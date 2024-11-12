@@ -161,8 +161,8 @@ fun ExpenseContent () {
 
     LaunchedEffect(tabIndex) {
         transactionType = if (tabIndex == 0) TransactionType.EXPENSE else TransactionType.INCOME
+        Log.i("ExpenseContent", "Loại giao dịch hiện tại: $transactionType")
     }
-
 
     val categories = listOf(
         Category(
