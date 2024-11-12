@@ -8,7 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.jetpackcompose.app.screens.SignUpScreen
 import com.example.jetpackcompose.app.screens.SignInScreen
-import com.example.jetpackcompose.components.TabMoney
+import com.example.jetpackcompose.app.features.MainScreen
 
 @Composable
 fun AppQuanLyChiTieu() {
@@ -16,7 +16,7 @@ fun AppQuanLyChiTieu() {
     NavHost(navController = navController, startDestination = "signup") {
         composable("signup") { SignUpScreen(navController) }
         composable("signin") { SignInScreen(navController) }
-        composable("tabmoney") { TabMoney() }
+        composable("tabmoney") { MainScreen() }
     }
 }
 

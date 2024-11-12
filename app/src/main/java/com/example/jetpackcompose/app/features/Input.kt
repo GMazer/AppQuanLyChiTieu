@@ -64,7 +64,6 @@ import com.example.jetpackcompose.R
 import com.example.jetpackcompose.components.DrawBottomLine
 import com.example.jetpackcompose.components.CategoriesGrid
 import com.example.jetpackcompose.components.TabMoney
-import com.example.jetpackcompose.navigation.CustomBottomAppBar
 import com.example.jetpackcompose.ui.theme.TextColor
 import com.example.jetpackcompose.ui.theme.colorPrimary
 import kotlinx.coroutines.CoroutineScope
@@ -201,10 +200,6 @@ fun ExpenseContent () {
     Scaffold(
         containerColor = Color.White,
 
-        //Bottom Navigation Bar
-        bottomBar = {
-            CustomBottomAppBar()
-        }
     ) { innerPadding ->
 
         // Đưa nội dung vào Column
@@ -249,7 +244,7 @@ fun ExpenseContent () {
             // Nhap vao so tien
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    "Tiền thu ",
+                    "Tiền chi ",
                     color = Color.DarkGray,
                     fontWeight = FontWeight.Bold,
                 )
@@ -371,11 +366,6 @@ fun IncomeContent () {
 
     Scaffold(
         containerColor = Color.White,
-
-        //Bottom Navigation Bar
-        bottomBar = {
-            CustomBottomAppBar()
-        }
     ) { innerPadding ->
 
         // Đưa nội dung vào Column
@@ -395,26 +385,28 @@ fun IncomeContent () {
                     selectedDate = date
                 })
             }
+
+            DrawBottomLine(8.dp)
             Spacer(Modifier.height(8.dp))
 
             // Ghi chu
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text("Ghi chú ", color = Color.DarkGray, fontWeight = FontWeight.Bold)
-                Spacer(Modifier.width(16.dp))
                 OutlinedTextField(
+                    modifier = Modifier
+                        .width(250.dp)
+                        .weight(1f),
                     value = textState,
                     onValueChange = { textState = it },
                     colors = TextFieldDefaults.outlinedTextFieldColors(
-                        containerColor = Color.LightGray,
                         focusedBorderColor = buttonColor,
                         unfocusedBorderColor = Color.Transparent,
-                        cursorColor = Color.Black
+                        cursorColor = colorPrimary
                     ),
-                    placeholder = { Text("Chưa nhập vào", color = TextColor) }
+                    placeholder = { Text("Chưa nhập vào", color = Color.LightGray) }
                 )
             }
-            Spacer(Modifier.height(8.dp))
-
+            DrawBottomLine(8.dp)
             // Nhap vao so tien
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
@@ -422,10 +414,10 @@ fun IncomeContent () {
                     color = Color.DarkGray,
                     fontWeight = FontWeight.Bold,
                 )
-                Spacer(Modifier.width(16.dp))
                 OutlinedTextField(
                     value = amountState,
                     onValueChange = { amountState = it },
+                    modifier = Modifier.weight(1f),
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         containerColor = Color.LightGray,
                         focusedBorderColor = buttonColor,
@@ -433,6 +425,7 @@ fun IncomeContent () {
                         cursorColor = Color.Black
                     ),
                     placeholder = { Text("0", color = TextColor) },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                 )
                 Spacer(Modifier.width(8.dp))
                 Text(
@@ -441,7 +434,7 @@ fun IncomeContent () {
                     fontWeight = FontWeight.Normal,
                 )
             }
-            Spacer(Modifier.height(24.dp))
+            DrawBottomLine(24.dp)
 
             // Danh mục chi tiêu
             Text("Danh mục", color = Color.DarkGray, fontWeight = FontWeight.Bold)
