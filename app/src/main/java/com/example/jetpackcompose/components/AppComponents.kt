@@ -23,6 +23,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Checkbox
+import androidx.compose.material.CheckboxDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material3.Text
@@ -63,6 +64,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.material.CheckboxDefaults.colors
 import com.example.jetpackcompose.R
 import com.example.jetpackcompose.app.features.Category
 import com.example.jetpackcompose.app.features.CustomTabRow
@@ -73,8 +75,10 @@ import com.example.jetpackcompose.ui.theme.TextColor
 import com.example.jetpackcompose.ui.theme.TextColorPrimary
 import com.example.jetpackcompose.ui.theme.bgColor
 import com.example.jetpackcompose.ui.theme.colorPrimary
+import com.example.jetpackcompose.ui.theme.colorSecondary
 import com.example.jetpackcompose.ui.theme.componentShapes
 import com.example.jetpackcompose.ui.theme.highGray
+
 val monsterrat = FontFamily(
     Font(R.font.montserrat_regular, FontWeight.Normal),
     Font(R.font.montserrat_bold, FontWeight.Bold),
@@ -89,7 +93,7 @@ fun NormalTextComponent(value: String) {
             .heightIn(min = 40.dp)
             .fillMaxWidth(),
         style = TextStyle(
-            fontSize = 24.sp,
+            fontSize = 22.sp,
             fontWeight = FontWeight.Normal,
             fontStyle = FontStyle.Normal,
         ),
@@ -103,10 +107,10 @@ fun HeadingTextComponent(value: String) {
     Text(
         text = value,
         modifier = Modifier
-            .heightIn(min = 80.dp)
+            .heightIn(min = 60.dp)
             .fillMaxWidth(),
         style = TextStyle(
-            fontSize = 40.sp,
+            fontSize = 36.sp,
             fontWeight = FontWeight.Bold,
             fontStyle = FontStyle.Normal,
         ),
@@ -206,20 +210,23 @@ fun PasswordTextFieldComponent(labelValue: String, painterResource: Painter) {
 }
 
 @Composable
-fun CheckboxComponent(value: String){
+fun CheckboxComponent(value: String) {
     val checkedState = remember { mutableStateOf(false) }
-    Row(modifier = Modifier
-        .fillMaxWidth()
-        .heightIn(56.dp),
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(56.dp),
         verticalAlignment = Alignment.CenterVertically
-    ){
-
-        val checkedState = remember { mutableStateOf(false) }
-        Checkbox(checked = checkedState.value,
-            onCheckedChange = {
-                checkedState.value != checkedState.value
-            })
-        Text(value,
+    ) {
+        Checkbox(
+            checked = checkedState.value,
+            onCheckedChange = { checkedState.value = it },
+            colors =  CheckboxDefaults.colors(
+                checkedColor = colorPrimary,
+            )
+        )
+        Text(
+            value,
             fontWeight = FontWeight.Normal,
             fontSize = 12.sp,
             color = Color(0xFF777777),
@@ -228,7 +235,7 @@ fun CheckboxComponent(value: String){
 }
 
 @Composable
-fun BottomLine(height: Dp) {
+fun DrawBottomLine(height: Dp) {
     Spacer(
         modifier = Modifier
             .fillMaxWidth()
@@ -247,7 +254,7 @@ fun BottomLine(height: Dp) {
 }
 
 @Composable
-fun TopLine(height: Dp) {
+fun DrawTopLine(height: Dp) {
     Spacer(
         modifier = Modifier
             .fillMaxWidth()
@@ -402,11 +409,30 @@ fun MyButtonComponent(value: String, onClick: () -> Unit)
 {
     Button(
         onClick = { /* Handle save */ },
-        colors = ButtonDefaults.buttonColors(containerColor = colorPrimary)
+        colors = ButtonDefaults.buttonColors(containerColor = colorPrimary),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(56.dp)
+            .padding(top = 16.dp),
     ) {
         Text(
             value,
             color = Color.White,
-            fontWeight = FontWeight.Bold)
+            fontWeight = FontWeight.Bold,
+            fontSize = 16.sp)
     }
+}
+
+
+@Composable
+fun ClickableTextComponent(value: String, onClick: () -> Unit) {
+    Text(
+        value,
+        color = colorSecondary,
+        fontWeight = FontWeight.Light,
+        fontSize = 8.sp,
+        modifier = Modifier
+            .padding(top = 5.dp)
+            .clickable(onClick = onClick)
+    )
 }
