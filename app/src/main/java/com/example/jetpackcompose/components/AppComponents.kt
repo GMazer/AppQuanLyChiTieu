@@ -25,7 +25,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Checkbox
 import androidx.compose.material.Icon
 import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
+import androidx.compose.material3.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -404,7 +404,7 @@ fun MyButtonComponent(value: String, onClick: () -> Unit)
         onClick = { /* Handle save */ },
         colors = ButtonDefaults.buttonColors(containerColor = colorPrimary)
     ) {
-        androidx.compose.material3.Text(
+        Text(
             value,
             color = Color.White,
             fontWeight = FontWeight.Bold)

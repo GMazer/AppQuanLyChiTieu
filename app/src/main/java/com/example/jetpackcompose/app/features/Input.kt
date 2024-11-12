@@ -248,26 +248,28 @@ fun ExpenseContent () {
                     selectedDate = date
                 })
             }
+
+            BottomLine(8.dp)
             Spacer(Modifier.height(8.dp))
 
             // Ghi chu
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text("Ghi chú ", color = Color.DarkGray, fontWeight = FontWeight.Bold)
-                Spacer(Modifier.width(16.dp))
                 OutlinedTextField(
+                    modifier = Modifier
+                        .width(250.dp)
+                        .weight(1f),
                     value = textState,
                     onValueChange = { textState = it },
                     colors = TextFieldDefaults.outlinedTextFieldColors(
-                        containerColor = Color.LightGray,
                         focusedBorderColor = buttonColor,
                         unfocusedBorderColor = Color.Transparent,
-                        cursorColor = Color.Black
+                        cursorColor = colorPrimary
                     ),
-                    placeholder = { Text("Chưa nhập vào", color = TextColor) }
+                    placeholder = { Text("Chưa nhập vào", color = Color.LightGray) }
                 )
             }
-            Spacer(Modifier.height(8.dp))
-
+            BottomLine(8.dp)
             // Nhap vao so tien
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
@@ -275,17 +277,18 @@ fun ExpenseContent () {
                     color = Color.DarkGray,
                     fontWeight = FontWeight.Bold,
                 )
-                Spacer(Modifier.width(16.dp))
                 OutlinedTextField(
                     value = amountState,
                     onValueChange = { amountState = it },
+                    modifier = Modifier.weight(1f),
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         containerColor = Color.LightGray,
                         focusedBorderColor = buttonColor,
                         unfocusedBorderColor = Color.Transparent,
                         cursorColor = Color.Black
                     ),
-                    placeholder = { Text("0", color = TextColor) }
+                    placeholder = { Text("0", color = TextColor) },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                 )
                 Spacer(Modifier.width(8.dp))
                 Text(
@@ -294,8 +297,7 @@ fun ExpenseContent () {
                     fontWeight = FontWeight.Normal,
                 )
             }
-            Spacer(Modifier.height(24.dp))
-
+            BottomLine(24.dp)
             // Danh mục chi tiêu
             Text("Danh mục", color = Color.DarkGray, fontWeight = FontWeight.Bold)
             Spacer(Modifier.height(24.dp))
