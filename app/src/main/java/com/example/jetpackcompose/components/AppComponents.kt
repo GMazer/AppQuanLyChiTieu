@@ -264,23 +264,42 @@ fun TopLine(height: Dp) {
     )
 }
 
+//Tạo layout với LazyColumn
 @Composable
-fun CategoriesGrid(categories: List<Category>, buttonColor: Color) {
+fun CategoriesGrid(
+    categories: List<Category>,
+    buttonColor: Color,
+    selectedCategory: Category?,
+    onCategorySelected: (Category) -> Unit
+) {
     LazyVerticalGrid(
-        columns = GridCells.Fixed(3),  // Số cột
-        contentPadding = PaddingValues(4.dp),  // Padding xung quanh grid
-        horizontalArrangement = Arrangement.spacedBy(4.dp),  // Khoảng cách ngang giữa các items
-        verticalArrangement = Arrangement.spacedBy(4.dp)  // Khoảng cách dọc giữa các items
+        columns = GridCells.Fixed(3),
+        contentPadding = PaddingValues(4.dp)
     ) {
         items(categories) { category ->
-            CategoryItem(category, buttonColor)
+            CategoryItem(
+                category = category,
+                buttonColor = buttonColor,
+                isSelected = (category == selectedCategory),
+                onClick = { onCategorySelected(category) }
+            )
         }
     }
 }
 
+
+
 // Tạo một item trong grid danh mục chi tiêu
 @Composable
-fun CategoryItem(category: Category, buttonColor: Color) {
+fun CategoryItem(
+    category: Category,
+    buttonColor: Color,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    // Màu viền sẽ là màu cam nếu item được chọn, ngược lại là màu xám nhạt
+    val borderColor = if (isSelected) buttonColor else Color.LightGray
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -289,16 +308,17 @@ fun CategoryItem(category: Category, buttonColor: Color) {
             .fillMaxWidth()
             .padding(4.dp)
             .border(
-                BorderStroke(1.dp, Color.LightGray),
+                BorderStroke(1.dp, borderColor),
                 RoundedCornerShape(4.dp)
-            )  // Viền và bo góc
+            )
+            .clickable { onClick() }
     ) {
         IconButton(
-            onClick = { /* Chưa có chức năng */ },
+            onClick = { onClick() },
             colors = IconButtonDefaults.iconButtonColors(contentColor = category.iconColor),
             modifier = Modifier
-                .padding(top = 4.dp, bottom = 2.dp) // Khoảng cách giữa icon và text
-                .size(24.dp) // Kích thước icon
+                .padding(top = 4.dp, bottom = 2.dp)
+                .size(24.dp)
         ) {
             androidx.compose.material3.Icon(painter = category.iconPainter(), contentDescription = category.name)
         }
@@ -334,11 +354,11 @@ fun TabMoney() {
     )
 
     var tabs = listOf(
-        TabItem("Income", icon =  Icons.Default.ArrowBack){
-            IncomeContent()
-        },
-        TabItem("Expense", icon =  Icons.Default.ArrowForward){
+        TabItem("Expense", icon =  Icons.Default.ArrowBack){
             ExpenseContent()
+        },
+        TabItem("Income", icon =  Icons.Default.ArrowForward){
+            IncomeContent()
         }
     )
 

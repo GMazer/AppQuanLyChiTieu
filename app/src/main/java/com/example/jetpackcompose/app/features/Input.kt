@@ -2,6 +2,7 @@ package com.example.jetpackcompose.app.features
 
 import android.app.DatePickerDialog
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.animateColorAsState
@@ -52,7 +53,9 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -78,6 +81,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
 import com.example.jetpackcompose.R
 import com.example.jetpackcompose.components.BottomLine
 import com.example.jetpackcompose.components.CategoriesGrid
@@ -117,169 +121,48 @@ val monsterrat = FontFamily(
 
 data class TabItem (val text: String, val icon: ImageVector, val screen: @Composable () -> Unit)
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun ExpenseContent () {
-    val customTypography = Typography(
-        bodyLarge = TextStyle(fontFamily = monsterrat),
-        bodyMedium = TextStyle(fontFamily = monsterrat),
-        bodySmall = TextStyle(fontFamily = monsterrat),
-        titleLarge = TextStyle(fontFamily = monsterrat),
-        titleMedium = TextStyle(fontFamily = monsterrat),
-        titleSmall = TextStyle(fontFamily = monsterrat),
-        labelLarge = TextStyle(fontFamily = monsterrat),
-        labelMedium = TextStyle(fontFamily = monsterrat),
-        labelSmall = TextStyle(fontFamily = monsterrat),
-        headlineLarge = TextStyle(fontFamily = monsterrat),
-        headlineMedium = TextStyle(fontFamily = monsterrat),
-        headlineSmall = TextStyle(fontFamily = monsterrat)
-    )
-    var tabIndex by remember { mutableStateOf(0) }
-    val tabTitles = listOf("Tiền chi", "Tiền thu")
-    val categories = listOf(
-        Category(
-            "Lương",
-            { painterResource(R.drawable.baseline_monetization_on_24) },
-            Color(0xFFfb791d)
-        ),
-        Category(
-            "Thưởng",
-            { painterResource(R.drawable.baseline_card_giftcard_24) },
-            Color(0xFF37c166)
-        ),
-        Category(
-            "Cướp",
-            { painterResource(R.drawable.baseline_person_off_24) },
-            Color(0xFFf95aa9)
-        ),
-        Category(
-            "Khác",
-            { painterResource(R.drawable.baseline_more_horiz_24) },
-            Color(0xFFfba74a)
-        )
-    )
+enum class TransactionType {
+    INCOME, // Tiền thu
+    EXPENSE // Tiền chi
+}
 
-    var textState by remember { mutableStateOf(TextFieldValue()) }
-    val buttonColor = Color(0xFFF35E17) // Color for the buttons
-    val textColor = Color(333333)
-    val navColor = Color(0xFFF1F1F1)
-    val activeColor = Color(0xFFF35E17)
-    val inactiveColor = Color(0xFFe1e1e1)
-    val backgroundColor = Color(0xFFF1F1F1)
+data class Transaction(
+    val date: String,
+    val note: String,
+    val amount: Long,
+    val category: String,
+    val type: TransactionType // Thêm thuộc tính type
+)
 
-    Scaffold(
-        containerColor = Color.White,
-        bottomBar = {
-            CustomBottomAppBar()
-        }
-        //Bottom Navigation Bar
-    ) { innerPadding ->
+class TransactionViewModel : ViewModel() {
+    private val _transactions = mutableStateListOf<Transaction>()
+    val transactions: List<Transaction> = _transactions
 
-        // Đưa nội dung vào Column
-
-        Column(
-            modifier = Modifier
-                .padding(innerPadding)
-                .padding(16.dp)
-                .background(Color.White)
-        ) {
-
-            Spacer(Modifier.height(8.dp))
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("Ngày ", color = Color.DarkGray, fontWeight = FontWeight.Bold)
-                //Gọi Nút Chọn ngày
-                DatePickerButton()
-            }
-            Spacer(Modifier.height(8.dp))
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("Ghi chú ", color = Color.DarkGray, fontWeight = FontWeight.Bold)
-                Spacer(Modifier.width(16.dp))
-                OutlinedTextField(
-                    value = textState,
-                    onValueChange = { textState = it },
-                    label = { Text("Note", color = buttonColor) },
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                        containerColor = Color.White,
-                        focusedBorderColor = buttonColor,
-                        unfocusedBorderColor = Color.Transparent,
-                        cursorColor = Color.Black
-                    ),
-                    placeholder = { Text("Chưa nhập vào", color = Color.LightGray) }
-                )
-            }
-            Spacer(Modifier.height(8.dp))
-            // Nhap vao so tien
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    "Tiền thu ",
-                    color = Color.DarkGray,
-                    fontWeight = FontWeight.Bold,
-                )
-                Spacer(Modifier.width(16.dp))
-                OutlinedTextField(
-                    value = textState,
-                    onValueChange = { textState = it },
-                    label = { Text("Money", color = buttonColor) },
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                        containerColor = Color.White,
-                        focusedBorderColor = buttonColor,
-                        unfocusedBorderColor = Color.Transparent,
-                        cursorColor = Color.Black
-                    ),
-                    placeholder = { Text("0", color = Color.LightGray) }
-                )
-                Spacer(Modifier.width(8.dp))
-                Text(
-                    "₫",
-                    color = Color.DarkGray,
-                    fontWeight = FontWeight.Normal,
-                )
-            }
-            Spacer(Modifier.height(24.dp))
-            // Danh mục chi tiêu
-            Text("Danh mục", color = Color.DarkGray, fontWeight = FontWeight.Bold)
-            Spacer(Modifier.height(24.dp))
-
-            CategoriesGrid(categories, buttonColor) // Gọi danh mục chi tiêu
-
-            Spacer(Modifier.height(32.dp))
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxSize()
-            ) {
-                Button(
-                    onClick = { /* Handle save */ },
-                    colors = ButtonDefaults.buttonColors(containerColor = buttonColor)
-                ) {
-                    Text("Nhập khoản thu", color = Color.White, fontWeight = FontWeight.Bold)
-                }
-            }
-        }
+    // Hàm thêm giao dịch
+    fun addTransaction(transaction: Transaction) {
+        _transactions.add(transaction)
     }
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun IncomeContent () {
-    val customTypography = Typography(
-        bodyLarge = TextStyle(fontFamily = monsterrat),
-        bodyMedium = TextStyle(fontFamily = monsterrat),
-        bodySmall = TextStyle(fontFamily = monsterrat),
-        titleLarge = TextStyle(fontFamily = monsterrat),
-        titleMedium = TextStyle(fontFamily = monsterrat),
-        titleSmall = TextStyle(fontFamily = monsterrat),
-        labelLarge = TextStyle(fontFamily = monsterrat),
-        labelMedium = TextStyle(fontFamily = monsterrat),
-        labelSmall = TextStyle(fontFamily = monsterrat),
-        headlineLarge = TextStyle(fontFamily = monsterrat),
-        headlineMedium = TextStyle(fontFamily = monsterrat),
-        headlineSmall = TextStyle(fontFamily = monsterrat)
-    )
+fun ExpenseContent () {
+
     var tabIndex by remember { mutableStateOf(0) }
-    val tabTitles = listOf("Tiền chi", "Tiền thu")
+    var textState by remember { mutableStateOf(TextFieldValue()) }
+    var amountState by remember { mutableStateOf(TextFieldValue()) }
+    var selectedDate by remember { mutableStateOf("Chưa chọn ngày") }
+    var selectedCategory by remember { mutableStateOf<Category?>(null) }
+
+    val buttonColor = Color(0xFFF35E17)
+
+    var transactionType by remember { mutableStateOf(TransactionType.EXPENSE) }
+
+    LaunchedEffect(tabIndex) {
+        transactionType = if (tabIndex == 0) TransactionType.EXPENSE else TransactionType.INCOME
+    }
+
+
     val categories = listOf(
         Category(
             "Ăn uống",
@@ -338,21 +221,13 @@ fun IncomeContent () {
         )
     )
 
-    var textState by remember { mutableStateOf(TextFieldValue()) }
-    var textOutcome by remember { mutableStateOf(TextFieldValue("0")) }
-    val buttonColor = Color(0xFFF35E17) // Color for the buttons
-    val textColor = Color(333333)
-    val navColor = Color(0xFFF1F1F1)
-    val activeColor = Color(0xFFF35E17)
-    val inactiveColor = Color(0xFFe1e1e1)
-    val backgroundColor = Color(0xFFF1F1F1)
-
     Scaffold(
         containerColor = Color.White,
+
+        //Bottom Navigation Bar
         bottomBar = {
             CustomBottomAppBar()
         }
-        //Bottom Navigation Bar
     ) { innerPadding ->
 
         // Đưa nội dung vào Column
@@ -363,60 +238,55 @@ fun IncomeContent () {
                 .padding(16.dp)
                 .background(Color.White)
         ) {
-
             Spacer(Modifier.height(8.dp))
+
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text("Ngày ", color = Color.DarkGray, fontWeight = FontWeight.Bold)
                 //Gọi Nút Chọn ngày
-                DatePickerButton()
+                DatePickerButton(onDateSelected = { date ->
+                    selectedDate = date
+                })
             }
+            Spacer(Modifier.height(8.dp))
 
-            BottomLine(8.dp)
+            // Ghi chu
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text("Ghi chú ", color = Color.DarkGray, fontWeight = FontWeight.Bold)
-                Spacer(Modifier.width(8.dp))
+                Spacer(Modifier.width(16.dp))
                 OutlinedTextField(
                     value = textState,
                     onValueChange = { textState = it },
+                    label = { Text("Note", color = buttonColor) },
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         containerColor = Color.White,
                         focusedBorderColor = buttonColor,
                         unfocusedBorderColor = Color.Transparent,
                         cursorColor = Color.Black
                     ),
-                    placeholder = { Text(
-                        "Chưa nhập vào",
-                        color = Color.LightGray,
-                        fontSize = 8.sp
-                    ) },
-                    modifier = Modifier
-                        .height(40.dp)
-                        .weight(1f)
+                    placeholder = { Text("Chưa nhập vào", color = Color.LightGray) }
                 )
             }
-            BottomLine(8.dp)
+            Spacer(Modifier.height(8.dp))
+
             // Nhap vao so tien
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    "Tiền chi ",
+                    "Tiền thu ",
                     color = Color.DarkGray,
                     fontWeight = FontWeight.Bold,
                 )
-                Spacer(Modifier.width(8.dp))
+                Spacer(Modifier.width(16.dp))
                 OutlinedTextField(
-                    value = textOutcome,
-                    onValueChange = { textOutcome = it },
+                    value = amountState,
+                    onValueChange = { amountState = it },
+                    label = { Text("Money", color = buttonColor) },
                     colors = TextFieldDefaults.outlinedTextFieldColors(
-                        containerColor = Color(0xFFe1e1e1),
-                        focusedBorderColor = colorPrimary,
+                        containerColor = Color.White,
+                        focusedBorderColor = buttonColor,
                         unfocusedBorderColor = Color.Transparent,
-                        cursorColor = colorPrimary
+                        cursorColor = Color.Black
                     ),
-                    modifier = Modifier
-                                .heightIn(max = 40.dp)
-                                .weight(1f)
-                                .padding(0.dp),
-                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
+                    placeholder = { Text("0", color = Color.LightGray) }
                 )
                 Spacer(Modifier.width(8.dp))
                 Text(
@@ -425,12 +295,21 @@ fun IncomeContent () {
                     fontWeight = FontWeight.Normal,
                 )
             }
-            BottomLine(24.dp)
+            Spacer(Modifier.height(24.dp))
+
             // Danh mục chi tiêu
             Text("Danh mục", color = Color.DarkGray, fontWeight = FontWeight.Bold)
             Spacer(Modifier.height(24.dp))
 
-            CategoriesGrid(categories, buttonColor) // Gọi danh mục chi tiêu
+            // Gọi danh mục chi tiêu và truyền callback
+            CategoriesGrid(
+                categories = categories,
+                buttonColor = buttonColor,
+                selectedCategory = selectedCategory,
+                onCategorySelected = { category ->
+                    selectedCategory = category
+                }
+            )
 
             Spacer(Modifier.height(32.dp))
             Row(
@@ -440,7 +319,27 @@ fun IncomeContent () {
                     .fillMaxSize()
             ) {
                 Button(
-                    onClick = { /* Handle save */ },
+                    onClick = {
+                        val amount = amountState.text.toLongOrNull() ?: 0L
+                        val categoryName = selectedCategory?.name ?: "Chưa chọn danh mục"
+
+                        val transaction = Transaction(
+                            date = selectedDate,
+                            note = textState.text,
+                            amount = amount,
+                            category = categoryName,
+                            type = transactionType // Thêm loại giao dịch
+                        )
+                        TransactionViewModel().addTransaction(transaction)
+
+                        // Xóa dữ liệu nhập sau khi lưu
+                        textState = TextFieldValue("")
+                        amountState = TextFieldValue("")
+
+                        // Ghi log thông tin giao dịch
+                        Log.i("ExpenseContent", "Transaction: $transaction")
+                    },
+
                     colors = ButtonDefaults.buttonColors(containerColor = buttonColor)
                 ) {
                     Text("Nhập khoản chi", color = Color.White, fontWeight = FontWeight.Bold)
@@ -450,31 +349,202 @@ fun IncomeContent () {
     }
 
 }
-//DATE PICKER BUTTON
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DatePickerButton() {
+fun IncomeContent () {
+
+    var tabIndex by remember { mutableStateOf(1) }
+    var textState by remember { mutableStateOf(TextFieldValue()) }
+    var amountState by remember { mutableStateOf(TextFieldValue()) }
+    var selectedDate by remember { mutableStateOf("Chưa chọn ngày") }
+    var selectedCategory by remember { mutableStateOf<Category?>(null) } // Lưu danh mục được chọn
+
+    val buttonColor = Color(0xFFF35E17)
+
+    var transactionType by remember { mutableStateOf(TransactionType.INCOME) }
+
+    LaunchedEffect(tabIndex) {
+        transactionType = if (tabIndex == 0) TransactionType.EXPENSE else TransactionType.INCOME
+        Log.i("ExpenseContent", "Loại giao dịch hiện tại: $transactionType")
+    }
+
+
+    val categories = listOf(
+        Category(
+            "Lương",
+            { painterResource(R.drawable.baseline_monetization_on_24) },
+            Color(0xFFfb791d)
+        ),
+        Category(
+            "Thưởng",
+            { painterResource(R.drawable.baseline_card_giftcard_24) },
+            Color(0xFF37c166)
+        ),
+        Category(
+            "Cướp",
+            { painterResource(R.drawable.baseline_person_off_24) },
+            Color(0xFFf95aa9)
+        ),
+        Category(
+            "Khác",
+            { painterResource(R.drawable.baseline_more_horiz_24) },
+            Color(0xFFfba74a)
+        )
+    )
+
+    Scaffold(
+        containerColor = Color.White,
+
+        //Bottom Navigation Bar
+        bottomBar = {
+            CustomBottomAppBar()
+        }
+    ) { innerPadding ->
+
+        // Đưa nội dung vào Column
+
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+                .padding(16.dp)
+                .background(Color.White)
+        ) {
+            Spacer(Modifier.height(8.dp))
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text("Ngày ", color = Color.DarkGray, fontWeight = FontWeight.Bold)
+                //Gọi Nút Chọn ngày
+                DatePickerButton(onDateSelected = { date ->
+                    selectedDate = date
+                })
+            }
+            Spacer(Modifier.height(8.dp))
+
+            // Ghi chu
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text("Ghi chú ", color = Color.DarkGray, fontWeight = FontWeight.Bold)
+                Spacer(Modifier.width(16.dp))
+                OutlinedTextField(
+                    value = textState,
+                    onValueChange = { textState = it },
+                    label = { Text("Note", color = buttonColor) },
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        containerColor = Color.White,
+                        focusedBorderColor = buttonColor,
+                        unfocusedBorderColor = Color.Transparent,
+                        cursorColor = Color.Black
+                    ),
+                    placeholder = { Text("Chưa nhập vào", color = Color.LightGray) }
+                )
+            }
+            Spacer(Modifier.height(8.dp))
+
+            // Nhap vao so tien
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    "Tiền thu ",
+                    color = Color.DarkGray,
+                    fontWeight = FontWeight.Bold,
+                )
+                Spacer(Modifier.width(16.dp))
+                OutlinedTextField(
+                    value = amountState,
+                    onValueChange = { amountState = it },
+                    label = { Text("Money", color = buttonColor) },
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        containerColor = Color.White,
+                        focusedBorderColor = buttonColor,
+                        unfocusedBorderColor = Color.Transparent,
+                        cursorColor = Color.Black
+                    ),
+                    placeholder = { Text("0", color = Color.LightGray) }
+                )
+                Spacer(Modifier.width(8.dp))
+                Text(
+                    "₫",
+                    color = Color.DarkGray,
+                    fontWeight = FontWeight.Normal,
+                )
+            }
+            Spacer(Modifier.height(24.dp))
+
+            // Danh mục chi tiêu
+            Text("Danh mục", color = Color.DarkGray, fontWeight = FontWeight.Bold)
+            Spacer(Modifier.height(24.dp))
+
+            // Gọi danh mục chi tiêu và truyền callback
+            CategoriesGrid(
+                categories = categories,
+                buttonColor = buttonColor,
+                selectedCategory = selectedCategory,
+                onCategorySelected = { category ->
+                    selectedCategory = category
+                }
+            )
+
+            Spacer(Modifier.height(32.dp))
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxSize()
+            ) {
+                Button(
+                    onClick = {
+                        val amount = amountState.text.toLongOrNull() ?: 0L
+                        val categoryName = selectedCategory?.name ?: "Chưa chọn danh mục"
+
+                        val transaction = Transaction(
+                            date = selectedDate,
+                            note = textState.text,
+                            amount = amount,
+                            category = categoryName,
+                            type = transactionType // Thêm loại giao dịch
+                        )
+                        TransactionViewModel().addTransaction(transaction)
+
+                        // Xóa dữ liệu nhập sau khi lưu
+                        textState = TextFieldValue("")
+                        amountState = TextFieldValue("")
+
+                        // Ghi log thông tin giao dịch
+                        Log.i("ExpenseContent", "Transaction: $transaction")
+                    },
+
+                    colors = ButtonDefaults.buttonColors(containerColor = buttonColor)
+                ) {
+                    Text("Nhập khoản thu", color = Color.White, fontWeight = FontWeight.Bold)
+                }
+            }
+        }
+    }
+
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DatePickerButton(onDateSelected: (String) -> Unit) {
     var dateText by remember { mutableStateOf("") }
     val context = LocalContext.current
     val calendar = Calendar.getInstance()
-    var buttonHeight by remember { mutableStateOf(0.dp) }
 
-    //Định dạng ngày tháng năm thứ
+    // Định dạng ngày tháng năm thứ
     val dateFormat = SimpleDateFormat("dd/MM/yyyy (E)", Locale("vi", "VN"))
 
     // Cập nhật ngày hiện tại khi khởi tạo
     LaunchedEffect(key1 = true) {
-        dateText = dateFormat.format(calendar.time) // Định dạng ngày tháng năm
+        dateText = dateFormat.format(calendar.time)
+        onDateSelected(dateText) // Gọi callback khi khởi tạo
     }
-    Row(
-        verticalAlignment = Alignment.CenterVertically
-    ) {
 
+    Row(verticalAlignment = Alignment.CenterVertically) {
         // Nút lùi lịch
         IconButton(
             onClick = {
-                calendar.add(Calendar.DAY_OF_MONTH, -1) // Lùi 1 ngày
+                calendar.add(Calendar.DAY_OF_MONTH, -1)
                 dateText = dateFormat.format(calendar.time)
+                onDateSelected(dateText) // Gọi callback khi lùi ngày
             },
             modifier = Modifier.size(20.dp)
         ) {
@@ -488,19 +558,17 @@ fun DatePickerButton() {
 
         // Nút chọn ngày
         Button(
-            modifier = Modifier
-                .weight(1f),
+            modifier = Modifier.weight(1f),
             shape = RoundedCornerShape(5.dp),
             onClick = {
-                // Xử lý sự kiện nhấn nút: mở DatePickerDialog
                 val datePickerDialog = DatePickerDialog(
                     context,
                     { _, year, month, dayOfMonth ->
-                        // Cập nhật ngày khi chọn xong
                         calendar.set(Calendar.YEAR, year)
                         calendar.set(Calendar.MONTH, month)
                         calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
                         dateText = dateFormat.format(calendar.time)
+                        onDateSelected(dateText) // Gọi callback khi chọn ngày
                     },
                     calendar.get(Calendar.YEAR),
                     calendar.get(Calendar.MONTH),
@@ -518,22 +586,26 @@ fun DatePickerButton() {
             )
         }
         Spacer(modifier = Modifier.width(8.dp))
+
         // Nút tiến lịch
         IconButton(
             onClick = {
-                calendar.add(Calendar.DAY_OF_MONTH, +1) // Lùi 1 ngày
+                calendar.add(Calendar.DAY_OF_MONTH, +1)
                 dateText = dateFormat.format(calendar.time)
+                onDateSelected(dateText) // Gọi callback khi tiến ngày
             },
             modifier = Modifier.size(20.dp)
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.outline_arrow_forward_ios_24),
-                contentDescription = "Lùi lịch",
+                contentDescription = "Tiến lịch",
                 tint = Color(0xFF444444)
             )
         }
     }
 }
+
+
 // Tạo custom TabRow
 @Composable
 fun CustomTabRow(
@@ -618,7 +690,8 @@ fun CustomTabRow(
                         selected = isSelected,
                         onClick = { onTabSelected(index)
                             ;coroutineScoper.launch {
-                                pagerStatement.scrollToPage(index) }
+                                pagerStatement.scrollToPage(index)
+                            }
                         },
                         text = {
                             Text(
@@ -635,10 +708,6 @@ fun CustomTabRow(
         }
     }
 }
-
-// Tạo grid danh mục chi tiêu bằng LazyVerticalGrid
-
-
 
 
 @Preview(showBackground = true)
