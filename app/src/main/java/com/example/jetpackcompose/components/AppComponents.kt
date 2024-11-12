@@ -313,6 +313,8 @@ fun CategoryItem(category: Category, buttonColor: Color) {
     }
 }
 
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TabMoney() {
@@ -372,4 +374,10 @@ fun TabMoney() {
 
         }
     }
+}
+
+@Composable
+fun MyButtonComponent(value: String, onClick: () -> Unit)
+{
+
 }

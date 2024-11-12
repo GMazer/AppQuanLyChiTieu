@@ -41,11 +41,14 @@ fun SignUpScreen() {
                 labelValue = stringResource(id = R.string.email_or_nummber),
                 painterResource(id = R.drawable.profile)
             )
+
+            Spacer(modifier = Modifier.height(10.dp))
             PasswordTextFieldComponent(
                     labelValue = stringResource(id = R.string.enter_password),
                     painterResource(id = R.drawable.outline_lock)
             )
 
+            Spacer(modifier = Modifier.height(10.dp))
             PasswordTextFieldComponent(
                 labelValue = stringResource(id = R.string.re_enter_password),
                 painterResource(id = R.drawable.outline_lock)

@@ -7,5 +7,6 @@ import com.example.jetpackcompose.components.TabMoney
 
 @Composable
 fun AppQuanLyChiTieu() {
+    SignUpScreen()
     TabMoney()
 }
