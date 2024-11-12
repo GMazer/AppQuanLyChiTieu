@@ -3,9 +3,8 @@ package com.example.jetpackcompose.navigation
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.outlined.Edit
@@ -21,6 +20,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.example.jetpackcompose.R // Đảm bảo import đúng R class
 import com.example.jetpackcompose.ui.theme.colorPrimary
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.ui.tooling.preview.Preview
+import com.example.jetpackcompose.app.screens.SignUpScreen
+
 
 @Composable
 fun CustomBottomAppBar() {
@@ -42,16 +46,13 @@ fun CustomBottomAppBar() {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                androidx.compose.material3.IconButton(
+                IconButton(
                     onClick = { /* Chua co chuc nang */ },
                     colors = IconButtonDefaults.iconButtonColors(contentColor = colorPrimary)
                 ) {
-                    androidx.compose.material3.Icon(
-                        Icons.Outlined.Edit,
-                        contentDescription = "Nhập vào"
-                    )
+                    Icon(Icons.Outlined.Edit, contentDescription = "Nhập vào")
                 }
-                androidx.compose.material3.Text(
+                Text(
                     "Nhập vào",
                     color = colorPrimary,
                     fontWeight = FontWeight.Normal,
@@ -63,16 +64,16 @@ fun CustomBottomAppBar() {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                androidx.compose.material3.IconButton(
+                IconButton(
                     onClick = { /* Chua co chuc nang */ },
                     colors = IconButtonDefaults.iconButtonColors(contentColor = Color.Gray)
                 ) {
-                    androidx.compose.material3.Icon(
+                    Icon(
                         painter = painterResource(id = R.drawable.outline_calendar_month_24),
                         contentDescription = "Lịch"
                     )
                 }
-                androidx.compose.material3.Text(
+                Text(
                     "Lịch",
                     color = Color.Gray,
                     fontWeight = FontWeight.W500,
@@ -84,16 +85,16 @@ fun CustomBottomAppBar() {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                androidx.compose.material3.IconButton(
+                IconButton(
                     onClick = { /* Chua co chuc nang */ },
                     colors = IconButtonDefaults.iconButtonColors(contentColor = Color.Gray)
                 ) {
-                    androidx.compose.material3.Icon(
+                    Icon(
                         painter = painterResource(id = R.drawable.chart_donut),
                         contentDescription = "Báo cáo"
                     )
                 }
-                androidx.compose.material3.Text(
+                Text(
                     "Báo cáo",
                     color = Color.Gray,
                     fontWeight = FontWeight.W500,
@@ -105,16 +106,16 @@ fun CustomBottomAppBar() {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                androidx.compose.material3.IconButton(
+                IconButton(
                     onClick = { /* Chua co chuc nang */ },
                     colors = IconButtonDefaults.iconButtonColors(contentColor = Color.Gray)
                 ) {
-                    androidx.compose.material3.Icon(
+                    Icon(
                         painter = painterResource(id = R.drawable.baseline_more_horiz_24),
                         contentDescription = "Khác"
                     )
                 }
-                androidx.compose.material3.Text(
+                Text(
                     "Khác",
                     color = Color.Gray,
                     fontWeight = FontWeight.W500,
@@ -123,4 +124,10 @@ fun CustomBottomAppBar() {
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun PreviewSignUpScreen() {
+    CustomBottomAppBar()
 }

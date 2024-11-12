@@ -30,6 +30,8 @@ import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -73,7 +75,6 @@ import com.example.jetpackcompose.ui.theme.bgColor
 import com.example.jetpackcompose.ui.theme.colorPrimary
 import com.example.jetpackcompose.ui.theme.componentShapes
 import com.example.jetpackcompose.ui.theme.highGray
-
 val monsterrat = FontFamily(
     Font(R.font.montserrat_regular, FontWeight.Normal),
     Font(R.font.montserrat_bold, FontWeight.Bold),
@@ -379,5 +380,13 @@ fun TabMoney() {
 @Composable
 fun MyButtonComponent(value: String, onClick: () -> Unit)
 {
-
+    Button(
+        onClick = { /* Handle save */ },
+        colors = ButtonDefaults.buttonColors(containerColor = colorPrimary)
+    ) {
+        androidx.compose.material3.Text(
+            value,
+            color = Color.White,
+            fontWeight = FontWeight.Bold)
+    }
 }
