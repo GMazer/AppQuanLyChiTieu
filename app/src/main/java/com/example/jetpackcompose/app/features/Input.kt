@@ -655,8 +655,9 @@ fun CustomTabRow(
                             .background(tabColor, shape = RoundedCornerShape(6.dp))
                         else Modifier.width(100.dp),
                         selected = isSelected,
-                        onClick = { onTabSelected(index)
-                            ;coroutineScoper.launch {
+                        onClick = {
+                            onTabSelected(index);
+                            coroutineScoper.launch {
                                 pagerStatement.scrollToPage(index)
                             }
                         },
