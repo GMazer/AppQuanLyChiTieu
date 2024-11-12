@@ -90,6 +90,7 @@ import com.example.jetpackcompose.navigation.CustomBottomAppBar
 import com.example.jetpackcompose.ui.theme.TextColor
 import com.example.jetpackcompose.ui.theme.TextColorPrimary
 import com.example.jetpackcompose.ui.theme.colorPrimary
+import com.example.jetpackcompose.ui.theme.highGray
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -256,14 +257,13 @@ fun ExpenseContent () {
                 OutlinedTextField(
                     value = textState,
                     onValueChange = { textState = it },
-                    label = { Text("Note", color = buttonColor) },
                     colors = TextFieldDefaults.outlinedTextFieldColors(
-                        containerColor = Color.White,
+                        containerColor = Color.LightGray,
                         focusedBorderColor = buttonColor,
                         unfocusedBorderColor = Color.Transparent,
                         cursorColor = Color.Black
                     ),
-                    placeholder = { Text("Chưa nhập vào", color = Color.LightGray) }
+                    placeholder = { Text("Chưa nhập vào", color = TextColor) }
                 )
             }
             Spacer(Modifier.height(8.dp))
@@ -279,14 +279,13 @@ fun ExpenseContent () {
                 OutlinedTextField(
                     value = amountState,
                     onValueChange = { amountState = it },
-                    label = { Text("Money", color = buttonColor) },
                     colors = TextFieldDefaults.outlinedTextFieldColors(
-                        containerColor = Color.White,
+                        containerColor = Color.LightGray,
                         focusedBorderColor = buttonColor,
                         unfocusedBorderColor = Color.Transparent,
                         cursorColor = Color.Black
                     ),
-                    placeholder = { Text("0", color = Color.LightGray) }
+                    placeholder = { Text("0", color = TextColor) }
                 )
                 Spacer(Modifier.width(8.dp))
                 Text(
@@ -427,14 +426,13 @@ fun IncomeContent () {
                 OutlinedTextField(
                     value = textState,
                     onValueChange = { textState = it },
-                    label = { Text("Note", color = buttonColor) },
                     colors = TextFieldDefaults.outlinedTextFieldColors(
-                        containerColor = Color.White,
+                        containerColor = Color.LightGray,
                         focusedBorderColor = buttonColor,
                         unfocusedBorderColor = Color.Transparent,
                         cursorColor = Color.Black
                     ),
-                    placeholder = { Text("Chưa nhập vào", color = Color.LightGray) }
+                    placeholder = { Text("Chưa nhập vào", color = TextColor) }
                 )
             }
             Spacer(Modifier.height(8.dp))
@@ -450,14 +448,13 @@ fun IncomeContent () {
                 OutlinedTextField(
                     value = amountState,
                     onValueChange = { amountState = it },
-                    label = { Text("Money", color = buttonColor) },
                     colors = TextFieldDefaults.outlinedTextFieldColors(
-                        containerColor = Color.White,
+                        containerColor = Color.LightGray,
                         focusedBorderColor = buttonColor,
                         unfocusedBorderColor = Color.Transparent,
                         cursorColor = Color.Black
                     ),
-                    placeholder = { Text("0", color = Color.LightGray) }
+                    placeholder = { Text("0", color = TextColor) },
                 )
                 Spacer(Modifier.width(8.dp))
                 Text(
