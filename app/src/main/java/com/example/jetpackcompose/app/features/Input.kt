@@ -369,7 +369,6 @@ fun IncomeContent () {
         Log.i("ExpenseContent", "Loại giao dịch hiện tại: $transactionType")
     }
 
-
     val categories = listOf(
         Category(
             "Lương",
