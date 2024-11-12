@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Quản Lý Chi Tiêu</string>
+    <string name="hello">Xin chào, </string>
+    <string name="create_account">Tạo một Tài khoản</string>
+    <string name="welcome_back">Chào mừng trở lại</string>">
+    <string name= "email_or_nummber">Email hoặc số điện thoại</string>
+    <string name= "enter_password">Mật khẩu</string>
+    <string name= "re_enter_password">Nhập lại mật khẩu</string>
+
+</resources>
