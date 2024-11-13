@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.material.Scaffold
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavHostController
 import com.example.jetpackcompose.app.screens.InputScreen
 import com.example.jetpackcompose.app.screens.CalendarScreen
 import com.example.jetpackcompose.app.screens.ReportScreen

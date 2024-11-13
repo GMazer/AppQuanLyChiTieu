@@ -70,6 +70,14 @@ fun SignInScreen(navController: NavHostController) {
                     navController.navigate("signup")
                 })
             }
+
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Spacer(modifier = Modifier.weight(1f))
+                ClickableTextComponent("Main screen    ", onClick = {
+                    navController.navigate("mainscreen")
+                })
+            }
+
         }
     }
 }

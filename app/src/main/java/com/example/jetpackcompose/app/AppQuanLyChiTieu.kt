@@ -16,7 +16,7 @@ fun AppQuanLyChiTieu() {
     NavHost(navController = navController, startDestination = "signup") {
         composable("signup") { SignUpScreen(navController) }
         composable("signin") { SignInScreen(navController) }
-        composable("tabmoney") { MainScreen() }
+        composable("mainscreen") { MainScreen() }
     }
 }
 
