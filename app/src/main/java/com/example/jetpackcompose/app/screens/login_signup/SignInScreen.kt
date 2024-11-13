@@ -1,4 +1,4 @@
-package com.example.jetpackcompose.app.screens
+package com.example.jetpackcompose.app.screens.login_signup
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -20,7 +20,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.jetpackcompose.R
-import com.example.jetpackcompose.components.CheckboxComponent
 import com.example.jetpackcompose.components.ClickableTextComponent
 import com.example.jetpackcompose.components.HeadingTextComponent
 import com.example.jetpackcompose.components.MyButtonComponent
@@ -73,7 +72,7 @@ fun SignInScreen(navController: NavHostController) {
 
             Row(modifier = Modifier.fillMaxWidth()) {
                 Spacer(modifier = Modifier.weight(1f))
-                ClickableTextComponent("Main screen    ", onClick = {
+                MyButtonComponent("Main screen", onClick = {
                     navController.navigate("mainscreen")
                 })
             }

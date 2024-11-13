@@ -63,9 +63,11 @@ import androidx.lifecycle.ViewModel
 import com.example.jetpackcompose.R
 import com.example.jetpackcompose.components.DrawBottomLine
 import com.example.jetpackcompose.components.CategoriesGrid
+import com.example.jetpackcompose.components.NumberTextField
 import com.example.jetpackcompose.components.TabMoney
 import com.example.jetpackcompose.ui.theme.TextColor
 import com.example.jetpackcompose.ui.theme.colorPrimary
+import com.example.jetpackcompose.ui.theme.componentShapes
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -248,19 +250,8 @@ fun ExpenseContent () {
                     color = Color.DarkGray,
                     fontWeight = FontWeight.Bold,
                 )
-                OutlinedTextField(
-                    value = amountState,
-                    onValueChange = { amountState = it },
-                    modifier = Modifier.weight(1f),
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                        containerColor = Color.LightGray,
-                        focusedBorderColor = buttonColor,
-                        unfocusedBorderColor = Color.Transparent,
-                        cursorColor = Color.Black
-                    ),
-                    placeholder = { Text("0", color = TextColor) },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-                )
+                Spacer(Modifier.width(8.dp))
+                NumberTextField()
                 Spacer(Modifier.width(8.dp))
                 Text(
                     "₫",
@@ -414,19 +405,8 @@ fun IncomeContent () {
                     color = Color.DarkGray,
                     fontWeight = FontWeight.Bold,
                 )
-                OutlinedTextField(
-                    value = amountState,
-                    onValueChange = { amountState = it },
-                    modifier = Modifier.weight(1f),
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                        containerColor = Color.LightGray,
-                        focusedBorderColor = buttonColor,
-                        unfocusedBorderColor = Color.Transparent,
-                        cursorColor = Color.Black
-                    ),
-                    placeholder = { Text("0", color = TextColor) },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-                )
+                Spacer(Modifier.width(8.dp))
+                NumberTextField()
                 Spacer(Modifier.width(8.dp))
                 Text(
                     "₫",
@@ -526,7 +506,7 @@ fun DatePickerButton(onDateSelected: (String) -> Unit) {
         // Nút chọn ngày
         Button(
             modifier = Modifier.weight(1f),
-            shape = RoundedCornerShape(5.dp),
+            shape = componentShapes.medium,
             onClick = {
                 val datePickerDialog = DatePickerDialog(
                     context,

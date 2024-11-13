@@ -5,28 +5,36 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Checkbox
 import androidx.compose.material.CheckboxDefaults
 import androidx.compose.material.Icon
+import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Surface
 import androidx.compose.material3.Text
+//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -48,6 +56,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
@@ -64,7 +74,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.material.CheckboxDefaults.colors
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import com.example.jetpackcompose.R
 import com.example.jetpackcompose.app.features.Category
 import com.example.jetpackcompose.app.features.CustomTabRow
@@ -78,6 +94,7 @@ import com.example.jetpackcompose.ui.theme.colorPrimary
 import com.example.jetpackcompose.ui.theme.colorSecondary
 import com.example.jetpackcompose.ui.theme.componentShapes
 import com.example.jetpackcompose.ui.theme.highGray
+
 
 val monsterrat = FontFamily(
     Font(R.font.montserrat_regular, FontWeight.Normal),
@@ -94,6 +111,7 @@ fun NormalTextComponent(value: String) {
             .fillMaxWidth(),
         style = TextStyle(
             fontSize = 22.sp,
+            fontFamily = monsterrat,
             fontWeight = FontWeight.Normal,
             fontStyle = FontStyle.Normal,
         ),
@@ -111,6 +129,7 @@ fun HeadingTextComponent(value: String) {
             .fillMaxWidth(),
         style = TextStyle(
             fontSize = 36.sp,
+            fontFamily = monsterrat,
             fontWeight = FontWeight.Bold,
             fontStyle = FontStyle.Normal,
         ),
@@ -126,7 +145,10 @@ fun MyTextFieldComponent(labelValue: String, painterResource: Painter) {
         modifier = Modifier
             .fillMaxWidth().clip(componentShapes.small),
         shape = RoundedCornerShape(10.dp),
-        label = { Text(text = labelValue) },
+        label = { Text(
+            text = labelValue,
+            fontFamily = monsterrat,
+        ) },
         value = textValue.value,
         colors = TextFieldDefaults.outlinedTextFieldColors(
             focusedBorderColor = colorPrimary,
@@ -161,7 +183,10 @@ fun PasswordTextFieldComponent(labelValue: String, painterResource: Painter) {
         modifier = Modifier
             .fillMaxWidth().clip(componentShapes.small),
         shape = RoundedCornerShape(10.dp),
-        label = { Text(text = labelValue) },
+        label = { Text(
+            text = labelValue,
+            fontFamily = monsterrat,
+        ) },
         value = password.value,
         colors = TextFieldDefaults.outlinedTextFieldColors(
             focusedBorderColor = colorPrimary,
@@ -227,6 +252,7 @@ fun CheckboxComponent(value: String) {
         )
         Text(
             value,
+            fontFamily = monsterrat,
             fontWeight = FontWeight.Normal,
             fontSize = 12.sp,
             color = Color(0xFF777777),
@@ -408,7 +434,7 @@ fun TabMoney() {
 fun MyButtonComponent(value: String, onClick: () -> Unit)
 {
     Button(
-        onClick = { /* Handle save */ },
+        onClick = onClick,
         colors = ButtonDefaults.buttonColors(containerColor = colorPrimary),
         modifier = Modifier
             .fillMaxWidth()
@@ -423,12 +449,12 @@ fun MyButtonComponent(value: String, onClick: () -> Unit)
     }
 }
 
-
 @Composable
 fun ClickableTextComponent(value: String, onClick: () -> Unit) {
     Text(
         value,
         color = colorSecondary,
+        fontFamily = monsterrat,
         fontWeight = FontWeight.Light,
         fontSize = 8.sp,
         modifier = Modifier
@@ -436,3 +462,85 @@ fun ClickableTextComponent(value: String, onClick: () -> Unit) {
             .clickable(onClick = onClick)
     )
 }
+
+
+
+@Composable
+fun NumberTextField() {
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
+    val focusRequester = FocusRequester()
+    var isFocused by remember { mutableStateOf(false) }
+    var amountState by remember { mutableStateOf("") }
+
+    Column {
+        BasicTextField(
+            value = amountState,
+            onValueChange = { newInput ->
+                if (newInput == "0" && amountState.isEmpty()) {
+                    // do nothing to block the first '0'
+                } else {
+                    val filteredInput = newInput.filter { it.isDigit() }
+                    amountState = if (filteredInput.isNotEmpty() && filteredInput != "0") {
+                        filteredInput
+                    } else if (filteredInput == "0" && amountState.isNotEmpty()) {
+                        filteredInput
+                    } else {
+                        ""
+                    }
+                }
+            },
+            singleLine = true,
+            modifier = Modifier
+                .focusRequester(focusRequester)
+                .onFocusChanged { focusState ->
+                    isFocused = focusState.isFocused
+                }
+                .height(45.dp)
+                .width(250.dp)
+                .background(Color(0xFFe1e1e1), shape = RoundedCornerShape(8.dp))
+                .border(1.dp, if (isFocused) colorPrimary else Color.Transparent, RoundedCornerShape(8.dp))
+                .padding(horizontal = 16.dp),
+            textStyle = TextStyle(
+                textAlign = TextAlign.Start,
+                fontSize = 20.sp,
+                fontFamily = monsterrat,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black  // Ensure the text color is set as BasicTextField does not provide defaults
+            ),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    amountState = amountState
+                    focusManager.clearFocus()  // Clear focus from the text field
+                    keyboardController?.hide()  // Hide the keyboard
+                }
+            ),
+            decorationBox = { innerTextField ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 10.dp),  // Vertical padding to ensure text is vertically centered
+                ) {
+                    if (amountState.isEmpty()) {
+                        Text(
+                            if (!isFocused) "0" else "",
+                            color = Color.Black,
+                            fontFamily = monsterrat,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 20.sp,
+                            style = LocalTextStyle.current
+                        )
+                    }
+                    innerTextField()
+                }
+            }
+        )
+    }
+}
+
+
+
