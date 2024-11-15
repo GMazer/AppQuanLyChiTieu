@@ -88,7 +88,8 @@ class MainActivity : ComponentActivity() {
 data class Category(
     val name: String,
     val iconPainter: @Composable () -> Painter,
-    val iconColor: Color
+    val iconColor: Color,
+    val percentage: Float
 )
 
 

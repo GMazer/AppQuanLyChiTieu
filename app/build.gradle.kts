@@ -88,6 +88,9 @@ dependencies {
     implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
     implementation ("androidx.lifecycle:lifecycle-runtime-compose:2.6.1")
 
+    // Animation
+    implementation ("androidx.compose.animation:animation:1.5.1")
+    implementation ("androidx.compose.ui:ui-graphics:1.5.1")
 
 
 }

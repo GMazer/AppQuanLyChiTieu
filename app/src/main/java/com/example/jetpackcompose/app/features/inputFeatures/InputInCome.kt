@@ -59,24 +59,29 @@ fun IncomeContent () {
         Category(
             "Lương",
             { painterResource(R.drawable.baseline_monetization_on_24) },
-            Color(0xFFfb791d)
+            Color(0xFFfb791d),
+            percentage = 0.75f // 75%
         ),
         Category(
             "Thưởng",
             { painterResource(R.drawable.baseline_card_giftcard_24) },
-            Color(0xFF37c166)
+            Color(0xFF37c166),
+            percentage = 0.90f // 90%
         ),
         Category(
             "Cướp",
             { painterResource(R.drawable.baseline_person_off_24) },
-            Color(0xFFf95aa9)
+            Color(0xFFf95aa9),
+            percentage = 0.30f // 30%
         ),
         Category(
             "Khác",
             { painterResource(R.drawable.baseline_more_horiz_24) },
-            Color(0xFFfba74a)
+            Color(0xFFfba74a),
+            percentage = 0.50f // 50%
         )
     )
+
 
     Scaffold(
         containerColor = Color.White,

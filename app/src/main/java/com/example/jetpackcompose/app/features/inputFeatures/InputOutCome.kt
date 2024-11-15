@@ -61,62 +61,31 @@ fun OutComeContent () {
 
     val categories = listOf(
         Category(
-            "Ăn uống",
+            "Thiết yếu",
             { painterResource(R.drawable.outline_ramen_dining_24) },
-            Color(0xFFfb791d)
+            Color(0xFFfb791d),
+            percentage = 0.80f // 80%
         ),
         Category(
-            "Chi tiêu hàng ngày",
+            "Giải trí",
             { painterResource(R.drawable.outline_grocery_24) },
-            Color(0xFF37c166)
+            Color(0xFF37c166),
+            percentage = 0.60f // 60%
         ),
         Category(
-            "Quần áo",
+            "Đầu tư",
             { painterResource(R.drawable.outline_apparel_24) },
-            Color(0xFF283eaa)
+            Color(0xFF283eaa),
+            percentage = 0.45f // 45%
         ),
         Category(
-            "Mỹ phẩm",
+            "Phát sinh",
             { painterResource(R.drawable.outline_cosmetic) },
-            Color(0xFFf95aa9)
-        ),
-        Category(
-            "Phí giao lưu",
-            { painterResource(R.drawable.outline_liquor_24) },
-            Color(0xFFfedc2e)
-        ),
-        Category(
-            "Y tế",
-            { painterResource(R.drawable.outline_health_and_safety_24) },
-            Color(0xFF6ee1a4)
-        ),
-        Category(
-            "Giáo dục",
-            { painterResource(R.drawable.outline_education) },
-            Color(0xFFed4f64)
-        ),
-        Category(
-            "Tiền điện",
-            { painterResource(R.drawable.outline_electric) },
-            Color(0xFF55daf1)
-        ),
-        Category("Đi lại", { painterResource(R.drawable.outline_train_24) }, Color(0xFFae6d2a)),
-        Category(
-            "Phí liên lạc",
-            { painterResource(R.drawable.outline_phone_iphone_24) },
-            Color(0xFF696969)
-        ),
-        Category(
-            "Tiền nhà",
-            { painterResource(R.drawable.outline_home_work_24) },
-            Color(0xFFfba74a)
-        ),
-        Category(
-            "Khác",
-            { painterResource(R.drawable.baseline_more_horiz_24) },
-            Color(0xFFfba74a)
+            Color(0xFFf95aa9),
+            percentage = 0.25f // 25%
         )
     )
+
 
     Scaffold(
         containerColor = Color.White,

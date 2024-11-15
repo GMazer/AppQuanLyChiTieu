@@ -1,6 +1,12 @@
 package com.example.jetpackcompose.components
 
 import android.widget.Toast
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.exponentialDecay
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -90,10 +96,19 @@ import com.example.jetpackcompose.app.features.inputFeatures.TabItem
 import com.example.jetpackcompose.ui.theme.TextColor
 import com.example.jetpackcompose.ui.theme.TextColorPrimary
 import com.example.jetpackcompose.ui.theme.bgColor
+import com.example.jetpackcompose.ui.theme.bgItemColor
 import com.example.jetpackcompose.ui.theme.colorPrimary
 import com.example.jetpackcompose.ui.theme.colorSecondary
 import com.example.jetpackcompose.ui.theme.componentShapes
 import com.example.jetpackcompose.ui.theme.highGray
+import androidx.compose.ui.graphics.drawscope.draw
+import androidx.compose.foundation.Canvas
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.zIndex
+import java.lang.StrictMath.PI
+import java.lang.StrictMath.sin
+import kotlin.math.sin
 
 
 val monsterrat = FontFamily(
@@ -143,7 +158,8 @@ fun MyTextFieldComponent(labelValue: String, painterResource: Painter) {
     val textValue = remember { mutableStateOf("") }
     OutlinedTextField(
         modifier = Modifier
-            .fillMaxWidth().clip(componentShapes.small),
+            .fillMaxWidth()
+            .clip(componentShapes.small),
         shape = RoundedCornerShape(10.dp),
         label = { Text(
             text = labelValue,
@@ -184,7 +200,8 @@ fun PasswordTextFieldComponent(labelValue: String, painterResource: Painter) {
 
     OutlinedTextField(
         modifier = Modifier
-            .fillMaxWidth().clip(componentShapes.small),
+            .fillMaxWidth()
+            .clip(componentShapes.small),
         shape = RoundedCornerShape(10.dp),
         label = { Text(
             text = labelValue,
@@ -313,7 +330,7 @@ fun CategoriesGrid(
     onCategorySelected: (Category) -> Unit
 ) {
     LazyVerticalGrid(
-        columns = GridCells.Fixed(3),
+        columns = GridCells.Fixed(2),
         contentPadding = PaddingValues(4.dp)
     ) {
         items(categories) { category ->
@@ -321,60 +338,108 @@ fun CategoriesGrid(
                 category = category,
                 buttonColor = buttonColor,
                 isSelected = (category == selectedCategory),
-                onClick = { onCategorySelected(category) }
+                onClick = { onCategorySelected(category) },
+                percentage = category.percentage
             )
         }
     }
 }
 
-
-
-// Tạo một item trong grid danh mục chi tiêu
 @Composable
 fun CategoryItem(
     category: Category,
     buttonColor: Color,
     isSelected: Boolean,
+    percentage: Float,
     onClick: () -> Unit
 ) {
-    // Màu viền sẽ là màu cam nếu item được chọn, ngược lại là màu xám nhạt
-    val borderColor = if (isSelected) buttonColor else Color.LightGray
+    val borderColor = if (isSelected) buttonColor else Color.Transparent
 
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-        modifier = Modifier
-            .height(80.dp)
-            .fillMaxWidth()
-            .padding(4.dp)
-            .border(
-                BorderStroke(1.dp, borderColor),
-                RoundedCornerShape(4.dp)
+    // Tạo Animatable để điều khiển offset cho sóng
+    val waveOffset = remember { Animatable(0f) }
+
+    // Tạo hiệu ứng sóng uốn lượn
+    LaunchedEffect(key1 = true) {
+        waveOffset.animateTo(
+            targetValue = 1f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(
+                    durationMillis = 5000, // Tăng durationMillis để làm chậm animation
+                    easing = LinearEasing // Sử dụng LinearEasing để chuyển động mượt mà
+                ),
+                repeatMode = RepeatMode.Restart
             )
-            .clickable { onClick() }
-    ) {
-        IconButton(
-            onClick = { onClick() },
-            colors = IconButtonDefaults.iconButtonColors(contentColor = category.iconColor),
-            modifier = Modifier
-                .padding(top = 4.dp, bottom = 2.dp)
-                .size(24.dp)
-        ) {
-            androidx.compose.material3.Icon(painter = category.iconPainter(), contentDescription = category.name)
-        }
-        androidx.compose.material3.Text(
-            category.name,
-            color = Color.Gray,
-            fontWeight = FontWeight.W500,
-            fontSize = 12.sp,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis  // Ẩn bớt phần text nếu quá dài
         )
     }
+
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .height(120.dp)
+            .fillMaxWidth()
+            .padding(8.dp)
+            .border(
+                BorderStroke(1.dp, borderColor),
+                RoundedCornerShape(8.dp)
+            )
+            .clickable { onClick() }
+            .clip(RoundedCornerShape(8.dp))
+            .background(color = Color.White)
+    ) {
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            val waveHeight = size.height * 0.05f // Giảm waveHeight để sóng nhỏ hơn
+            val waveLength = size.width * 0.7f // Giảm waveLength để sóng dày hơn
+            val waveY = size.height * (1 - percentage) // Vị trí sóng
+            val offset = waveOffset.value * waveLength // Di chuyển sóng theo phương ngang
+
+            // Vẽ sóng uốn lượn
+            val wavePath = Path().apply {
+                moveTo(0f, waveY)
+                for (x in 0..size.width.toInt() step 20) {
+                    val y = waveY + waveHeight * sin(2.0f * PI.toFloat() * (x.toFloat() + offset) / waveLength)
+                    lineTo(x.toFloat(), y)
+                }
+                lineTo(size.width, size.height)
+                lineTo(0f, size.height)
+                close()
+            }
+
+            // Vẽ path sóng
+            drawPath(
+                path = wavePath,
+                color = Color(0xFFB3E5FC) // Màu xanh nhạt cho nước
+            )
+        }
+
+        // Hiển thị icon và tên danh mục
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.align(Alignment.Center)
+        ) {
+            // Icon
+            IconButton(
+                onClick = { onClick() },
+                colors = IconButtonDefaults.iconButtonColors(contentColor = category.iconColor),
+                modifier = Modifier
+                    .padding(top = 4.dp, bottom = 2.dp)
+                    .size(32.dp)
+            ) {
+                androidx.compose.material3.Icon(painter = category.iconPainter(), contentDescription = category.name)
+            }
+
+            // Tên danh mục
+            androidx.compose.material3.Text(
+                category.name,
+                color = Color.Gray,
+                fontWeight = FontWeight.W500,
+                fontSize = 12.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+    }
 }
-
-
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InputTab() {
@@ -505,7 +570,11 @@ fun NumberTextField(amountState: String, onValueChange: (String) -> Unit) {
             .height(45.dp)
             .width(250.dp)
             .background(Color(0xFFe1e1e1), shape = RoundedCornerShape(8.dp))
-            .border(1.dp, if (isFocused) colorPrimary else Color.Transparent, RoundedCornerShape(8.dp))
+            .border(
+                1.dp,
+                if (isFocused) colorPrimary else Color.Transparent,
+                RoundedCornerShape(8.dp)
+            )
             .padding(horizontal = 16.dp),
         textStyle = TextStyle(
             textAlign = TextAlign.Start,
