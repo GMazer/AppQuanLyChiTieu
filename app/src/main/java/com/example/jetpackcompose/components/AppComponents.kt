@@ -379,7 +379,7 @@ fun CategoryItem(
             .fillMaxWidth()
             .padding(8.dp)
             .border(
-                BorderStroke(1.dp, borderColor),
+                BorderStroke(2.dp, borderColor),
                 RoundedCornerShape(8.dp)
             )
             .clickable { onClick() }
@@ -389,7 +389,7 @@ fun CategoryItem(
         Canvas(modifier = Modifier.fillMaxSize()) {
             val waveHeight = size.height * 0.04f // Giảm waveHeight để sóng nhỏ hơn
             val waveLength = size.width * 0.8f // Giảm waveLength để sóng dày hơn
-            val waveY = size.height * (1 - percentage) // Vị trí sóng
+            val waveY = size.height * (1 - percentage - 0.04f) // Vị trí sóng
             val offset = waveOffset.value * waveLength // Di chuyển sóng theo phương ngang
 
             // Vẽ sóng uốn lượn
