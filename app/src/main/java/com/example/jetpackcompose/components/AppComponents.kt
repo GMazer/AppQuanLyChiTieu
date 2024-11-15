@@ -387,8 +387,8 @@ fun CategoryItem(
             .background(color = Color.White)
     ) {
         Canvas(modifier = Modifier.fillMaxSize()) {
-            val waveHeight = size.height * 0.05f // Giảm waveHeight để sóng nhỏ hơn
-            val waveLength = size.width * 0.7f // Giảm waveLength để sóng dày hơn
+            val waveHeight = size.height * 0.04f // Giảm waveHeight để sóng nhỏ hơn
+            val waveLength = size.width * 0.8f // Giảm waveLength để sóng dày hơn
             val waveY = size.height * (1 - percentage) // Vị trí sóng
             val offset = waveOffset.value * waveLength // Di chuyển sóng theo phương ngang
 
