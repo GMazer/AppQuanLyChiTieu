@@ -404,11 +404,18 @@ fun CategoryItem(
                 close()
             }
 
+            // Vẽ nền
+            drawRect(
+                color = bgItemColor,
+                size = size
+            )
+
             // Vẽ path sóng
             drawPath(
                 path = wavePath,
                 color = Color(0xFFB3E5FC) // Màu xanh nhạt cho nước
             )
+
         }
 
         // Hiển thị icon và tên danh mục
