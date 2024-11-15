@@ -148,6 +148,9 @@ fun MyTextFieldComponent(labelValue: String, painterResource: Painter) {
         label = { Text(
             text = labelValue,
             fontFamily = monsterrat,
+            fontWeight = FontWeight.Normal,
+            fontSize = 12.sp,
+            color = Color.LightGray
         ) },
         value = textValue.value,
         colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -186,6 +189,9 @@ fun PasswordTextFieldComponent(labelValue: String, painterResource: Painter) {
         label = { Text(
             text = labelValue,
             fontFamily = monsterrat,
+            fontWeight = FontWeight.Normal,
+            fontSize = 12.sp,
+            color = Color.LightGray
         ) },
         value = password.value,
         colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -526,7 +532,7 @@ fun NumberTextField(amountState: String, onValueChange: (String) -> Unit) {
             ) {
                 if (amountState.isEmpty()) {
                     Text(
-                        "0",
+                        if (isFocused) "" else "0",
                         color = Color.Black,
                         fontWeight = FontWeight.Bold,
                         fontFamily = monsterrat,

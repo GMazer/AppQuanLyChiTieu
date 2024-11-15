@@ -26,6 +26,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
@@ -35,6 +37,7 @@ import com.example.jetpackcompose.components.CategoriesGrid
 import com.example.jetpackcompose.components.DrawBottomLine
 import com.example.jetpackcompose.components.NoteTextField
 import com.example.jetpackcompose.components.NumberTextField
+
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -143,7 +146,12 @@ fun OutComeContent () {
 
             // Ghi chu
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("Ghi chú ", color = Color.DarkGray, fontWeight = FontWeight.Bold)
+                Text(
+                    "Ghi chú ",
+                    color = Color.DarkGray,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = com.example.jetpackcompose.components.monsterrat
+                )
                 Spacer(Modifier.width(8.dp))
                 NoteTextField(textState = textNote, onValueChange = { newValue ->
                     textNote = newValue
@@ -157,6 +165,7 @@ fun OutComeContent () {
                     "Tiền chi ",
                     color = Color.DarkGray,
                     fontWeight = FontWeight.Bold,
+                    fontFamily = com.example.jetpackcompose.components.monsterrat
                 )
                 Spacer(Modifier.width(8.dp))
                 NumberTextField(
