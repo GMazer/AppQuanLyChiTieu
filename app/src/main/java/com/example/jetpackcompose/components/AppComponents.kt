@@ -1,5 +1,6 @@
 package com.example.jetpackcompose.components
 
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -10,7 +11,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -32,7 +32,6 @@ import androidx.compose.material.CheckboxDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Surface
 import androidx.compose.material3.Text
 //noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.TextFieldDefaults
@@ -75,18 +74,19 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.input.TextFieldValue
 import com.example.jetpackcompose.R
-import com.example.jetpackcompose.app.features.Category
-import com.example.jetpackcompose.app.features.CustomTabRow
-import com.example.jetpackcompose.app.features.ExpenseContent
-import com.example.jetpackcompose.app.features.IncomeContent
-import com.example.jetpackcompose.app.features.TabItem
+import com.example.jetpackcompose.app.features.inputFeatures.Category
+import com.example.jetpackcompose.app.features.inputFeatures.CustomTabRow
+import com.example.jetpackcompose.app.features.inputFeatures.OutComeContent
+import com.example.jetpackcompose.app.features.inputFeatures.IncomeContent
+import com.example.jetpackcompose.app.features.inputFeatures.TabItem
 import com.example.jetpackcompose.ui.theme.TextColor
 import com.example.jetpackcompose.ui.theme.TextColorPrimary
 import com.example.jetpackcompose.ui.theme.bgColor
@@ -371,25 +371,25 @@ fun CategoryItem(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TabMoney() {
+fun InputTab() {
     val customTypography = Typography(
-        bodyLarge = TextStyle(fontFamily = com.example.jetpackcompose.app.features.monsterrat),
-        bodyMedium = TextStyle(fontFamily = com.example.jetpackcompose.app.features.monsterrat),
-        bodySmall = TextStyle(fontFamily = com.example.jetpackcompose.app.features.monsterrat),
-        titleLarge = TextStyle(fontFamily = com.example.jetpackcompose.app.features.monsterrat),
-        titleMedium = TextStyle(fontFamily = com.example.jetpackcompose.app.features.monsterrat),
-        titleSmall = TextStyle(fontFamily = com.example.jetpackcompose.app.features.monsterrat),
-        labelLarge = TextStyle(fontFamily = com.example.jetpackcompose.app.features.monsterrat),
-        labelMedium = TextStyle(fontFamily = com.example.jetpackcompose.app.features.monsterrat),
-        labelSmall = TextStyle(fontFamily = com.example.jetpackcompose.app.features.monsterrat),
-        headlineLarge = TextStyle(fontFamily = com.example.jetpackcompose.app.features.monsterrat),
-        headlineMedium = TextStyle(fontFamily = com.example.jetpackcompose.app.features.monsterrat),
-        headlineSmall = TextStyle(fontFamily = com.example.jetpackcompose.app.features.monsterrat)
+        bodyLarge = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.monsterrat),
+        bodyMedium = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.monsterrat),
+        bodySmall = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.monsterrat),
+        titleLarge = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.monsterrat),
+        titleMedium = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.monsterrat),
+        titleSmall = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.monsterrat),
+        labelLarge = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.monsterrat),
+        labelMedium = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.monsterrat),
+        labelSmall = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.monsterrat),
+        headlineLarge = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.monsterrat),
+        headlineMedium = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.monsterrat),
+        headlineSmall = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.monsterrat)
     )
 
     var tabs = listOf(
         TabItem("Expense", icon =  Icons.Default.ArrowBack){
-            ExpenseContent()
+            OutComeContent()
         },
         TabItem("Income", icon =  Icons.Default.ArrowForward){
             IncomeContent()
@@ -466,81 +466,130 @@ fun ClickableTextComponent(value: String, onClick: () -> Unit) {
 
 
 @Composable
-fun NumberTextField() {
+fun NumberTextField(amountState: String, onValueChange: (String) -> Unit) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
     val focusRequester = FocusRequester()
     var isFocused by remember { mutableStateOf(false) }
-    var amountState by remember { mutableStateOf("") }
 
-    Column {
-        BasicTextField(
-            value = amountState,
-            onValueChange = { newInput ->
-                if (newInput == "0" && amountState.isEmpty()) {
-                    // do nothing to block the first '0'
-                } else {
-                    val filteredInput = newInput.filter { it.isDigit() }
-                    amountState = if (filteredInput.isNotEmpty() && filteredInput != "0") {
+    BasicTextField(
+        value = amountState,
+        onValueChange = { newInput ->
+            if (newInput == "0" && amountState.isEmpty()) {
+                // do nothing to block the first '0'
+            } else {
+                val filteredInput = newInput.filter { it.isDigit() }
+                onValueChange(
+                    if (filteredInput.isNotEmpty() && filteredInput != "0") {
                         filteredInput
-                    } else if (filteredInput == "0" && amountState.isNotEmpty()) {
+                    } else if (filteredInput == "0" && !amountState.isEmpty()) {
                         filteredInput
                     } else {
                         ""
                     }
-                }
-            },
-            singleLine = true,
-            modifier = Modifier
-                .focusRequester(focusRequester)
-                .onFocusChanged { focusState ->
-                    isFocused = focusState.isFocused
-                }
-                .height(45.dp)
-                .width(250.dp)
-                .background(Color(0xFFe1e1e1), shape = RoundedCornerShape(8.dp))
-                .border(1.dp, if (isFocused) colorPrimary else Color.Transparent, RoundedCornerShape(8.dp))
-                .padding(horizontal = 16.dp),
-            textStyle = TextStyle(
-                textAlign = TextAlign.Start,
-                fontSize = 20.sp,
-                fontFamily = monsterrat,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black  // Ensure the text color is set as BasicTextField does not provide defaults
-            ),
-            keyboardOptions = KeyboardOptions.Default.copy(
-                keyboardType = KeyboardType.Number,
-                imeAction = ImeAction.Done
-            ),
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    amountState = amountState
-                    focusManager.clearFocus()  // Clear focus from the text field
-                    keyboardController?.hide()  // Hide the keyboard
-                }
-            ),
-            decorationBox = { innerTextField ->
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 10.dp),  // Vertical padding to ensure text is vertically centered
-                ) {
-                    if (amountState.isEmpty()) {
-                        Text(
-                            if (!isFocused) "0" else "",
-                            color = Color.Black,
-                            fontFamily = monsterrat,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 20.sp,
-                            style = LocalTextStyle.current
-                        )
-                    }
-                    innerTextField()
-                }
+                )
             }
-        )
-    }
+        },
+        singleLine = true,
+        modifier = Modifier
+            .focusRequester(focusRequester)
+            .onFocusChanged { focusState ->
+                isFocused = focusState.isFocused
+            }
+            .height(45.dp)
+            .width(250.dp)
+            .background(Color(0xFFe1e1e1), shape = RoundedCornerShape(8.dp))
+            .border(1.dp, if (isFocused) colorPrimary else Color.Transparent, RoundedCornerShape(8.dp))
+            .padding(horizontal = 16.dp),
+        textStyle = TextStyle(
+            textAlign = TextAlign.Start,
+            fontSize = 20.sp,
+            fontFamily = monsterrat,
+            fontWeight = FontWeight.Bold,
+            color = Color.Black
+        ),
+        keyboardOptions = KeyboardOptions.Default.copy(
+            keyboardType = KeyboardType.Number,
+            imeAction = ImeAction.Done
+        ),
+        keyboardActions = KeyboardActions(
+            onDone = {
+                focusManager.clearFocus()  // Clear focus from the text field
+                keyboardController?.hide()  // Hide the keyboard
+            }
+        ),
+        decorationBox = { innerTextField ->
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 10.dp)
+            ) {
+                if (amountState.isEmpty()) {
+                    Text(
+                        "0",
+                        color = Color.Black,
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = monsterrat,
+                        fontSize = 20.sp,
+                        style = LocalTextStyle.current
+                    )
+                }
+                innerTextField()
+            }
+        }
+    )
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun NoteTextField(textState: TextFieldValue, onValueChange: (TextFieldValue) -> Unit)
+{
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
+    var textNote by remember { mutableStateOf("") }
+    androidx.compose.material3.OutlinedTextField(
+        modifier = Modifier
+            .width(250.dp),
+        value = textState,
+        onValueChange = onValueChange,
+        colors = androidx.compose.material3.TextFieldDefaults.outlinedTextFieldColors(
+            focusedBorderColor = colorPrimary,
+            unfocusedBorderColor = Color.Transparent,
+            cursorColor = colorPrimary
+        ),
+        placeholder = { Text(
+            "Chưa nhập vào",
+            color = Color.LightGray,
+            fontFamily = monsterrat,
+        ) },
+        textStyle = TextStyle(
+            fontSize = 16.sp,
+            fontFamily = monsterrat,
+            fontWeight = FontWeight.Normal,
+            color = Color.Black
+        ),
+        keyboardOptions = KeyboardOptions.Default.copy(
+            keyboardType = KeyboardType.Text,
+            imeAction = ImeAction.Done
+        ),
+        keyboardActions = KeyboardActions(
+            onDone = {
+                textNote = textState.toString()
+                focusManager.clearFocus()  // Clear focus from the text field
+                keyboardController?.hide()  // Hide the keyboard
+            }
+        ),
+    )
+}
+
+@Preview
+@Composable
+fun PreviewInputScreen() {
+    InputTab()
+}
+
+
+
 
 
 

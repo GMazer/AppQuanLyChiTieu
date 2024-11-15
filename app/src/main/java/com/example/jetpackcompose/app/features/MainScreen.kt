@@ -39,7 +39,7 @@ fun MainScreen() {
             beyondViewportPageCount = PagerDefaults.BeyondViewportPageCount,
             pageSpacing = 8.dp,
             verticalAlignment = Alignment.CenterVertically,
-            userScrollEnabled = true,
+            userScrollEnabled = false,
             reverseLayout = false
         ) { page ->
             when (page) {
