@@ -379,7 +379,7 @@ fun CategoryItem(
             .fillMaxWidth()
             .padding(8.dp)
             .border(
-                BorderStroke(1.dp, borderColor),
+                BorderStroke(2.dp, borderColor),
                 RoundedCornerShape(8.dp)
             )
             .clickable { onClick() }
@@ -387,9 +387,9 @@ fun CategoryItem(
             .background(color = Color.White)
     ) {
         Canvas(modifier = Modifier.fillMaxSize()) {
-            val waveHeight = size.height * 0.05f // Giảm waveHeight để sóng nhỏ hơn
-            val waveLength = size.width * 0.7f // Giảm waveLength để sóng dày hơn
-            val waveY = size.height * (1 - percentage) // Vị trí sóng
+            val waveHeight = size.height * 0.04f // Giảm waveHeight để sóng nhỏ hơn
+            val waveLength = size.width * 0.8f // Giảm waveLength để sóng dày hơn
+            val waveY = size.height * (1 - percentage - 0.04f) // Vị trí sóng
             val offset = waveOffset.value * waveLength // Di chuyển sóng theo phương ngang
 
             // Vẽ sóng uốn lượn
@@ -404,11 +404,18 @@ fun CategoryItem(
                 close()
             }
 
+            // Vẽ nền
+            drawRect(
+                color = bgItemColor,
+                size = size
+            )
+
             // Vẽ path sóng
             drawPath(
                 path = wavePath,
                 color = Color(0xFFB3E5FC) // Màu xanh nhạt cho nước
             )
+
         }
 
         // Hiển thị icon và tên danh mục
