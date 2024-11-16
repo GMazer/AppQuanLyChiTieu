@@ -1,10 +1,12 @@
 package com.example.jetpackcompose.components
 
-import android.widget.Toast
+import android.annotation.SuppressLint
+import android.app.DatePickerDialog
+import android.content.res.Resources
+import android.view.View
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.exponentialDecay
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
@@ -101,13 +103,19 @@ import com.example.jetpackcompose.ui.theme.colorPrimary
 import com.example.jetpackcompose.ui.theme.colorSecondary
 import com.example.jetpackcompose.ui.theme.componentShapes
 import com.example.jetpackcompose.ui.theme.highGray
-import androidx.compose.ui.graphics.drawscope.draw
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.zIndex
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.buildAnnotatedString
+import com.example.jetpackcompose.ui.theme.SaturDayColor
+import com.example.jetpackcompose.ui.theme.SundayColor
 import java.lang.StrictMath.PI
-import java.lang.StrictMath.sin
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 import kotlin.math.sin
 
 
@@ -379,7 +387,7 @@ fun CategoryItem(
             .fillMaxWidth()
             .padding(8.dp)
             .border(
-                BorderStroke(1.dp, borderColor),
+                BorderStroke(2.dp, borderColor),
                 RoundedCornerShape(8.dp)
             )
             .clickable { onClick() }
@@ -387,9 +395,9 @@ fun CategoryItem(
             .background(color = Color.White)
     ) {
         Canvas(modifier = Modifier.fillMaxSize()) {
-            val waveHeight = size.height * 0.05f // Giảm waveHeight để sóng nhỏ hơn
-            val waveLength = size.width * 0.7f // Giảm waveLength để sóng dày hơn
-            val waveY = size.height * (1 - percentage) // Vị trí sóng
+            val waveHeight = size.height * 0.04f // Giảm waveHeight để sóng nhỏ hơn
+            val waveLength = size.width * 0.8f // Giảm waveLength để sóng dày hơn
+            val waveY = size.height * (1 - percentage - 0.04f) // Vị trí sóng
             val offset = waveOffset.value * waveLength // Di chuyển sóng theo phương ngang
 
             // Vẽ sóng uốn lượn
@@ -404,11 +412,18 @@ fun CategoryItem(
                 close()
             }
 
+            // Vẽ nền
+            drawRect(
+                color = bgItemColor,
+                size = size
+            )
+
             // Vẽ path sóng
             drawPath(
                 path = wavePath,
                 color = Color(0xFFB3E5FC) // Màu xanh nhạt cho nước
             )
+
         }
 
         // Hiển thị icon và tên danh mục
@@ -657,10 +672,221 @@ fun NoteTextField(textState: TextFieldValue, onValueChange: (TextFieldValue) -> 
     )
 }
 
+@SuppressLint("DiscouragedApi")
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MonthPickerButton(onDateSelected: (String) -> Unit) {
+    var dateText by remember { mutableStateOf("") }
+    val context = LocalContext.current
+    val calendar = Calendar.getInstance()
+
+    // Định dạng tháng và năm
+    val monthYearFormat = SimpleDateFormat("MM/yyyy", Locale("vi", "VN"))
+
+    // Hàm để cập nhật chuỗi hiển thị
+    fun updateDateText() {
+        val monthYear = monthYearFormat.format(calendar.time)
+        dateText = monthYear // Chỉ giữ định dạng MM/yyyy
+        onDateSelected(dateText) // Gọi callback với giá trị đơn giản
+    }
+
+    // Cập nhật ngày hiện tại khi khởi tạo
+    LaunchedEffect(key1 = true) {
+        updateDateText()
+    }
+
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        // Nút lùi lịch
+        IconButton(
+            onClick = {
+                calendar.add(Calendar.MONTH, -1)
+                updateDateText() // Gọi callback khi lùi tháng
+            },
+            modifier = Modifier.size(20.dp)
+        ) {
+            androidx.compose.material3.Icon(
+                painter = painterResource(id = R.drawable.outline_arrow_back_ios_24),
+                contentDescription = "Lùi lịch",
+                tint = Color(0xFF444444)
+            )
+        }
+        Spacer(modifier = Modifier.width(8.dp))
+
+        // Nút chọn tháng
+        Button(
+            modifier = Modifier.width(320.dp),
+            shape = RoundedCornerShape(8.dp),
+            onClick = {
+                val datePickerDialog = DatePickerDialog(
+                    context,
+                    { _, year, month, _ ->
+                        calendar.set(Calendar.YEAR, year)
+                        calendar.set(Calendar.MONTH, month)
+                        updateDateText() // Cập nhật tháng/năm khi chọn
+                    },
+                    calendar.get(Calendar.YEAR),
+                    calendar.get(Calendar.MONTH),
+                    calendar.get(Calendar.DAY_OF_MONTH)
+                )
+                // Ẩn ngày
+                datePickerDialog.datePicker.findViewById<View>(
+                    Resources.getSystem().getIdentifier("day", "id", "android")
+                )?.visibility = View.GONE
+                datePickerDialog.show()
+            },
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFe1e1e1))
+        ) {
+            Text(
+                dateText,
+                fontFamily = monsterrat,
+                color = Color(0xFF444444),
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp
+            )
+        }
+        Spacer(modifier = Modifier.width(8.dp))
+
+        // Nút tiến lịch
+        IconButton(
+            onClick = {
+                calendar.add(Calendar.MONTH, +1)
+                updateDateText() // Gọi callback khi tiến tháng
+            },
+            modifier = Modifier.size(20.dp)
+        ) {
+            androidx.compose.material3.Icon(
+                painter = painterResource(id = R.drawable.outline_arrow_forward_ios_24),
+                contentDescription = "Tiến lịch",
+                tint = Color(0xFF444444)
+            )
+        }
+    }
+}
+
+
+
+@SuppressLint("UnusedBoxWithConstraintsScope")
+@Composable
+fun CustomCalendar(selectedMonthYear: String) {
+    val calendar = Calendar.getInstance()
+
+    // Tách tháng và năm từ chuỗi truyền vào
+    val parts = selectedMonthYear.split("/")
+    val month = parts[0].toInt() - 1 // Tháng trong Calendar là từ 0 đến 11
+    val year = parts[1].toInt()
+
+    // Thiết lập tháng và năm cho Calendar
+    calendar.set(Calendar.YEAR, year)
+    calendar.set(Calendar.MONTH, month)
+    calendar.set(Calendar.DAY_OF_MONTH, 1)
+
+    // Tính toán số ngày trong tháng và các ngày cần hiển thị
+    val daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
+    val firstDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK) - 1 // Chủ nhật = 0
+    val previousMonth = calendar.clone() as Calendar
+    previousMonth.add(Calendar.MONTH, -1)
+    val daysInPreviousMonth = previousMonth.getActualMaximum(Calendar.DAY_OF_MONTH)
+
+    val days = mutableListOf<String>()
+    // Thêm ngày cuối tháng trước nếu cần
+    for (i in (daysInPreviousMonth - firstDayOfWeek + 1)..daysInPreviousMonth) {
+        days.add(i.toString())
+    }
+    // Thêm ngày trong tháng hiện tại
+    for (i in 1..daysInMonth) {
+        days.add(i.toString())
+    }
+    // Thêm ngày đầu tháng sau nếu cần
+    val remainingDays = 42 - days.size // 6 hàng x 7 cột = 42 ô
+    for (i in 1..remainingDays) {
+        days.add(i.toString())
+    }
+
+    // Header cho lịch (Các ngày trong tuần)
+    val daysOfWeek = listOf("T2", "T3", "T4", "T5", "T6", "T7", "CN")
+
+    // Kích thước lịch
+    val calendarHeight = 300.dp
+
+    BoxWithConstraints(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(calendarHeight)
+            .background(Color.White)
+            .padding(4.dp)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            // Hàng các ngày trong tuần
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround) {
+                daysOfWeek.forEach { day ->
+                    Box(
+                        modifier = Modifier
+                            .weight(1f) // Mỗi ngày trong tuần có cùng trọng số
+                            .height(10.dp) // Tùy chỉnh chiều cao
+                            .background(Color(0xFFe1e1e1))
+                            .border(0.25.dp, Color(0xFFd4d4d4)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = day,
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 8.sp,
+                            fontFamily = monsterrat,
+                            color = if (day == "CN") SundayColor else if (day == "T7") SaturDayColor else TextColor,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+            }
+
+            // Lưới ngày
+            val rows = days.chunked(7) // Chia thành các hàng, mỗi hàng 7 ngày
+            rows.forEachIndexed { rowIndex, week ->
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceAround
+                ) {
+                    week.forEachIndexed { columnIndex, day ->
+                        val isCurrentMonth = rowIndex > 0 || (rowIndex == 0 && day.toIntOrNull() ?: 0 > 7)
+
+                        Box(
+                            modifier = Modifier
+                                .weight(1f) // Mỗi ô ngày có cùng trọng số
+                                .height(35.dp) // Tùy chỉnh chiều cao
+                                .background(Color.White)
+                                .border(0.25.dp, Color(0xFFd4d4d4)),
+                            contentAlignment = Alignment.TopStart // Đặt vị trí căn chỉnh góc trên trái
+                        ) {
+                            Text(
+                                text = day,
+                                color = when {
+                                    columnIndex == 6 -> SundayColor // Chủ nhật
+                                    columnIndex == 5 -> SaturDayColor // Thứ 7
+                                    else -> Color.Black
+                                },
+                                fontFamily = monsterrat,
+                                fontSize = 8.sp,
+                                textAlign = TextAlign.Start,
+                                modifier = Modifier.padding(4.dp) // Padding để di chuyển Text khỏi viền
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+
+
+
 @Preview
 @Composable
 fun PreviewInputScreen() {
-    InputTab()
+    CustomCalendar("11/2024")
 }
 
 

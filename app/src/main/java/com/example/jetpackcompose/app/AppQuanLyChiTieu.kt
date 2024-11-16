@@ -12,7 +12,7 @@ import com.example.jetpackcompose.app.features.MainScreen
 @Composable
 fun AppQuanLyChiTieu() {
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = "signup") {
+    NavHost(navController = navController, startDestination = "mainscreen") {
         composable("signup") { SignUpScreen(navController) }
         composable("signin") { SignInScreen(navController) }
         composable("mainscreen") { MainScreen() }

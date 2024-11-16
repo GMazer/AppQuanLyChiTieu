@@ -66,7 +66,7 @@ fun IncomeContent () {
             "Thưởng",
             { painterResource(R.drawable.baseline_card_giftcard_24) },
             Color(0xFF37c166),
-            percentage = 0.90f // 90%
+            percentage = 0.65f // 90%
         ),
         Category(
             "Cướp",

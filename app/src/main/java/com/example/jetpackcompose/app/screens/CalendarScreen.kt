@@ -1,15 +1,13 @@
 package com.example.jetpackcompose.app.screens
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.material.BottomAppBar
 import androidx.compose.material.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material.Scaffold
@@ -32,16 +30,25 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.jetpackcompose.app.features.inputFeatures.DatePickerButton
-import com.example.jetpackcompose.navigation.CustomBottomAppBar
-import com.example.jetpackcompose.ui.theme.colorPrimary
+import com.example.jetpackcompose.components.CustomCalendar
+import com.example.jetpackcompose.components.MonthPickerButton
 import com.example.jetpackcompose.ui.theme.topBarColor
+import java.util.Calendar
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CalendarScreen() {
-    var selectedDate by remember { mutableStateOf("Chưa chọn ngày") }
+
+    // Lấy tháng và năm hiện tại làm giá trị mặc định
+    val currentMonthYear = remember {
+        val calendar = Calendar.getInstance()
+        val month = String.format("%02d", calendar.get(Calendar.MONTH) + 1)
+        val year = calendar.get(Calendar.YEAR)
+        "$month/$year"
+    }
+
+    var selectedMonthYear by remember { mutableStateOf(currentMonthYear) }
 
     val customTypography = Typography(
         bodyLarge = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.monsterrat),
@@ -99,11 +106,15 @@ fun CalendarScreen() {
             Column(
                 modifier = Modifier.padding(paddingValues)
             ) {
-                Row {
-                    DatePickerButton(onDateSelected = { date ->
-                        selectedDate = date
+                Row(verticalAlignment = Alignment.CenterVertically)  {
+                    MonthPickerButton(onDateSelected = { month ->
+                        selectedMonthYear = month
                     })
                 }
+
+                Spacer(modifier = Modifier.height(16.dp))
+                CustomCalendar(selectedMonthYear = selectedMonthYear)
+
             }
         }
     }
