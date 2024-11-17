@@ -110,6 +110,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.buildAnnotatedString
+import com.example.jetpackcompose.app.screens.InputScreen
 import com.example.jetpackcompose.ui.theme.SaturDayColor
 import com.example.jetpackcompose.ui.theme.SundayColor
 import java.lang.StrictMath.PI
@@ -851,7 +852,7 @@ fun CustomCalendar(selectedMonthYear: String) {
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
                     week.forEachIndexed { columnIndex, day ->
-                        val isCurrentMonth = rowIndex > 0 || (rowIndex == 0 && day.toIntOrNull() ?: 0 > 7)
+                        rowIndex > 0 || (rowIndex == 0 && day.toIntOrNull() ?: 0 > 7)
 
                         Box(
                             modifier = Modifier
@@ -889,7 +890,7 @@ fun CustomCalendar(selectedMonthYear: String) {
 @Preview
 @Composable
 fun PreviewInputScreen() {
-    CustomCalendar("11/2024")
+    InputScreen()
 }
 
 

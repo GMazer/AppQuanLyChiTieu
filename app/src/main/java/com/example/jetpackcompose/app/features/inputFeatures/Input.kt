@@ -148,7 +148,9 @@ fun DatePickerButton(onDateSelected: (String) -> Unit) {
                 dateText = dateFormat.format(calendar.time)
                 onDateSelected(dateText) // Gọi callback khi lùi ngày
             },
-            modifier = Modifier.size(20.dp)
+            modifier = Modifier
+                .weight(1f)
+                .size(20.dp)
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.outline_arrow_back_ios_24),
@@ -160,7 +162,7 @@ fun DatePickerButton(onDateSelected: (String) -> Unit) {
 
         // Nút chọn ngày
         Button(
-            modifier = Modifier.width(250.dp),
+            modifier = Modifier.weight(8f),
             shape = componentShapes.medium,
             onClick = {
                 val datePickerDialog = DatePickerDialog(
@@ -184,6 +186,7 @@ fun DatePickerButton(onDateSelected: (String) -> Unit) {
                 dateText,
                 color = Color(0xFF444444),
                 fontWeight = FontWeight.Bold,
+                fontFamily = monsterrat,
                 fontSize = 16.sp
             )
         }
@@ -196,7 +199,9 @@ fun DatePickerButton(onDateSelected: (String) -> Unit) {
                 dateText = dateFormat.format(calendar.time)
                 onDateSelected(dateText) // Gọi callback khi tiến ngày
             },
-            modifier = Modifier.size(20.dp)
+            modifier = Modifier
+                .weight(1f)
+                .size(20.dp)
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.outline_arrow_forward_ios_24),

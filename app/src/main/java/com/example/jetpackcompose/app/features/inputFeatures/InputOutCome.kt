@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import com.example.jetpackcompose.R
 import com.example.jetpackcompose.components.CategoriesGrid
 import com.example.jetpackcompose.components.DrawBottomLine
+import com.example.jetpackcompose.components.DrawTopLine
 import com.example.jetpackcompose.components.NoteTextField
 import com.example.jetpackcompose.components.NumberTextField
 
@@ -101,9 +102,13 @@ fun OutComeContent () {
                 .background(Color.White)
         ) {
             Spacer(Modifier.height(8.dp))
-
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("Ngày ", color = Color.DarkGray, fontWeight = FontWeight.Bold)
+                Text(
+                    "Ngày ",
+                    color = Color.DarkGray,
+                    fontFamily = monsterrat,
+                    fontWeight = FontWeight.Bold
+                )
                 //Gọi Nút Chọn ngày
                 DatePickerButton(onDateSelected = { date ->
                     selectedDate = date
@@ -147,12 +152,18 @@ fun OutComeContent () {
                 Text(
                     "₫",
                     color = Color.DarkGray,
+                    fontFamily = monsterrat,
                     fontWeight = FontWeight.Normal,
                 )
             }
             DrawBottomLine(24.dp)
             // Danh mục chi tiêu
-            Text("Danh mục", color = Color.DarkGray, fontWeight = FontWeight.Bold)
+            Text(
+                "Danh mục",
+                color = Color.DarkGray,
+                fontFamily = monsterrat,
+                fontWeight = FontWeight.Bold
+            )
             Spacer(Modifier.height(24.dp))
 
             // Gọi danh mục chi tiêu và truyền callback
@@ -196,7 +207,11 @@ fun OutComeContent () {
 
                     colors = ButtonDefaults.buttonColors(containerColor = buttonColor)
                 ) {
-                    Text("Nhập khoản chi", color = Color.White, fontWeight = FontWeight.Bold)
+                    Text("Nhập khoản chi",
+                        color = Color.White,
+                        fontFamily = monsterrat,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             }
         }

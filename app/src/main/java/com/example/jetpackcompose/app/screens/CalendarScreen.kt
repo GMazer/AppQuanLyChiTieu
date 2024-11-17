@@ -1,8 +1,5 @@
 package com.example.jetpackcompose.app.screens
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,20 +8,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
 import androidx.compose.material.Divider
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material.Scaffold
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.material.TextButton
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -43,16 +30,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
 import com.example.jetpackcompose.components.CustomCalendar
 import com.example.jetpackcompose.components.MonthPickerButton
-import com.example.jetpackcompose.components.monsterrat
-import com.example.jetpackcompose.ui.theme.TextColor
-import com.example.jetpackcompose.ui.theme.colorPrimary
 import com.example.jetpackcompose.ui.theme.topBarColor
-import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Locale
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -87,7 +68,9 @@ fun CalendarScreen() {
     MaterialTheme(typography = customTypography) {
         Scaffold(
             topBar = {
-                Column {
+                Column(modifier = Modifier
+                    .padding(0.dp)
+                    .fillMaxWidth()) {
                     TopAppBar(
                         title = {
                             Box(
@@ -123,7 +106,9 @@ fun CalendarScreen() {
             }
         ) { paddingValues ->
             Column(
-                modifier = Modifier.padding(paddingValues)
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically)  {
                     MonthPickerButton(onDateSelected = { month ->

@@ -10,11 +10,15 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Surface
@@ -32,12 +36,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.example.jetpackcompose.R
 import com.example.jetpackcompose.ui.theme.TextColor
 import com.example.jetpackcompose.ui.theme.colorPrimary
 import java.util.Calendar
@@ -241,12 +247,95 @@ fun YearPickerDialog(
     }
 }
 
+@Composable
+fun YearPickerButton(onYearSelected: (String) -> Unit) {
+    var yearText by remember { mutableStateOf("") }
+    var showYearPicker by remember { mutableStateOf(false) }
+    val calendar = Calendar.getInstance()
+
+    // Hàm để cập nhật chuỗi hiển thị năm
+    fun updateYearText() {
+        val year = calendar.get(Calendar.YEAR).toString()
+        yearText = year // Cập nhật năm
+        onYearSelected(year) // Gọi callback với giá trị năm
+    }
+
+    // Cập nhật năm hiện tại khi khởi tạo
+    LaunchedEffect(key1 = true) {
+        updateYearText()
+    }
+
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        // Nút lùi năm
+        IconButton(
+            onClick = {
+                calendar.add(Calendar.YEAR, -1)
+                updateYearText() // Gọi callback khi lùi năm
+            },
+            modifier = Modifier
+                .weight(1f)
+                .size(20.dp)
+        ) {
+            androidx.compose.material3.Icon(
+                painter = painterResource(id = R.drawable.outline_arrow_back_ios_24),
+                contentDescription = "Lùi năm",
+                tint = Color(0xFF444444)
+            )
+        }
+        Spacer(modifier = Modifier.width(8.dp))
+
+        // Nút chọn năm
+        Button(
+            modifier = Modifier.weight(8f),
+            shape = RoundedCornerShape(8.dp),
+            onClick = { showYearPicker = true }, // Hiển thị YearPickerDialog
+            colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFe1e1e1))
+        ) {
+            Text(
+                yearText,
+                fontFamily = monsterrat,
+                color = Color(0xFF444444),
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp
+            )
+        }
+        Spacer(modifier = Modifier.width(8.dp))
+
+        // Nút tiến năm
+        IconButton(
+            onClick = {
+                calendar.add(Calendar.YEAR, +1)
+                updateYearText() // Gọi callback khi tiến năm
+            },
+            modifier = Modifier
+                .weight(1f)
+                .size(20.dp)
+        ) {
+            androidx.compose.material3.Icon(
+                painter = painterResource(id = R.drawable.outline_arrow_forward_ios_24),
+                contentDescription = "Tiến năm",
+                tint = Color(0xFF444444)
+            )
+        }
+    }
+
+    // Hiển thị YearPickerDialog khi cần
+    if (showYearPicker) {
+        YearPickerDialog(
+            initialYear = calendar.get(Calendar.YEAR),
+            onDismiss = { showYearPicker = false },
+            onYearSelected = { selectedYear ->
+                calendar.set(Calendar.YEAR, selectedYear)
+                updateYearText() // Cập nhật năm sau khi chọn
+                showYearPicker = false
+            }
+        )
+    }
+}
+
+
 @Preview
 @Composable
 fun PreviewMonthPickerDialog() {
-    YearPickerDialog(
-        initialYear = 2024,
-        onDismiss = {},
-        onYearSelected = {}
-    )
+    YearPickerButton{}
 }
