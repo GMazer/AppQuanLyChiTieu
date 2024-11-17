@@ -36,8 +36,8 @@ fun MainScreen() {
             state = pagerState,
             modifier = Modifier.padding(innerPadding),
             contentPadding = PaddingValues(horizontal = 16.dp),
-            beyondViewportPageCount = PagerDefaults.BeyondViewportPageCount,
-            pageSpacing = 8.dp,
+            beyondViewportPageCount = 0, // Đặt giá trị là 0
+            pageSpacing = 16.dp,
             verticalAlignment = Alignment.CenterVertically,
             userScrollEnabled = false,
             reverseLayout = false
@@ -49,6 +49,8 @@ fun MainScreen() {
                 3 -> OtherScreen()
             }
         }
+
+
     }
 }
 

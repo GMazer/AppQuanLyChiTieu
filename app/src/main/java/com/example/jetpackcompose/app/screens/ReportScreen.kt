@@ -28,6 +28,8 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.input.pointer.motionEventSpy
+import com.example.jetpackcompose.components.YearPickerDialog
 import androidx.compose.ui.graphics.Color as ComposeColor
 
 
@@ -101,6 +103,14 @@ fun ReportScreen() {
                     .fillMaxHeight()
             ) {
                 // Spacer giữa TopAppBar và biểu đồ
+                Spacer(modifier = Modifier.height(32.dp))
+
+//                YearPickerDialog(
+//                    initialYear = 2024,
+//                    onDismiss = {},
+//                    onYearSelected = {}
+//                )
+
                 Spacer(modifier = Modifier.height(32.dp))
 
                 BarChartWithLine(values = values, months = months) // Hiển thị biểu đồ cột với các tháng
