@@ -107,6 +107,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.buildAnnotatedString
@@ -406,7 +407,7 @@ fun CategoryItem(
             targetValue = 1f,
             animationSpec = infiniteRepeatable(
                 animation = tween(
-                    durationMillis = 5000, // Tăng durationMillis để làm chậm animation
+                    durationMillis = 2500, // Tăng durationMillis để làm chậm animation
                     easing = LinearEasing // Sử dụng LinearEasing để chuyển động mượt mà
                 ),
                 repeatMode = RepeatMode.Restart
@@ -525,7 +526,7 @@ fun InputTab() {
     MaterialTheme(
         typography = customTypography
     ) {
-        var tabIndex by remember { mutableStateOf(0) }
+        var tabIndex by rememberSaveable { mutableStateOf(0) }
         val tabTitles = listOf("Tiền chi", "Tiền thu")
 
 
@@ -542,7 +543,7 @@ fun InputTab() {
                 coroutineScoper = coroutineScope,
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
-            HorizontalPager(state = pagerState) {
+            HorizontalPager(state = pagerState, userScrollEnabled = false) {
                 tabs[it].screen()
             }
 
