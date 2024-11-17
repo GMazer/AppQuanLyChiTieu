@@ -251,11 +251,11 @@ fun YearPickerDialog(
 fun YearPickerButton(onYearSelected: (String) -> Unit) {
     var yearText by remember { mutableStateOf("") }
     var showYearPicker by remember { mutableStateOf(false) }
-    val calendar = Calendar.getInstance()
+    val calendar = remember { mutableStateOf(Calendar.getInstance()) }
 
     // Hàm để cập nhật chuỗi hiển thị năm
     fun updateYearText() {
-        val year = calendar.get(Calendar.YEAR).toString()
+        val year = calendar.value.get(Calendar.YEAR).toString()
         yearText = year // Cập nhật năm
         onYearSelected(year) // Gọi callback với giá trị năm
     }
@@ -269,7 +269,7 @@ fun YearPickerButton(onYearSelected: (String) -> Unit) {
         // Nút lùi năm
         IconButton(
             onClick = {
-                calendar.add(Calendar.YEAR, -1)
+                calendar.value.add(Calendar.YEAR, -1)
                 updateYearText() // Gọi callback khi lùi năm
             },
             modifier = Modifier
@@ -282,8 +282,6 @@ fun YearPickerButton(onYearSelected: (String) -> Unit) {
                 tint = Color(0xFF444444)
             )
         }
-        Spacer(modifier = Modifier.width(8.dp))
-
         // Nút chọn năm
         Button(
             modifier = Modifier.weight(8f),
@@ -299,12 +297,10 @@ fun YearPickerButton(onYearSelected: (String) -> Unit) {
                 fontSize = 16.sp
             )
         }
-        Spacer(modifier = Modifier.width(8.dp))
-
         // Nút tiến năm
         IconButton(
             onClick = {
-                calendar.add(Calendar.YEAR, +1)
+                calendar.value.add(Calendar.YEAR, +1)
                 updateYearText() // Gọi callback khi tiến năm
             },
             modifier = Modifier
@@ -322,10 +318,10 @@ fun YearPickerButton(onYearSelected: (String) -> Unit) {
     // Hiển thị YearPickerDialog khi cần
     if (showYearPicker) {
         YearPickerDialog(
-            initialYear = calendar.get(Calendar.YEAR),
+            initialYear = calendar.value.get(Calendar.YEAR),
             onDismiss = { showYearPicker = false },
             onYearSelected = { selectedYear ->
-                calendar.set(Calendar.YEAR, selectedYear)
+                calendar.value.set(Calendar.YEAR, selectedYear)
                 updateYearText() // Cập nhật năm sau khi chọn
                 showYearPicker = false
             }

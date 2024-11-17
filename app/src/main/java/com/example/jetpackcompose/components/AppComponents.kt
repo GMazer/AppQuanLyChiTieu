@@ -131,10 +131,10 @@ fun NormalTextComponent(value: String) {
     Text(
         text = value,
         modifier = Modifier
-            .heightIn(min = 40.dp)
+            .heightIn(min = 32.dp)
             .fillMaxWidth(),
         style = TextStyle(
-            fontSize = 22.sp,
+            fontSize = 18.sp,
             fontFamily = monsterrat,
             fontWeight = FontWeight.Normal,
             fontStyle = FontStyle.Normal,
@@ -149,10 +149,10 @@ fun HeadingTextComponent(value: String) {
     Text(
         text = value,
         modifier = Modifier
-            .heightIn(min = 60.dp)
+            .heightIn(min = 48.dp)
             .fillMaxWidth(),
         style = TextStyle(
-            fontSize = 36.sp,
+            fontSize = 28.sp,
             fontFamily = monsterrat,
             fontWeight = FontWeight.Bold,
             fontStyle = FontStyle.Normal,
@@ -164,19 +164,28 @@ fun HeadingTextComponent(value: String) {
 
 @Composable
 fun MyTextFieldComponent(labelValue: String, painterResource: Painter) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
     val textValue = remember { mutableStateOf("") }
+    val isFocused = remember { mutableStateOf(false) }
+
     OutlinedTextField(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(componentShapes.small),
+            .clip(componentShapes.small)
+            .onFocusChanged { focusState ->
+                isFocused.value = focusState.isFocused
+            },
         shape = RoundedCornerShape(10.dp),
-        label = { Text(
-            text = labelValue,
-            fontFamily = monsterrat,
-            fontWeight = FontWeight.Normal,
-            fontSize = 12.sp,
-            color = Color.LightGray
-        ) },
+        label = {
+            Text(
+                text = labelValue,
+                fontFamily = monsterrat,
+                fontWeight = FontWeight.Normal,
+                fontSize = 12.sp,
+                color = if (isFocused.value) colorPrimary else Color.LightGray
+            )
+        },
         value = textValue.value,
         colors = TextFieldDefaults.outlinedTextFieldColors(
             focusedBorderColor = colorPrimary,
@@ -187,14 +196,23 @@ fun MyTextFieldComponent(labelValue: String, painterResource: Painter) {
             textColor = TextColor,
             backgroundColor = bgColor
         ),
-        keyboardOptions = KeyboardOptions.Default,
+        keyboardOptions = KeyboardOptions.Default.copy(
+            keyboardType = KeyboardType.Text,
+            imeAction = ImeAction.Done
+        ),
+        keyboardActions = KeyboardActions(
+            onDone = {
+                focusManager.clearFocus()  // Clear focus from the text field
+                keyboardController?.hide()  // Hide the keyboard
+            }
+        ),
         onValueChange = {
             textValue.value = it
         },
         leadingIcon = {
             Icon(
                 painter = painterResource,
-                contentDescription = (""),
+                contentDescription = "",
                 tint = highGray
             )
         }
@@ -203,21 +221,27 @@ fun MyTextFieldComponent(labelValue: String, painterResource: Painter) {
 
 @Composable
 fun PasswordTextFieldComponent(labelValue: String, painterResource: Painter) {
-
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
     val password = remember { mutableStateOf("") }
     val passwordVisibility = remember { mutableStateOf(false) }
+    val isFocused = remember { mutableStateOf(false) }
+
 
     OutlinedTextField(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(componentShapes.small),
+            .clip(componentShapes.small)
+            .onFocusChanged { focusState ->
+                isFocused.value = focusState.isFocused
+            },
         shape = RoundedCornerShape(10.dp),
         label = { Text(
             text = labelValue,
             fontFamily = monsterrat,
             fontWeight = FontWeight.Normal,
             fontSize = 12.sp,
-            color = Color.LightGray
+            color = if(isFocused.value) colorPrimary else Color.LightGray
         ) },
         value = password.value,
         colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -229,7 +253,16 @@ fun PasswordTextFieldComponent(labelValue: String, painterResource: Painter) {
             textColor = TextColor,
             backgroundColor = bgColor
         ),
-        keyboardOptions = KeyboardOptions.Default,
+        keyboardOptions = KeyboardOptions.Default.copy(
+            keyboardType = KeyboardType.Text,
+            imeAction = ImeAction.Done
+        ),
+        keyboardActions = KeyboardActions(
+            onDone = {
+                focusManager.clearFocus()  // Clear focus from the text field
+                keyboardController?.hide()  // Hide the keyboard
+            }
+        ),
         onValueChange = {
             password.value = it
         },
@@ -474,7 +507,7 @@ fun InputTab() {
         headlineSmall = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.monsterrat)
     )
 
-    var tabs = listOf(
+    val tabs = listOf(
         TabItem("Expense", icon =  Icons.Default.ArrowBack){
             OutComeContent()
         },
@@ -483,11 +516,11 @@ fun InputTab() {
         }
     )
 
-    var pagerState = rememberPagerState (
+    val pagerState = rememberPagerState (
         pageCount = {tabs.size}
     )
 
-    var coroutineScope = rememberCoroutineScope()
+    val coroutineScope = rememberCoroutineScope()
 
     MaterialTheme(
         typography = customTypography
@@ -531,6 +564,7 @@ fun MyButtonComponent(value: String, onClick: () -> Unit)
         Text(
             value,
             color = Color.White,
+            fontFamily = monsterrat,
             fontWeight = FontWeight.Bold,
             fontSize = 16.sp)
     }
@@ -674,97 +708,84 @@ fun NoteTextField(textState: TextFieldValue, onValueChange: (TextFieldValue) -> 
 }
 
 @SuppressLint("DiscouragedApi")
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MonthPickerButton(onDateSelected: (String) -> Unit) {
     var dateText by remember { mutableStateOf("") }
     var showMonthPicker by remember { mutableStateOf(false) }
-    val calendar = Calendar.getInstance()
+    val calendar = remember { mutableStateOf(Calendar.getInstance()) }
 
-    // Định dạng tháng và năm
     val monthYearFormat = SimpleDateFormat("MM/yyyy", Locale("vi", "VN"))
 
-    // Hàm để cập nhật chuỗi hiển thị
     fun updateDateText() {
-        val monthYear = monthYearFormat.format(calendar.time)
-        dateText = monthYear // Chỉ giữ định dạng MM/yyyy
-        onDateSelected(dateText) // Gọi callback với giá trị đơn giản
+        dateText = monthYearFormat.format(calendar.value.time)
+        onDateSelected(dateText)
     }
 
-    // Cập nhật ngày hiện tại khi khởi tạo
-    LaunchedEffect(key1 = true) {
+    LaunchedEffect(key1 = Unit) {
         updateDateText()
     }
 
     Row(verticalAlignment = Alignment.CenterVertically) {
-        // Nút lùi lịch
         IconButton(
             onClick = {
-                calendar.add(Calendar.MONTH, -1)
-                updateDateText() // Gọi callback khi lùi tháng
+                calendar.value.add(Calendar.MONTH, -1)
+                updateDateText()
             },
             modifier = Modifier
                 .weight(1f)
                 .size(20.dp)
         ) {
-            androidx.compose.material3.Icon(
+            Icon(
                 painter = painterResource(id = R.drawable.outline_arrow_back_ios_24),
-                contentDescription = "Lùi lịch",
-                tint = Color(0xFF444444)
-            )
+                contentDescription = "Previous Month",
+                tint = Color(0xFF444444))
         }
-        Spacer(modifier = Modifier.width(8.dp))
-
-        // Nút chọn tháng
         Button(
+            onClick = { showMonthPicker = true },
+            shape = componentShapes.medium,
             modifier = Modifier.weight(8f),
-            shape = RoundedCornerShape(8.dp),
-            onClick = { showMonthPicker = true }, // Hiển thị MonthPickerDialog
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFe1e1e1))
         ) {
             Text(
                 dateText,
-                fontFamily = monsterrat,
-                color = Color(0xFF444444),
                 fontWeight = FontWeight.Bold,
-                fontSize = 16.sp
+                fontFamily = monsterrat,
+                fontSize = 16.sp,
+                color = Color(0xFF444444)
             )
         }
-        Spacer(modifier = Modifier.width(8.dp))
-
-        // Nút tiến lịch
         IconButton(
             onClick = {
-                calendar.add(Calendar.MONTH, +1)
-                updateDateText() // Gọi callback khi tiến tháng
+                calendar.value.add(Calendar.MONTH, +1)
+                updateDateText()
             },
             modifier = Modifier
                 .weight(1f)
                 .size(20.dp)
         ) {
-            androidx.compose.material3.Icon(
+            Icon(
                 painter = painterResource(id = R.drawable.outline_arrow_forward_ios_24),
-                contentDescription = "Tiến lịch",
+                contentDescription = "Next Month",
                 tint = Color(0xFF444444)
             )
         }
     }
 
-    // Hiển thị MonthPickerDialog khi cần
     if (showMonthPicker) {
         MonthPickerDialog(
-            currentYear = calendar.get(Calendar.YEAR),
-            currentMonth = calendar.get(Calendar.MONTH),
+            currentYear = calendar.value.get(Calendar.YEAR),
+            currentMonth = calendar.value.get(Calendar.MONTH),
             onDismiss = { showMonthPicker = false },
             onMonthYearSelected = { selectedMonth, selectedYear ->
-                calendar.set(Calendar.YEAR, selectedYear)
-                calendar.set(Calendar.MONTH, selectedMonth)
-                updateDateText() // Cập nhật tháng và năm sau khi chọn
+                calendar.value.set(Calendar.YEAR, selectedYear)
+                calendar.value.set(Calendar.MONTH, selectedMonth)
+                updateDateText()
                 showMonthPicker = false
             }
         )
     }
 }
+
 
 
 
@@ -890,7 +911,7 @@ fun CustomCalendar(selectedMonthYear: String) {
 @Preview
 @Composable
 fun PreviewInputScreen() {
-    InputScreen()
+    MonthPickerButton(onDateSelected = {})
 }
 
 

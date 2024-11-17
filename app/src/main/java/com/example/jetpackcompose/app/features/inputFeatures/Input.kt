@@ -149,7 +149,9 @@ fun DatePickerButton(onDateSelected: (String) -> Unit) {
                 dateText = dateFormat.format(calendar.time)
                 onDateSelected(dateText) // Gọi callback khi lùi ngày
             },
-            modifier = Modifier.size(20.dp)
+            modifier = Modifier
+                .weight(1f)
+                .size(20.dp)
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.outline_arrow_back_ios_24),
@@ -157,11 +159,10 @@ fun DatePickerButton(onDateSelected: (String) -> Unit) {
                 tint = Color(0xFF444444)
             )
         }
-        Spacer(modifier = Modifier.width(8.dp))
 
         // Nút chọn ngày
         Button(
-            modifier = Modifier.width(250.dp),
+            modifier = Modifier.weight(8f),
             shape = componentShapes.medium,
             onClick = {
                 val datePickerDialog = DatePickerDialog(
@@ -188,7 +189,6 @@ fun DatePickerButton(onDateSelected: (String) -> Unit) {
                 fontSize = 16.sp
             )
         }
-        Spacer(modifier = Modifier.width(8.dp))
 
         // Nút tiến lịch
         IconButton(
@@ -197,7 +197,9 @@ fun DatePickerButton(onDateSelected: (String) -> Unit) {
                 dateText = dateFormat.format(calendar.time)
                 onDateSelected(dateText) // Gọi callback khi tiến ngày
             },
-            modifier = Modifier.size(20.dp)
+            modifier = Modifier
+                .weight(1f)
+                .size(20.dp)
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.outline_arrow_forward_ios_24),
@@ -317,5 +319,4 @@ fun CustomTabRow(
             thickness = 1.dp
         )
     }
-
 }
