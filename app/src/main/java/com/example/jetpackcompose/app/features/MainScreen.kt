@@ -35,7 +35,7 @@ fun MainScreen() {
         HorizontalPager(
             state = pagerState,
             modifier = Modifier.padding(innerPadding),
-            contentPadding = PaddingValues(horizontal = 16.dp),
+            contentPadding = PaddingValues(horizontal = 0.dp),
             beyondViewportPageCount = 0, // Đặt giá trị là 0
             pageSpacing = 16.dp,
             verticalAlignment = Alignment.CenterVertically,
