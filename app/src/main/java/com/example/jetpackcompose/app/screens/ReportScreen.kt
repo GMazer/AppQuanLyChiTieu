@@ -30,6 +30,8 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.input.pointer.motionEventSpy
 import com.example.jetpackcompose.components.YearPickerDialog
+import com.example.jetpackcompose.components.YearPickerButton
+import java.util.Calendar
 import androidx.compose.ui.graphics.Color as ComposeColor
 
 
@@ -37,13 +39,16 @@ import androidx.compose.ui.graphics.Color as ComposeColor
 @Composable
 fun ReportScreen() {
     val values = listOf(10, 20, 30, 25, 40, 35, 45, 50, 60, 55, 70, 65) // Dữ liệu cho các tháng
+    val indexs = listOf(12, 22, 33, 24, 45, 36, 47, 58, 69, 50, 71, 62) // Mốc cho mỗi tháng
     val months = listOf("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
 
-    val canvasHeight = 300f
-    val barWidth = 40f
-    val spaceBetweenBars = 40f
+    val currentYear = remember {
+        val calendar = Calendar.getInstance()
+        val year = calendar.get(Calendar.YEAR)
+        "$year"
+    }
 
-    var selectedMonthYear by remember { mutableStateOf("01/2024") }
+    var selectedYear by remember { mutableStateOf(currentYear) }
 
     val customTypography = Typography(
         bodyLarge = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.monsterrat),
@@ -103,25 +108,23 @@ fun ReportScreen() {
                     .fillMaxHeight()
             ) {
                 // Spacer giữa TopAppBar và biểu đồ
-                Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-//                YearPickerDialog(
-//                    initialYear = 2024,
-//                    onDismiss = {},
-//                    onYearSelected = {}
-//                )
+               YearPickerButton(onYearSelected = { year ->
+                   selectedYear = year
+               })
 
-                Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-                BarChartWithLine(values = values, months = months) // Hiển thị biểu đồ cột với các tháng
+                BarChartWithLine(values = values, index = indexs, months = months) // Hiển thị biểu đồ cột với các tháng
             }
         }
     }
 }
 
 @Composable
-fun BarChartWithLine(values: List<Int>, months: List<String>) {
-    val canvasHeight = 300f
+fun BarChartWithLine(values: List<Int>, index: List<Int>, months: List<String>) {
+    val canvasHeight = 500f
     val barWidth = 40f
     val spaceBetweenBars = 40f  // Khoảng cách giữa các cột
 
@@ -136,10 +139,10 @@ fun BarChartWithLine(values: List<Int>, months: List<String>) {
     ) {
         Canvas(modifier = Modifier
             .width(chartWidth.dp)  // Thiết lập chiều rộng biểu đồ theo chiều rộng tính toán
-            .height(350.dp) // Chiều cao của canvas
+            .height(400.dp) // Chiều cao của canvas
             .padding(start = 28.dp) // Padding vào trục Y, không ảnh hưởng đến các đường ngang
         ) {
-            val maxValue = values.maxOrNull() ?: 0
+            val maxValue = (values.maxOrNull() ?: 0 ) * 1.2f
             val scaleFactor = canvasHeight / maxValue
 
             // Vẽ nền
@@ -154,7 +157,7 @@ fun BarChartWithLine(values: List<Int>, months: List<String>) {
                 color = Color.Black,
                 start = Offset(0f, 0f),  // Điểm bắt đầu của trục Y
                 end = Offset(0f, canvasHeight),
-                strokeWidth = 2f
+                strokeWidth = 4f
             )
 
             // Vẽ các cột màu cam
@@ -177,12 +180,12 @@ fun BarChartWithLine(values: List<Int>, months: List<String>) {
                 color = Color.Black,
                 start = Offset(0f, canvasHeight),
                 end = Offset(chartWidth, canvasHeight),
-                strokeWidth = 2f
+                strokeWidth = 4f
             )
 
             // Tạo các điểm để vẽ đường uốn lượn
             val points = mutableListOf<Offset>()
-            values.forEachIndexed { index, value ->
+            index.forEachIndexed { index, value ->
                 val x = (barWidth + spaceBetweenBars) * index.toFloat() + barWidth / 2 + 50f  // Thêm padding vào trục Y
                 val y = canvasHeight - value * scaleFactor
                 points.add(Offset(x, y))

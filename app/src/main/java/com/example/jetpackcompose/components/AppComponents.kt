@@ -890,11 +890,7 @@ fun CustomCalendar(selectedMonthYear: String) {
 @Preview
 @Composable
 fun PreviewInputScreen() {
-<<<<<<< HEAD
-    InputTab()
-=======
     InputScreen()
->>>>>>> 8428c159a9b6a65d6c5630adadf931b7f2e3566e
 }
 
 

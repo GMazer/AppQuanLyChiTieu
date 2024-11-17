@@ -110,6 +110,9 @@ fun CalendarScreen() {
                     .fillMaxSize()
                     .padding(paddingValues)
             ) {
+
+                Spacer(modifier = Modifier.height(16.dp))
+
                 Row(verticalAlignment = Alignment.CenterVertically)  {
                     MonthPickerButton(onDateSelected = { month ->
                         selectedMonthYear = month
