@@ -889,7 +889,7 @@ fun CustomCalendar(selectedMonthYear: String) {
 @Preview
 @Composable
 fun PreviewInputScreen() {
-    CustomCalendar("11/2024")
+    InputTab()
 }
 
 
