@@ -677,7 +677,7 @@ fun NoteTextField(textState: TextFieldValue, onValueChange: (TextFieldValue) -> 
 @Composable
 fun MonthPickerButton(onDateSelected: (String) -> Unit) {
     var dateText by remember { mutableStateOf("") }
-    val context = LocalContext.current
+    var showMonthPicker by remember { mutableStateOf(false) }
     val calendar = Calendar.getInstance()
 
     // Định dạng tháng và năm
@@ -702,7 +702,9 @@ fun MonthPickerButton(onDateSelected: (String) -> Unit) {
                 calendar.add(Calendar.MONTH, -1)
                 updateDateText() // Gọi callback khi lùi tháng
             },
-            modifier = Modifier.size(20.dp)
+            modifier = Modifier
+                .weight(1f)
+                .size(20.dp)
         ) {
             androidx.compose.material3.Icon(
                 painter = painterResource(id = R.drawable.outline_arrow_back_ios_24),
@@ -714,26 +716,9 @@ fun MonthPickerButton(onDateSelected: (String) -> Unit) {
 
         // Nút chọn tháng
         Button(
-            modifier = Modifier.width(320.dp),
+            modifier = Modifier.weight(8f),
             shape = RoundedCornerShape(8.dp),
-            onClick = {
-                val datePickerDialog = DatePickerDialog(
-                    context,
-                    { _, year, month, _ ->
-                        calendar.set(Calendar.YEAR, year)
-                        calendar.set(Calendar.MONTH, month)
-                        updateDateText() // Cập nhật tháng/năm khi chọn
-                    },
-                    calendar.get(Calendar.YEAR),
-                    calendar.get(Calendar.MONTH),
-                    calendar.get(Calendar.DAY_OF_MONTH)
-                )
-                // Ẩn ngày
-                datePickerDialog.datePicker.findViewById<View>(
-                    Resources.getSystem().getIdentifier("day", "id", "android")
-                )?.visibility = View.GONE
-                datePickerDialog.show()
-            },
+            onClick = { showMonthPicker = true }, // Hiển thị MonthPickerDialog
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFe1e1e1))
         ) {
             Text(
@@ -752,7 +737,9 @@ fun MonthPickerButton(onDateSelected: (String) -> Unit) {
                 calendar.add(Calendar.MONTH, +1)
                 updateDateText() // Gọi callback khi tiến tháng
             },
-            modifier = Modifier.size(20.dp)
+            modifier = Modifier
+                .weight(1f)
+                .size(20.dp)
         ) {
             androidx.compose.material3.Icon(
                 painter = painterResource(id = R.drawable.outline_arrow_forward_ios_24),
@@ -760,6 +747,21 @@ fun MonthPickerButton(onDateSelected: (String) -> Unit) {
                 tint = Color(0xFF444444)
             )
         }
+    }
+
+    // Hiển thị MonthPickerDialog khi cần
+    if (showMonthPicker) {
+        MonthPickerDialog(
+            currentYear = calendar.get(Calendar.YEAR),
+            currentMonth = calendar.get(Calendar.MONTH),
+            onDismiss = { showMonthPicker = false },
+            onMonthYearSelected = { selectedMonth, selectedYear ->
+                calendar.set(Calendar.YEAR, selectedYear)
+                calendar.set(Calendar.MONTH, selectedMonth)
+                updateDateText() // Cập nhật tháng và năm sau khi chọn
+                showMonthPicker = false
+            }
+        )
     }
 }
 
@@ -878,6 +880,7 @@ fun CustomCalendar(selectedMonthYear: String) {
         }
     }
 }
+
 
 
 
