@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
@@ -149,7 +148,9 @@ fun DatePickerButton(onDateSelected: (String) -> Unit) {
                 dateText = dateFormat.format(calendar.time)
                 onDateSelected(dateText) // Gọi callback khi lùi ngày
             },
-            modifier = Modifier.size(20.dp)
+            modifier = Modifier
+                .weight(1f)
+                .size(20.dp)
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.outline_arrow_back_ios_24),
@@ -161,7 +162,7 @@ fun DatePickerButton(onDateSelected: (String) -> Unit) {
 
         // Nút chọn ngày
         Button(
-            modifier = Modifier.width(250.dp),
+            modifier = Modifier.weight(8f),
             shape = componentShapes.medium,
             onClick = {
                 val datePickerDialog = DatePickerDialog(
@@ -185,6 +186,7 @@ fun DatePickerButton(onDateSelected: (String) -> Unit) {
                 dateText,
                 color = Color(0xFF444444),
                 fontWeight = FontWeight.Bold,
+                fontFamily = monsterrat,
                 fontSize = 16.sp
             )
         }
@@ -197,7 +199,9 @@ fun DatePickerButton(onDateSelected: (String) -> Unit) {
                 dateText = dateFormat.format(calendar.time)
                 onDateSelected(dateText) // Gọi callback khi tiến ngày
             },
-            modifier = Modifier.size(20.dp)
+            modifier = Modifier
+                .weight(1f)
+                .size(20.dp)
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.outline_arrow_forward_ios_24),
@@ -237,85 +241,78 @@ fun CustomTabRow(
         }
     )
 
-    Column {
-        Row(
-            modifier = modifier
-                .height(50.dp)
-                .fillMaxWidth()
-                .background(color = backgroundColor),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center // Căn giữa TabRow
+    Row(
+        modifier = modifier
+            .height(50.dp)
+            .fillMaxWidth()
+            .background(color = backgroundColor),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center // Căn giữa TabRow
+    ) {
+        TabRow(
+            selectedTabIndex = tabIndex,
+            modifier = Modifier
+                .background(backgroundColor)
+                .width(200.dp),
+            indicator = {
+            },  // Không có chỉ báo
+            divider = {}  // Không có dòng phân cách
         ) {
-            TabRow(
-                selectedTabIndex = tabIndex,
-                modifier = Modifier
-                    .background(backgroundColor)
-                    .width(200.dp),
-                indicator = {
-                },  // Không có chỉ báo
-                divider = {}  // Không có dòng phân cách
-            ) {
-                titles.forEachIndexed { index, title ->
-                    val isSelected = tabIndex == index
-                    val tabColor by animateColorAsState (
-                        if (isSelected) activeColor else inactiveColor,
-                        animationSpec = tween(500)
-                    )
-                    val textColor by animateColorAsState(
-                        targetValue = if (isSelected) activeTextColor else inactiveTextColor,
-                        animationSpec = tween(durationMillis = 500)
-                    )
-                    val shape = when (index) {
-                        0 -> RoundedCornerShape(topStart = 6.dp, bottomStart = 6.dp)
-                        titles.lastIndex -> RoundedCornerShape(topEnd = 6.dp, bottomEnd = 6.dp)
-                        else -> RoundedCornerShape(8.dp)
-                    }
-                    val tabWidth by animateDpAsState(
-                        targetValue = if (isSelected) 100.dp else 200.dp,
-                        animationSpec = tween(durationMillis = 500)
-                    )
-                    Box(
-                        modifier = Modifier
-                            .width(200.dp)
-                            .height(36.dp)
-                            .background(
-                                color = inactiveColor,
-                                shape = shape
-                            ),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Tab(
-                            modifier = if (isSelected) Modifier
-                                .width(100.dp)
-                                .height(32.dp)
-                                .padding(horizontal = 2.dp)
-                                .background(tabColor, shape = RoundedCornerShape(6.dp))
-                            else Modifier.width(100.dp),
-                            selected = isSelected,
-                            onClick = {
-                                onTabSelected(index);
-                                coroutineScoper.launch {
-                                    pagerStatement.scrollToPage(index)
-                                }
-                            },
-                            text = {
-                                Text(
-                                    title,
-                                    color = textColor,
-                                    fontSize = 10.sp,
-                                    fontWeight = FontWeight.Normal,
-                                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp)
-                                )
+            titles.forEachIndexed { index, title ->
+                val isSelected = tabIndex == index
+                val tabColor by animateColorAsState (
+                    if (isSelected) activeColor else inactiveColor,
+                    animationSpec = tween(500)
+                )
+                val textColor by animateColorAsState(
+                    targetValue = if (isSelected) activeTextColor else inactiveTextColor,
+                    animationSpec = tween(durationMillis = 500)
+                )
+                val shape = when (index) {
+                    0 -> RoundedCornerShape(topStart = 6.dp, bottomStart = 6.dp)
+                    titles.lastIndex -> RoundedCornerShape(topEnd = 6.dp, bottomEnd = 6.dp)
+                    else -> RoundedCornerShape(8.dp)
+                }
+                val tabWidth by animateDpAsState(
+                    targetValue = if (isSelected) 100.dp else 200.dp,
+                    animationSpec = tween(durationMillis = 500)
+                )
+                Box(
+                    modifier = Modifier
+                        .width(200.dp)
+                        .height(36.dp)
+                        .background(
+                            color = inactiveColor,
+                            shape = shape
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Tab(
+                        modifier = if (isSelected) Modifier
+                            .width(100.dp)
+                            .height(32.dp)
+                            .padding(horizontal = 2.dp)
+                            .background(tabColor, shape = RoundedCornerShape(6.dp))
+                        else Modifier.width(100.dp),
+                        selected = isSelected,
+                        onClick = {
+                            onTabSelected(index);
+                            coroutineScoper.launch {
+                                pagerStatement.scrollToPage(index)
                             }
-                        )
-                    }
+                        },
+                        text = {
+                            Text(
+                                title,
+                                color = textColor,
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Normal,
+                                modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp)
+                            )
+                        }
+                    )
                 }
             }
         }
-        Divider(
-            color = Color.LightGray,
-            thickness = 1.dp
-        )
     }
-
 }
