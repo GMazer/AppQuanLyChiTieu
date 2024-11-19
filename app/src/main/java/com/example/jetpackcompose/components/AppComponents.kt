@@ -666,6 +666,7 @@ fun NumberTextField(amountState: String, onValueChange: (String) -> Unit) {
     )
 }
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NoteTextField(textState: TextFieldValue, onValueChange: (TextFieldValue) -> Unit)

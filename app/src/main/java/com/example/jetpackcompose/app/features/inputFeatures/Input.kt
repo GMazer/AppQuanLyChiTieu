@@ -2,7 +2,6 @@ package com.example.jetpackcompose.app.features.inputFeatures
 
 import android.app.DatePickerDialog
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.animateColorAsState
@@ -13,8 +12,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -24,19 +21,15 @@ import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -50,24 +43,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import com.example.jetpackcompose.R
-import com.example.jetpackcompose.components.DrawBottomLine
-import com.example.jetpackcompose.components.CategoriesGrid
-import com.example.jetpackcompose.components.NoteTextField
-import com.example.jetpackcompose.components.NumberTextField
 import com.example.jetpackcompose.components.InputTab
-import com.example.jetpackcompose.app.features.inputFeatures.OutComeContent
+import com.example.jetpackcompose.components.PopUpSetValueDialog
 import com.example.jetpackcompose.ui.theme.colorPrimary
 import com.example.jetpackcompose.ui.theme.componentShapes
 import kotlinx.coroutines.CoroutineScope
@@ -100,7 +86,7 @@ val monsterrat = FontFamily(
     Font(R.font.montserrat_light, FontWeight.Light)
 )
 
-data class TabItem (val text: String, val icon: ImageVector, val screen: @Composable () -> Unit)
+data class TabItem(val text: String, val icon: ImageVector, val screen: @Composable () -> Unit)
 
 enum class TransactionType {
     INCOME, // Tiền thu
@@ -222,36 +208,34 @@ fun CustomTabRow(
     coroutineScoper: CoroutineScope,
     modifier: Modifier = Modifier
 ) {
-
-    val backgroundColor = Color(0xFFf1f1f1)
-    val activeColor = Color(0xFFF35E17)  // Màu cho tab đang chọn
+    var isDialogOpen by remember { mutableStateOf(false) }
     val inactiveColor = Color(0xFFe1e1e1)  // Màu cho tab không chọn
-    val activeTextColor = Color.White  // Màu văn bản cho tab đang chọn
     val inactiveTextColor = Color(0xFFF35E17)  // Màu văn bản cho tab không chọn
 
 
-    var listtab = listOf(
-        TabItem("Income", icon =  Icons.Default.ArrowBack){
-            IncomeContent()
-        },
-        TabItem("Expense", icon =  Icons.Default.ArrowForward){
-            OutComeContent()
-        }
-    )
+
 
     Column {
         Row(
             modifier = modifier
                 .height(50.dp)
                 .fillMaxWidth()
-                .background(color = backgroundColor),
+                .background(color = Color.Transparent),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center // Căn giữa TabRow
         ) {
+            // Nút ảo
+            IconButton(
+                onClick = {},
+                enabled = false // Đặt enabled = false để không thể nhấn được
+            ) {
+                // Không thêm Icon hoặc Text nào
+            }
+
             TabRow(
                 selectedTabIndex = tabIndex,
                 modifier = Modifier
-                    .background(backgroundColor)
+                    .background(Color.Transparent)
                     .width(200.dp),
                 indicator = {
                 },  // Không có chỉ báo
@@ -259,17 +243,17 @@ fun CustomTabRow(
             ) {
                 titles.forEachIndexed { index, title ->
                     val isSelected = tabIndex == index
-                    val tabColor by animateColorAsState (
-                        if (isSelected) activeColor else inactiveColor,
+                    val tabColor by animateColorAsState(
+                        if (isSelected) colorPrimary else inactiveColor,
                         animationSpec = tween(500)
                     )
                     val textColor by animateColorAsState(
-                        targetValue = if (isSelected) activeTextColor else inactiveTextColor,
+                        targetValue = if (isSelected) Color.White else inactiveTextColor,
                         animationSpec = tween(durationMillis = 500)
                     )
                     val shape = when (index) {
-                        0 -> RoundedCornerShape(topStart = 6.dp, bottomStart = 6.dp)
-                        titles.lastIndex -> RoundedCornerShape(topEnd = 6.dp, bottomEnd = 6.dp)
+                        0 -> RoundedCornerShape(topStart = 8.dp, bottomStart = 8.dp)
+                        titles.lastIndex -> RoundedCornerShape(topEnd = 8.dp, bottomEnd = 8.dp)
                         else -> RoundedCornerShape(8.dp)
                     }
                     val tabWidth by animateDpAsState(
@@ -291,7 +275,7 @@ fun CustomTabRow(
                                 .width(100.dp)
                                 .height(32.dp)
                                 .padding(horizontal = 2.dp)
-                                .background(tabColor, shape = RoundedCornerShape(6.dp))
+                                .background(tabColor, shape = componentShapes.medium)
                             else Modifier.width(100.dp),
                             selected = isSelected,
                             onClick = {
@@ -313,10 +297,34 @@ fun CustomTabRow(
                     }
                 }
             }
+
+            IconButton(
+                onClick = { isDialogOpen = true }
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.edit_value_dialog), // Icon mặc định, bạn có thể thay đổi thành icon khác
+                    contentDescription = "Mở Pop-up Form",
+                    tint = colorPrimary
+                )
+            }
+
+            // Hiển thị PopUpSetValueDialog khi isDialogOpen là true
+            if (isDialogOpen) {
+                PopUpSetValueDialog(
+                    onDismiss = { isDialogOpen = false }
+                )
+            }
         }
-        Divider(
-            color = Color.LightGray,
-            thickness = 1.dp
-        )
     }
+    Divider(
+        color = Color.LightGray,
+        thickness = 1.dp
+    )
+}
+
+
+@Preview
+@Composable
+fun PreviewInputTab() {
+    InputTab()
 }

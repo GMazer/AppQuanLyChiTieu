@@ -26,8 +26,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
@@ -35,15 +33,14 @@ import androidx.compose.ui.unit.dp
 import com.example.jetpackcompose.R
 import com.example.jetpackcompose.components.CategoriesGrid
 import com.example.jetpackcompose.components.DrawBottomLine
-import com.example.jetpackcompose.components.DrawTopLine
 import com.example.jetpackcompose.components.NoteTextField
 import com.example.jetpackcompose.components.NumberTextField
-
+import com.example.jetpackcompose.components.PopUpSetValueDialog
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun OutComeContent () {
+fun OutComeContent() {
 
     var tabIndex by remember { mutableStateOf(0) }
     var textNote by remember { mutableStateOf(TextFieldValue()) }
@@ -207,16 +204,20 @@ fun OutComeContent () {
 
                     colors = ButtonDefaults.buttonColors(containerColor = buttonColor)
                 ) {
-                    Text("Nhập khoản chi",
+                    Text(
+                        "Nhập khoản chi",
                         color = Color.White,
                         fontFamily = monsterrat,
                         fontWeight = FontWeight.Bold
                     )
                 }
+
+
             }
         }
     }
 }
+
 
 @Preview
 @Composable

@@ -1,6 +1,7 @@
 package com.example.jetpackcompose.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,10 +18,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
@@ -35,9 +40,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -329,9 +343,328 @@ fun YearPickerButton(onYearSelected: (String) -> Unit) {
     }
 }
 
+@Composable
+fun PopUpSetValueDialog(
+    onDismiss: () -> Unit
+) {
+    var basicValue by remember { mutableStateOf(TextFieldValue()) }
+    var entertainmentValue by remember { mutableStateOf(TextFieldValue()) }
+    var investValue by remember { mutableStateOf(TextFieldValue()) }
+    var incidentalValue by remember { mutableStateOf(TextFieldValue()) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+
+    // Hàm để tính giá trị còn lại và kiểm tra giới hạn 100%
+    fun calculateRemainingValue() {
+        val entertainment = entertainmentValue.text.toDoubleOrNull() ?: 0.0
+        val invest = investValue.text.toDoubleOrNull() ?: 0.0
+        val incidental = incidentalValue.text.toDoubleOrNull() ?: 0.0
+
+        if (entertainment > 100 || invest > 100 || incidental > 100) {
+            errorMessage = "Giá trị không được vượt quá 100%"
+            if (entertainment > 100) entertainmentValue = TextFieldValue("")
+            if (invest > 100) investValue = TextFieldValue("")
+            if (incidental > 100) incidentalValue = TextFieldValue("")
+            return
+        } else {
+            errorMessage = null // Xóa thông báo lỗi nếu không có lỗi
+        }
+
+        val totalEntered = entertainment + invest + incidental
+        if (totalEntered > 100) {
+            return // Đảm bảo rằng tổng không vượt quá 100%
+        }
+
+        val emptyFields = listOf(
+            entertainmentValue.text.isBlank(),
+            investValue.text.isBlank(),
+            incidentalValue.text.isBlank()
+        ).count { it }
+
+        if (emptyFields == 1) {
+            val remainingValue = 100 - totalEntered
+            when {
+                entertainmentValue.text.isBlank() -> {
+                    entertainmentValue = TextFieldValue(remainingValue.toString())
+                }
+                investValue.text.isBlank() -> {
+                    investValue = TextFieldValue(remainingValue.toString())
+                }
+                incidentalValue.text.isBlank() -> {
+                    incidentalValue = TextFieldValue(remainingValue.toString())
+                }
+            }
+        }
+    }
+
+    Dialog(onDismissRequest = { onDismiss() }) {
+        Surface(
+            shape = RoundedCornerShape(16.dp),
+            color = Color.White
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                errorMessage?.let {
+                    Text(
+                        text = it,
+                        color = Color.Red,
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                }
+                    Text(
+                        text = "Phân bổ ngân sách",
+                        fontFamily = monsterrat,
+                        color = colorPrimary,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .padding(bottom = 16.dp)
+                        .fillMaxWidth()
+                ) {
+                    Text(
+                        text = "Chi phí thiết yếu",
+                        fontFamily = monsterrat,
+                        color = TextColor,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Normal,
+                        modifier = Modifier.weight(2f)
+                    )
+                    Box(modifier = Modifier.weight(5.5f)) {
+                        NumberTextField(
+                            amountState = basicValue.text,
+                            onValueChange = { newValue ->
+                                basicValue = TextFieldValue(newValue)
+                            },
+                        )
+                    }
+
+                    Text(
+                        text = "đ",
+                        fontFamily = monsterrat,
+                        color = TextColor,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Normal,
+                        modifier = Modifier.weight(0.5f),
+                        textAlign = TextAlign.Center
+                    )
+                }
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .padding(bottom = 16.dp)
+                        .fillMaxWidth()
+                ) {
+                    Text(
+                        text = "Ngân sách giải trí",
+                        fontFamily = monsterrat,
+                        color = TextColor,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Normal,
+                        modifier = Modifier.weight(2f)
+                    )
+                    Box(modifier = Modifier.weight(2.5f)) {
+                        PercentTextField(
+                            amountState = entertainmentValue.text,
+                            onValueChange = { newValue ->
+                                entertainmentValue = TextFieldValue(newValue)
+                                calculateRemainingValue()
+                            },
+                        )
+                    }
+
+                    Text(
+                        text = " %",
+                        fontFamily = monsterrat,
+                        color = TextColor,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Normal,
+                        modifier = Modifier.weight(3.5f),
+                        textAlign = TextAlign.Start
+                    )
+                }
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .padding(bottom = 16.dp)
+                        .fillMaxWidth()
+                ) {
+                    Text(
+                        text = "Ngân sách đầu tư",
+                        fontFamily = monsterrat,
+                        color = TextColor,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Normal,
+                        modifier = Modifier.weight(2f)
+                    )
+                    Box(modifier = Modifier.weight(2.5f)) {
+                        PercentTextField (
+                            amountState = investValue.text,
+                            onValueChange = { newValue ->
+                                investValue = TextFieldValue(newValue)
+                                calculateRemainingValue()
+                            },
+                        )
+                    }
+
+                    Text(
+                        text = " %",
+                        fontFamily = monsterrat,
+                        color = TextColor,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Normal,
+                        modifier = Modifier.weight(3.5f),
+                        textAlign = TextAlign.Start
+                    )
+                }
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .padding(bottom = 16.dp)
+                        .fillMaxWidth()
+                ) {
+                    Text(
+                        text = "Quỹ dự phòng",
+                        fontFamily = monsterrat,
+                        color = TextColor,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Normal,
+                        modifier = Modifier.weight(2f)
+                    )
+                    Box(modifier = Modifier.weight(2.5f)) {
+                        PercentTextField(
+                            amountState = incidentalValue.text,
+                            onValueChange = { newValue ->
+                                incidentalValue = TextFieldValue(newValue)
+                                calculateRemainingValue()
+                            },
+                        )
+                    }
+
+                    Text(
+                        text = " %",
+                        fontFamily = monsterrat,
+                        color = TextColor,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Normal,
+                        modifier = Modifier.weight(3.5f),
+                        textAlign = TextAlign.Start
+                    )
+                }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    TextButton(onClick = { onDismiss() }) {
+                        Text(text = "Huỷ bỏ", fontFamily = monsterrat, color = TextColor)
+                    }
+                    TextButton(onClick = {
+                        onDismiss()
+                    }) {
+                        Text(text = "OK", fontFamily = monsterrat, color = colorPrimary)
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun PercentTextField(amountState: String, onValueChange: (String) -> Unit) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
+    val focusRequester = FocusRequester()
+    var isFocused by remember { mutableStateOf(false) }
+
+    BasicTextField(
+        value = amountState,
+        onValueChange = { newInput ->
+            if (newInput == "0" && amountState.isEmpty()) {
+                // do nothing to block the first '0'
+            } else {
+                val filteredInput = newInput.filter { it.isDigit() || it == '.' }
+                onValueChange(
+                    if (filteredInput.isNotEmpty() && filteredInput != "0" && filteredInput != ".") {
+                        filteredInput
+                    } else if (filteredInput == "0" && !amountState.isEmpty()) {
+                        filteredInput
+                    } else {
+                        ""
+                    }
+                )
+            }
+        },
+        singleLine = true,
+        modifier = Modifier
+            .focusRequester(focusRequester)
+            .onFocusChanged { focusState ->
+                isFocused = focusState.isFocused
+            }
+            .height(45.dp)
+            .width(250.dp)
+            .background(Color(0xFFe1e1e1), shape = RoundedCornerShape(8.dp))
+            .border(
+                1.dp,
+                if (isFocused) colorPrimary else Color.Transparent,
+                RoundedCornerShape(8.dp)
+            )
+            .padding(horizontal = 16.dp),
+        textStyle = TextStyle(
+            textAlign = TextAlign.Start,
+            fontSize = 20.sp,
+            fontFamily = monsterrat,
+            fontWeight = FontWeight.Bold,
+            color = Color.Black
+        ),
+        keyboardOptions = KeyboardOptions.Default.copy(
+            keyboardType = KeyboardType.Number,
+            imeAction = ImeAction.Done
+        ),
+        keyboardActions = KeyboardActions(
+            onDone = {
+                focusManager.clearFocus()  // Clear focus from the text field
+                keyboardController?.hide()  // Hide the keyboard
+            }
+        ),
+        decorationBox = { innerTextField ->
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 10.dp)
+            ) {
+                if (amountState.isEmpty()) {
+                    androidx.compose.material3.Text(
+                        if (isFocused) "" else "0",
+                        color = TextColor,
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = monsterrat,
+                        fontSize = 20.sp,
+                        style = LocalTextStyle.current
+                    )
+                }
+                innerTextField()
+            }
+        }
+    )
+}
+
+
+
 
 @Preview
 @Composable
 fun PreviewMonthPickerDialog() {
-    YearPickerButton{}
+    PopUpSetValueDialog {  }
 }
