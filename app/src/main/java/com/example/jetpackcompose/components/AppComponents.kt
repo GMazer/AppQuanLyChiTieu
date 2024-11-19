@@ -164,11 +164,19 @@ fun HeadingTextComponent(value: String) {
 }
 
 @Composable
-fun MyTextFieldComponent(labelValue: String, painterResource: Painter) {
+fun MyTextFieldComponent(
+    value: String,
+    onValueChange: (String) -> Unit,
+    labelValue: String,
+    painterResource: Painter,
+    keyboardType: KeyboardType = KeyboardType.Text,
+    imeAction: ImeAction = ImeAction.Done,
+    isPassword: Boolean = false
+) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
-    val textValue = remember { mutableStateOf("") }
     val isFocused = remember { mutableStateOf(false) }
+    val isPasswordVisible = remember { mutableStateOf(false) }
 
     OutlinedTextField(
         modifier = Modifier
@@ -187,7 +195,9 @@ fun MyTextFieldComponent(labelValue: String, painterResource: Painter) {
                 color = if (isFocused.value) colorPrimary else Color.LightGray
             )
         },
-        value = textValue.value,
+        value = value,
+        onValueChange = onValueChange,
+        visualTransformation = if (isPassword && !isPasswordVisible.value) PasswordVisualTransformation() else VisualTransformation.None,
         colors = TextFieldDefaults.outlinedTextFieldColors(
             focusedBorderColor = colorPrimary,
             focusedLabelColor = colorPrimary,
@@ -198,8 +208,8 @@ fun MyTextFieldComponent(labelValue: String, painterResource: Painter) {
             backgroundColor = bgColor
         ),
         keyboardOptions = KeyboardOptions.Default.copy(
-            keyboardType = KeyboardType.Text,
-            imeAction = ImeAction.Done
+            keyboardType = keyboardType,
+            imeAction = imeAction
         ),
         keyboardActions = KeyboardActions(
             onDone = {
@@ -207,27 +217,41 @@ fun MyTextFieldComponent(labelValue: String, painterResource: Painter) {
                 keyboardController?.hide()  // Hide the keyboard
             }
         ),
-        onValueChange = {
-            textValue.value = it
-        },
         leadingIcon = {
             Icon(
                 painter = painterResource,
-                contentDescription = "",
+                contentDescription = "Leading icon for $labelValue",
                 tint = highGray
             )
-        }
+        },
+        trailingIcon = if (isPassword) {
+            {
+                IconButton(onClick = { isPasswordVisible.value = !isPasswordVisible.value }) {
+                    Icon(
+                        painter = painterResource(
+                            if (isPasswordVisible.value) R.drawable.baseline_key_24 else R.drawable.baseline_key_off_24
+                        ),
+                        contentDescription = if (isPasswordVisible.value) "Hide password" else "Show password",
+                        tint = highGray
+                    )
+                }
+            }
+        } else null
     )
 }
 
+
 @Composable
-fun PasswordTextFieldComponent(labelValue: String, painterResource: Painter) {
+fun PasswordTextFieldComponent(
+    value: String,
+    onValueChange: (String) -> Unit,
+    labelValue: String,
+    painterResource: Painter
+) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
-    val password = remember { mutableStateOf("") }
-    val passwordVisibility = remember { mutableStateOf(false) }
     val isFocused = remember { mutableStateOf(false) }
-
+    val passwordVisibility = remember { mutableStateOf(false) }
 
     OutlinedTextField(
         modifier = Modifier
@@ -237,14 +261,18 @@ fun PasswordTextFieldComponent(labelValue: String, painterResource: Painter) {
                 isFocused.value = focusState.isFocused
             },
         shape = RoundedCornerShape(10.dp),
-        label = { Text(
-            text = labelValue,
-            fontFamily = monsterrat,
-            fontWeight = FontWeight.Normal,
-            fontSize = 12.sp,
-            color = if(isFocused.value) colorPrimary else Color.LightGray
-        ) },
-        value = password.value,
+        label = {
+            Text(
+                text = labelValue,
+                fontFamily = monsterrat,
+                fontWeight = FontWeight.Normal,
+                fontSize = 12.sp,
+                color = if (isFocused.value) colorPrimary else Color.LightGray
+            )
+        },
+        value = value,
+        onValueChange = onValueChange,
+        visualTransformation = if (passwordVisibility.value) VisualTransformation.None else PasswordVisualTransformation(),
         colors = TextFieldDefaults.outlinedTextFieldColors(
             focusedBorderColor = colorPrimary,
             focusedLabelColor = colorPrimary,
@@ -255,22 +283,19 @@ fun PasswordTextFieldComponent(labelValue: String, painterResource: Painter) {
             backgroundColor = bgColor
         ),
         keyboardOptions = KeyboardOptions.Default.copy(
-            keyboardType = KeyboardType.Text,
+            keyboardType = KeyboardType.Password,
             imeAction = ImeAction.Done
         ),
         keyboardActions = KeyboardActions(
             onDone = {
-                focusManager.clearFocus()  // Clear focus from the text field
-                keyboardController?.hide()  // Hide the keyboard
+                focusManager.clearFocus()
+                keyboardController?.hide()
             }
         ),
-        onValueChange = {
-            password.value = it
-        },
         leadingIcon = {
             Icon(
                 painter = painterResource,
-                contentDescription = (""),
+                contentDescription = "Leading icon for $labelValue",
                 tint = highGray
             )
         },
@@ -280,51 +305,57 @@ fun PasswordTextFieldComponent(labelValue: String, painterResource: Painter) {
             } else {
                 painterResource(R.drawable.outline_visibility)
             }
-            var description = if (passwordVisibility.value) {
+            val description = if (passwordVisibility.value) {
                 "Ẩn mật khẩu"
             } else {
                 "Hiện mật khẩu"
             }
-            Icon(
-                painter = icon,
-                contentDescription = (""),
-                tint = highGray,
-                modifier = Modifier
-                    .clickable {
-                        passwordVisibility.value = !passwordVisibility.value
-                    }
-            )
-        },
-        visualTransformation = if (passwordVisibility.value) VisualTransformation.None else
-        PasswordVisualTransformation()
+            IconButton(onClick = { passwordVisibility.value = !passwordVisibility.value }) {
+                Icon(
+                    painter = icon,
+                    contentDescription = description,
+                    tint = highGray
+                )
+            }
+        }
     )
 }
 
+
 @Composable
-fun CheckboxComponent(value: String) {
-    val checkedState = remember { mutableStateOf(false) }
+fun CheckboxComponent(
+    text: String,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .heightIn(56.dp),
+            .padding(vertical = 8.dp), // Cách đều trên dưới
         verticalAlignment = Alignment.CenterVertically
     ) {
         Checkbox(
-            checked = checkedState.value,
-            onCheckedChange = { checkedState.value = it },
-            colors =  CheckboxDefaults.colors(
+            checked = checked,
+            onCheckedChange = onCheckedChange,
+            colors = CheckboxDefaults.colors(
                 checkedColor = colorPrimary,
+                uncheckedColor = Color.Gray,
+                checkmarkColor = Color.White
             )
         )
+        Spacer(modifier = Modifier.width(8.dp)) // Tạo khoảng cách giữa checkbox và text
         Text(
-            value,
-            fontFamily = monsterrat,
+            text = text,
+            fontFamily = monsterrat, // Đảm bảo khai báo `monsterrat`
             fontWeight = FontWeight.Normal,
-            fontSize = 12.sp,
+            fontSize = 14.sp,
             color = Color(0xFF777777),
+            modifier = Modifier.weight(1f) // Tự động chiếm không gian còn lại
         )
     }
 }
+
+
 
 @Composable
 fun DrawBottomLine(height: Dp) {
@@ -665,7 +696,6 @@ fun NumberTextField(amountState: String, onValueChange: (String) -> Unit) {
         }
     )
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
