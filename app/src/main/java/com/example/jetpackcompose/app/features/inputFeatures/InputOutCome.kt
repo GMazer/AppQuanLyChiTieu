@@ -98,7 +98,7 @@ fun OutComeContent() {
                 .padding(16.dp)
                 .background(Color.White)
         ) {
-            Spacer(Modifier.height(8.dp))
+
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     "Ngày ",
@@ -112,8 +112,7 @@ fun OutComeContent() {
                 })
             }
 
-            DrawBottomLine(8.dp)
-            Spacer(Modifier.height(8.dp))
+            DrawBottomLine(16.dp)
 
             // Ghi chu
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -121,7 +120,9 @@ fun OutComeContent() {
                     "Ghi chú ",
                     color = Color.DarkGray,
                     fontWeight = FontWeight.Bold,
-                    fontFamily = com.example.jetpackcompose.components.monsterrat
+                    fontFamily = com.example.jetpackcompose.components.monsterrat,
+                    modifier = Modifier
+                        .width(68.dp)
                 )
                 Spacer(Modifier.width(8.dp))
                 NoteTextField(textState = textNote, onValueChange = { newValue ->
@@ -129,14 +130,16 @@ fun OutComeContent() {
                 })
             }
 
-            DrawBottomLine(8.dp)
+            DrawBottomLine(16.dp)
             // Nhap vao so tien
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     "Tiền chi ",
                     color = Color.DarkGray,
                     fontWeight = FontWeight.Bold,
-                    fontFamily = com.example.jetpackcompose.components.monsterrat
+                    fontFamily = com.example.jetpackcompose.components.monsterrat,
+                    modifier = Modifier
+                        .width(68.dp)
                 )
                 Spacer(Modifier.width(8.dp))
                 NumberTextField(
@@ -153,7 +156,7 @@ fun OutComeContent() {
                     fontWeight = FontWeight.Normal,
                 )
             }
-            DrawBottomLine(24.dp)
+            DrawBottomLine(16.dp)
             // Danh mục chi tiêu
             Text(
                 "Danh mục",
