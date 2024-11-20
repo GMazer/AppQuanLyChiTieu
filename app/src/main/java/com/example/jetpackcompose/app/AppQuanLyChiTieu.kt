@@ -9,16 +9,19 @@ import androidx.navigation.compose.rememberNavController
 import com.example.jetpackcompose.app.screens.login_signup.SignUpScreen
 import com.example.jetpackcompose.app.screens.login_signup.SignInScreen
 import com.example.jetpackcompose.app.features.MainScreen
+import com.example.jetpackcompose.app.screens.OtherScreen
+import com.example.jetpackcompose.app.screens.other_screens.AnualScreen
 
 @Composable
 fun AppQuanLyChiTieu() {
     val navController = rememberNavController()
-    val context = LocalContext.current // Lấy context từ LocalContext
 
     NavHost(navController = navController, startDestination = "signup") {
         composable("signup") { SignUpScreen(navController) }
-        composable("signin") { SignInScreen(navController, context) }
-        composable("mainscreen") { MainScreen() }
+        composable("signin") { SignInScreen(navController) }
+        composable("mainscreen") { MainScreen(navController)}
+        composable("anual") { AnualScreen(navController)}
+        composable("other") { OtherScreen(navController)}
     }
 }
 

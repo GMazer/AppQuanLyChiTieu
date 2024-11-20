@@ -22,7 +22,7 @@ class SignInViewModel(private val context: Context) : ViewModel() {
         .create()
 
     private val api = Retrofit.Builder()
-        .baseUrl("https://af02-1-54-7-77.ngrok-free.app") // Thay thế bằng base URL API của bạn
+        .baseUrl("https://3263-1-54-7-77.ngrok-free.app") // Thay thế bằng base URL API của bạn
         .addConverterFactory(GsonConverterFactory.create(gson))
         .build()
         .create(ApiService::class.java)
@@ -50,6 +50,10 @@ class SignInViewModel(private val context: Context) : ViewModel() {
         val editor = sharedPreferences.edit()
         editor.remove("auth_token")
         editor.apply()
+    }
+
+    fun isTokenCleared(): Boolean {
+        return getToken() == null
     }
 
     // Hàm đăng nhập người dùng

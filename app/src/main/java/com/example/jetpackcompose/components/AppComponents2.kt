@@ -40,10 +40,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
@@ -61,6 +64,8 @@ import com.example.jetpackcompose.R
 import com.example.jetpackcompose.ui.theme.TextColor
 import com.example.jetpackcompose.ui.theme.colorPrimary
 import java.util.Calendar
+import com.example.jetpackcompose.ui.theme.bgColor
+
 
 @Composable
 fun MonthPickerDialog(
@@ -659,6 +664,43 @@ fun PercentTextField(amountState: String, onValueChange: (String) -> Unit) {
         }
     )
 }
+
+
+@Composable
+fun OtherTab(value: String, onClick: () -> Unit, painter: Painter) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(64.dp)
+            .padding(top = 16.dp)
+            .background(Color.White) // Thêm màu nền
+            .clickable(onClick = onClick), // Thêm chức năng click
+        contentAlignment = Alignment.CenterStart // Căn chỉnh nội dung
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically, // Căn giữa theo chiều dọc
+            horizontalArrangement = Arrangement.Start, // Căn trái theo chiều ngang
+            modifier = Modifier.fillMaxWidth() // Chiếm toàn bộ chiều rộng của Box
+        ) {
+            Spacer(modifier = Modifier.width(24.dp))
+            Icon(
+                painter = painter,
+                contentDescription = "Icon",
+                tint = colorPrimary,
+                modifier = Modifier.size(24.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = value,
+                color = Color.Black,
+                fontWeight = FontWeight.Normal,
+                fontSize = 16.sp
+            )
+        }
+    }
+}
+
+
 
 
 

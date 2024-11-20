@@ -16,12 +16,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import com.example.jetpackcompose.app.screens.InputScreen
 import com.example.jetpackcompose.app.screens.CalendarScreen
+import com.example.jetpackcompose.app.screens.OtherScreen
 import com.example.jetpackcompose.app.screens.ReportScreen
 import com.example.jetpackcompose.app.screens.OtherScreen
 import com.example.jetpackcompose.navigation.CustomBottomAppBar
 
 @Composable
-fun MainScreen() {
+fun MainScreen(navController: NavHostController) {
     val pagerState = rememberPagerState(
         pageCount = { 4 }
     )
@@ -46,18 +47,10 @@ fun MainScreen() {
                 0 -> InputScreen()
                 1 -> CalendarScreen()
                 2 -> ReportScreen()
-                3 -> OtherScreen()
+                3 -> OtherScreen(navController)
             }
         }
 
 
     }
-}
-
-
-
-@Preview
-@Composable
-fun PreviewMainScreen() {
-    MainScreen()
 }
