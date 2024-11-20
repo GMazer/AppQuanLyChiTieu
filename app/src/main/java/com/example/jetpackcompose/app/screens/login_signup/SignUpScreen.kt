@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.jetpackcompose.R
@@ -59,43 +60,40 @@ fun SignUpScreen(navController: NavHostController, viewModel: SignUpViewModel = 
                     .height(120.dp)
                     .align(Alignment.CenterHorizontally)
             )
-            Spacer(modifier = Modifier.height(40.dp))
+            Spacer(modifier = Modifier.height(30.dp))
             NormalTextComponent(value = stringResource(id = R.string.hello))
             HeadingTextComponent(value = stringResource(id = R.string.create_account))
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(10.dp))
             MyTextFieldComponent(
                 value = phoneNumber,
                 onValueChange = { phoneNumber = it },
-                labelValue = stringResource(id = R.string.email_or_nummber),
+                labelValue = stringResource(id = R.string.number),
                 painterResource = painterResource(id = R.drawable.profile)
             )
             MyTextFieldComponent(
                 value = email,
                 onValueChange = { email = it },
-                labelValue = stringResource(id = R.string.email_or_nummber),
+                labelValue = stringResource(id = R.string.email),
                 painterResource = painterResource(id = R.drawable.profile)
             )
-            Spacer(modifier = Modifier.height(10.dp))
             PasswordTextFieldComponent(
                 value = password,
                 onValueChange = { password = it },
                 labelValue = stringResource(id = R.string.enter_password),
                 painterResource = painterResource(id = R.drawable.outline_lock)
             )
-            Spacer(modifier = Modifier.height(10.dp))
             PasswordTextFieldComponent(
                 value = retypePassword,
                 onValueChange = { retypePassword = it },
                 labelValue = stringResource(id = R.string.re_enter_password),
                 painterResource = painterResource(id = R.drawable.outline_lock)
             )
-            Spacer(modifier = Modifier.height(10.dp))
             CheckboxComponent(
                 text = "Tôi đồng ý với các điều khoản và điều kiện chính sách của ứng dụng",
                 checked = agreeToTerms,
                 onCheckedChange = { agreeToTerms = it }
             )
-            Spacer(modifier = Modifier.height(40.dp))
+            Spacer(modifier = Modifier.height(10.dp))
             MyButtonComponent("Đăng ký", onClick = {
                 if (phoneNumber.isEmpty() || email.isEmpty() || password.isEmpty() || retypePassword.isEmpty()) {
                     errorMessage = "Vui lòng điền đầy đủ thông tin."
@@ -132,7 +130,6 @@ fun SignUpScreen(navController: NavHostController, viewModel: SignUpViewModel = 
                 Thread.sleep(3000)
                 Text(text = successMessage, color = Color.Green, style = MaterialTheme.typography.bodyMedium)
             }
-
             Row(modifier = Modifier.fillMaxWidth()) {
                 Spacer(modifier = Modifier.weight(1f))
                 ClickableTextComponent("Đã có tài khoản? Đăng nhập ngay    ", onClick = {

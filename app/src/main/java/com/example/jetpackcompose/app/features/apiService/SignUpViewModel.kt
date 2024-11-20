@@ -15,7 +15,7 @@ import com.google.gson.JsonSyntaxException
 
 class SignUpViewModel : ViewModel() {
     private val api = Retrofit.Builder()
-        .baseUrl("https://039c-1-54-7-77.ngrok-free.app")
+        .baseUrl("https://e676-42-116-146-88.ngrok-free.app")
         .addConverterFactory(GsonConverterFactory.create(GsonBuilder().setLenient().create()))
         .build()
         .create(ApiService::class.java)
