@@ -17,18 +17,20 @@ data class LoginData(
 )
 
 data class LoginResponse(
-    val token: String  // Giả sử API trả về một trường 'token'
+    val status: String,
+    val message: String  // Giả sử API trả về một trường 'token'
 )
 
 data class RegistrationResponse(
+    val status: String,  // Trạng thái đăng ký (thành công hoặc thất bại)
     val message: String  // Hoặc bất kỳ thông tin nào bạn muốn từ API sau khi đăng ký
 )
 
 
 interface ApiService {
     @POST("/api/users/register")
-    suspend fun register(@Body registrationData: RegistrationData): Response<Any>
+    suspend fun register(@Body registrationData: RegistrationData): Response<RegistrationResponse>
 
     @POST("/api/users/login")
-    suspend fun login (@Body LoginData: LoginData): Response<Any>
+    suspend fun login (@Body LoginData: LoginData): Response<LoginResponse>
 }

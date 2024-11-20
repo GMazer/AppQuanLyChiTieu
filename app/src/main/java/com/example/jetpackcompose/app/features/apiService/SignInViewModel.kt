@@ -1,8 +1,8 @@
 package com.example.jetpackcompose.app.features.apiService
 
-import android.util.Log
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.jetpackcompose.app.network.ApiService
@@ -14,20 +14,15 @@ import com.google.gson.JsonSyntaxException
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.Body
-import retrofit2.http.Headers
-import retrofit2.http.POST
-
-
 
 class SignInViewModel(private val context: Context) : ViewModel() {
 
-    val gson = GsonBuilder()
-        .setLenient() // Cho phép đọc dữ liệu JSON không hoàn chỉnh
+    private val gson = GsonBuilder()
+        .setLenient() // Cho phép đọc dữ liệu JSON không chính xác hoàn toàn
         .create()
 
     private val api = Retrofit.Builder()
-        .baseUrl("https://e676-42-116-146-88.ngrok-free.app")
+        .baseUrl("https://af02-1-54-7-77.ngrok-free.app") // Thay thế bằng base URL API của bạn
         .addConverterFactory(GsonConverterFactory.create(gson))
         .build()
         .create(ApiService::class.java)
@@ -58,37 +53,50 @@ class SignInViewModel(private val context: Context) : ViewModel() {
     }
 
     // Hàm đăng nhập người dùng
-    fun signInUser(data: LoginData, onSuccess: (String) -> Unit, onError: (String) -> Unit) {
+    fun signInUser(
+        data: LoginData,
+        onSuccess: (String) -> Unit,
+        onError: (String) -> Unit
+    ) {
         viewModelScope.launch {
             try {
                 val response = api.login(data) // Gọi API đăng nhập
                 if (response.isSuccessful) {
-                    Log.i("Response: ", response.body().toString())
-
-                    // Kiểm tra nếu phản hồi trả về một chuỗi token đơn giản
                     val responseBody = response.body()
-                    if (responseBody is String) {
-                        // Nếu responseBody là một chuỗi (token trực tiếp)
-                        val token = responseBody
-                        saveToken(token) // Lưu token vào SharedPreferences
-                        loginStatus = "Login successful"
-                        onSuccess(loginStatus)
-                    } else {
-                        // Nếu phản hồi trả về là đối tượng JSON như mong đợi
-                        val loginResponse = responseBody as? LoginResponse
-                        val token = loginResponse?.token
-                        if (token != null) {
-                            saveToken(token) // Lưu token vào SharedPreferences
-                            loginStatus = "Login successful"
-                            onSuccess(loginStatus)
+                    if (responseBody != null) {
+                        // Lấy token từ phản hồi
+                        val status = responseBody.status
+                        if (status == "success") {
+                            val token = responseBody.message
+                            if (token.isNotEmpty()) {
+                                saveToken(token) // Lưu token vào SharedPreferences
+                                loginStatus = "Login successful"
+                                onSuccess(loginStatus)
+                            } else {
+                                loginStatus = "Login failed: Empty token"
+                                onError(loginStatus)
+                            }
                         } else {
-                            loginStatus = "Token missing"
+                            loginStatus = "Login failed: ${responseBody.message}"
                             onError(loginStatus)
                         }
+                    } else {
+                        loginStatus = "Login failed: Empty response from server"
+                        onError(loginStatus)
                     }
                 } else {
-                    loginStatus = "Login failed: ${response.message()}"
-                    onError(loginStatus)
+                    // Xử lý errorBody
+                    val errorBodyString = response.errorBody()?.string() // Lấy nội dung của errorBody
+                    if (errorBodyString != null) {
+                        // Parse JSON từ errorBody
+                        val errorResponse = gson.fromJson(errorBodyString, LoginResponse::class.java)
+                        val errorMessage = errorResponse.message
+                        loginStatus = "Login failed: $errorMessage"
+                        onError(loginStatus)
+                    } else {
+                        loginStatus = "Login failed: Unknown error"
+                        onError(loginStatus)
+                    }
                 }
             } catch (e: JsonSyntaxException) {
                 loginStatus = "JSON syntax error: ${e.localizedMessage}"
@@ -105,5 +113,4 @@ class SignInViewModel(private val context: Context) : ViewModel() {
             }
         }
     }
-
 }
