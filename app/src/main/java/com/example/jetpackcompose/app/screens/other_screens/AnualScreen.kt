@@ -16,6 +16,6 @@ import com.example.jetpackcompose.components.OtherTab
 @Composable
 fun AnualScreen(navController: NavHostController) {
     OtherTab(value = "Back", painter = painterResource(R.drawable.logopng), onClick = {
-        navController.navigate("other")
+        navController.popBackStack()
     })
 }

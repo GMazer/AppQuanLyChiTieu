@@ -27,6 +27,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.graphics.RectangleShape
 import com.example.jetpackcompose.R
 import com.example.jetpackcompose.ui.theme.colorPrimary
@@ -36,7 +37,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun CustomBottomAppBar(pagerState: PagerState, coroutineScope: CoroutineScope) {
     // Trạng thái để theo dõi màu sắc khi nhấn vào các mục
-    var selectedPage by remember { mutableStateOf(0) }
+    var selectedPage by rememberSaveable { mutableStateOf(0) }
 
     Box(
         modifier = Modifier
