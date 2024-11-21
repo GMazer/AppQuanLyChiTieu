@@ -65,7 +65,157 @@ import com.example.jetpackcompose.ui.theme.TextColor
 import com.example.jetpackcompose.ui.theme.colorPrimary
 import java.util.Calendar
 import com.example.jetpackcompose.ui.theme.bgColor
+import com.example.jetpackcompose.ui.theme.topBarColor
+import androidx.compose.material3.TopAppBar
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.input.pointer.motionEventSpy
+import com.example.jetpackcompose.components.YearPickerDialog
+import com.example.jetpackcompose.components.YearPickerButton
+import com.example.jetpackcompose.ui.theme.colorContrast
+import com.example.jetpackcompose.ui.theme.colorPrimary
+import androidx.compose.ui.graphics.Color as ComposeColor
 
+
+@Composable
+fun BarChartWithLine(values: List<Int>, index: List<Int>, months: List<String>) {
+    val canvasHeight = 500f
+    val barWidth = 40f
+    val spaceBetweenBars = 40f  // Khoảng cách giữa các cột
+
+    // Tính chiều rộng của canvas dựa trên số lượng cột và khoảng cách giữa các cột
+    val chartWidth = (barWidth + spaceBetweenBars) * values.size - spaceBetweenBars + 50f
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()  // Lấp đầy chiều rộng màn hình
+            .height(350.dp)  // Chiều cao của biểu đồ
+            .wrapContentSize(Alignment.Center)  // Căn giữa canvas
+    ) {
+        Canvas(modifier = Modifier
+            .width(chartWidth.dp)  // Thiết lập chiều rộng biểu đồ theo chiều rộng tính toán
+            .height(400.dp) // Chiều cao của canvas
+            .padding(start = 28.dp) // Padding vào trục Y, không ảnh hưởng đến các đường ngang
+        ) {
+            val maxValue = (values.maxOrNull() ?: 0 ) * 1.2f
+            val scaleFactor = canvasHeight / maxValue
+
+            // Vẽ nền
+            drawRect(
+                color = Color.White,
+                size = size,
+                topLeft = Offset(0f, 0f)
+            )
+
+            // Vẽ các đường ngang song song với trục X
+            val stepSize = maxValue / 5f
+            for (i in 0..5) {
+                val yPos = canvasHeight - (i * stepSize * scaleFactor)
+
+                // Vẽ đường ngang từ trục Y tới hết chiều rộng
+                drawLine(
+                    color = Color.LightGray,
+                    start = Offset(0f, yPos),
+                    end = Offset(chartWidth, yPos),  // Đảm bảo đường ngang kéo dài đến hết biểu đồ
+                    strokeWidth = 1f
+                )
+
+                // Vẽ giá trị trục Y bên trái
+                drawContext.canvas.nativeCanvas.drawText(
+                    "${(i * stepSize).toInt()}",
+                    -10f,  // Vị trí căn trái cho giá trị
+                    yPos,
+                    android.graphics.Paint().apply {
+                        textSize = 36f
+                        color = android.graphics.Color.BLACK
+                        textAlign = android.graphics.Paint.Align.RIGHT
+                    }
+                )
+            }
+
+            // Vẽ các cột màu cam
+            values.forEachIndexed { index, value ->
+                val left = (barWidth + spaceBetweenBars) * index.toFloat() + 50f  // Thêm padding vào trục Y
+                val top = canvasHeight - value * scaleFactor
+                val right = left + barWidth
+                val bottom = canvasHeight // Đảm bảo đáy cột nằm ở trục X
+
+                drawRoundRect(
+                    color = colorPrimary, // Màu cam
+                    topLeft = Offset(left, top),
+                    size = androidx.compose.ui.geometry.Size(barWidth, bottom - top),
+                    cornerRadius = androidx.compose.ui.geometry.CornerRadius.Zero
+                )
+            }
+
+            // Vẽ đường trục X
+            drawLine(
+                color = Color.LightGray,
+                start = Offset(0f, canvasHeight),
+                end = Offset(chartWidth, canvasHeight),
+                strokeWidth = 4f
+            )
+
+            // Tạo các điểm để vẽ đường uốn lượn
+            val points = mutableListOf<Offset>()
+            index.forEachIndexed { index, value ->
+                val x = (barWidth + spaceBetweenBars) * index.toFloat() + barWidth / 2 + 50f  // Thêm padding vào trục Y
+                val y = canvasHeight - value * scaleFactor
+                points.add(Offset(x, y))
+            }
+
+            // Vẽ đường uốn lượn (parabol) giữa các điểm
+            drawPath(
+                path = androidx.compose.ui.graphics.Path().apply {
+                    moveTo(points.first().x, points.first().y)  // Bắt đầu từ điểm đầu tiên
+
+                    for (i in 1 until points.size) {
+                        val p0 = points[i - 1]
+                        val p1 = points[i]
+                        val middleX = (p0.x + p1.x) / 2f
+                        val middleY = (p0.y + p1.y) / 2f
+
+                        // Vẽ Bezier curve (parabol) giữa các điểm
+                        cubicTo(
+                            p0.x + (p1.x - p0.x) / 3f, p0.y,  // Điểm kiểm soát 1
+                            p1.x - (p1.x - p0.x) / 3f, p1.y,  // Điểm kiểm soát 2
+                            p1.x, p1.y                        // Điểm kết thúc
+                        )
+                    }
+                },
+                color = colorContrast, // Màu xanh dương cho đường nối
+                style = androidx.compose.ui.graphics.drawscope.Stroke(width = 2f)
+            )
+
+            // Vẽ các điểm tròn tại các điểm trên đường nối
+            points.forEach { point ->
+                drawCircle(
+                    color = colorContrast, // Màu xanh dương
+                    radius = 8f, // Kích thước của điểm tròn
+                    center = point
+                )
+            }
+
+            // Vẽ tên các tháng trên trục X
+            months.forEachIndexed { index, month ->
+                val xPos = (barWidth + spaceBetweenBars) * index.toFloat() + barWidth / 2 + 50f  // Thêm padding vào trục Y
+                drawContext.canvas.nativeCanvas.drawText(
+                    month,
+                    xPos,
+                    canvasHeight + 30f,
+                    android.graphics.Paint().apply {
+                        textSize = 30f
+                        color = android.graphics.Color.BLACK
+                        textAlign = android.graphics.Paint.Align.CENTER
+                    }
+                )
+            }
+        }
+    }
+}
 
 @Composable
 fun MonthPickerDialog(
