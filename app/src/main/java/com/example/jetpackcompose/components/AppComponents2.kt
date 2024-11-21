@@ -506,35 +506,52 @@ fun PopUpSetValueDialog(
     var entertainmentValue by remember { mutableStateOf(TextFieldValue()) }
     var investValue by remember { mutableStateOf(TextFieldValue()) }
     var incidentalValue by remember { mutableStateOf(TextFieldValue()) }
+    var saveValue by remember { mutableStateOf(TextFieldValue()) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
     // Hàm để tính giá trị còn lại và kiểm tra giới hạn 100%
     fun calculateRemainingValue() {
-        val entertainment = entertainmentValue.text.toDoubleOrNull() ?: 0.0
-        val invest = investValue.text.toDoubleOrNull() ?: 0.0
-        val incidental = incidentalValue.text.toDoubleOrNull() ?: 0.0
+        // Sử dụng Int thay vì Double
+        val entertainment = entertainmentValue.text.toIntOrNull()
+        val invest = investValue.text.toIntOrNull()
+        val incidental = incidentalValue.text.toIntOrNull()
+        val basic = basicValue.text.toIntOrNull()
+        val save = saveValue.text.toIntOrNull()
 
-        if (entertainment > 100 || invest > 100 || incidental > 100) {
+        // Kiểm tra nếu giá trị nhập vào vượt quá 100%
+        if ((entertainment ?: 0) > 100 || (invest ?: 0) > 100 || (incidental ?: 0) > 100 || (basic ?: 0) > 100 || (save ?: 0) > 100) {
             errorMessage = "Giá trị không được vượt quá 100%"
-            if (entertainment > 100) entertainmentValue = TextFieldValue("")
-            if (invest > 100) investValue = TextFieldValue("")
-            if (incidental > 100) incidentalValue = TextFieldValue("")
+            // Reset lại các trường nhập liệu nếu giá trị vượt quá 100
+            if ((entertainment ?: 0) > 100) entertainmentValue = TextFieldValue("")
+            if ((invest ?: 0) > 100) investValue = TextFieldValue("")
+            if ((incidental ?: 0) > 100) incidentalValue = TextFieldValue("")
+            if ((basic ?: 0) > 100) basicValue = TextFieldValue("")
+            if ((save ?: 0) > 100) saveValue = TextFieldValue("")
             return
         } else {
             errorMessage = null // Xóa thông báo lỗi nếu không có lỗi
         }
 
-        val totalEntered = entertainment + invest + incidental
+        // Tính tổng giá trị đã nhập
+        val enteredValues = listOf(entertainment, invest, incidental, basic, save)
+        val totalEntered = enteredValues.filterNotNull().sum()
+
+        // Kiểm tra nếu tổng vượt quá 100%
         if (totalEntered > 100) {
-            return // Đảm bảo rằng tổng không vượt quá 100%
+            errorMessage = "Tổng không được vượt quá 100%"
+            return // Đảm bảo tổng không vượt quá 100%
         }
 
+        // Đếm số trường nhập liệu trống
         val emptyFields = listOf(
             entertainmentValue.text.isBlank(),
             investValue.text.isBlank(),
-            incidentalValue.text.isBlank()
+            incidentalValue.text.isBlank(),
+            basicValue.text.isBlank(),
+            saveValue.text.isBlank()
         ).count { it }
 
+        // Nếu có 1 trường trống, tính toán giá trị còn lại
         if (emptyFields == 1) {
             val remainingValue = 100 - totalEntered
             when {
@@ -546,6 +563,12 @@ fun PopUpSetValueDialog(
                 }
                 incidentalValue.text.isBlank() -> {
                     incidentalValue = TextFieldValue(remainingValue.toString())
+                }
+                basicValue.text.isBlank() -> {
+                    basicValue = TextFieldValue(remainingValue.toString())
+                }
+                saveValue.text.isBlank() -> {
+                    saveValue = TextFieldValue(remainingValue.toString())
                 }
             }
         }
@@ -570,15 +593,16 @@ fun PopUpSetValueDialog(
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
                 }
-                    Text(
-                        text = "Phân bổ ngân sách",
-                        fontFamily = monsterrat,
-                        color = colorPrimary,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(bottom = 16.dp)
-                    )
+                Text(
+                    text = "Phân bổ ngân sách",
+                    fontFamily = monsterrat,
+                    color = colorPrimary,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+                // Ô thứ nhất
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
@@ -593,26 +617,28 @@ fun PopUpSetValueDialog(
                         fontWeight = FontWeight.Normal,
                         modifier = Modifier.weight(2f)
                     )
-                    Box(modifier = Modifier.weight(5.5f)) {
-                        NumberTextField(
+                    Box(modifier = Modifier.weight(2.5f)) {
+                        PercentTextField(
                             amountState = basicValue.text,
                             onValueChange = { newValue ->
                                 basicValue = TextFieldValue(newValue)
+                                // Loại bỏ việc gọi calculateRemainingValue()
                             },
                         )
                     }
 
                     Text(
-                        text = "đ",
+                        text = " %",
                         fontFamily = monsterrat,
                         color = TextColor,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Normal,
-                        modifier = Modifier.weight(0.5f),
-                        textAlign = TextAlign.Center
+                        modifier = Modifier.weight(3.5f),
+                        textAlign = TextAlign.Start
                     )
                 }
 
+                // Ô thứ hai
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
@@ -632,7 +658,7 @@ fun PopUpSetValueDialog(
                             amountState = entertainmentValue.text,
                             onValueChange = { newValue ->
                                 entertainmentValue = TextFieldValue(newValue)
-                                calculateRemainingValue()
+                                // Loại bỏ việc gọi calculateRemainingValue()
                             },
                         )
                     }
@@ -648,6 +674,7 @@ fun PopUpSetValueDialog(
                     )
                 }
 
+                // Ô thứ ba
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
@@ -663,11 +690,11 @@ fun PopUpSetValueDialog(
                         modifier = Modifier.weight(2f)
                     )
                     Box(modifier = Modifier.weight(2.5f)) {
-                        PercentTextField (
+                        PercentTextField(
                             amountState = investValue.text,
                             onValueChange = { newValue ->
                                 investValue = TextFieldValue(newValue)
-                                calculateRemainingValue()
+                                // Loại bỏ việc gọi calculateRemainingValue()
                             },
                         )
                     }
@@ -683,6 +710,7 @@ fun PopUpSetValueDialog(
                     )
                 }
 
+                // Ô thứ tư với KeyboardActions
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
@@ -702,8 +730,55 @@ fun PopUpSetValueDialog(
                             amountState = incidentalValue.text,
                             onValueChange = { newValue ->
                                 incidentalValue = TextFieldValue(newValue)
-                                calculateRemainingValue()
+                                // Không gọi calculateRemainingValue() ở đây
                             },
+                            keyboardOptions = KeyboardOptions(
+                                imeAction = ImeAction.Done
+                            ),
+                            keyboardActions = KeyboardActions(
+                                onDone = {
+                                    calculateRemainingValue()
+                                    // Ẩn bàn phím sau khi hoàn thành
+                                    // Bạn cần truyền `focusManager` vào nếu muốn sử dụng
+                                }
+                            )
+                        )
+                    }
+
+                    Text(
+                        text = " %",
+                        fontFamily = monsterrat,
+                        color = TextColor,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Normal,
+                        modifier = Modifier.weight(3.5f),
+                        textAlign = TextAlign.Start
+                    )
+                }
+
+                // Ô thứ năm (sẽ được tự động điền)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .padding(bottom = 16.dp)
+                        .fillMaxWidth()
+                ) {
+                    Text(
+                        text = "Khoản tiết kiệm",
+                        fontFamily = monsterrat,
+                        color = TextColor,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Normal,
+                        modifier = Modifier.weight(2f)
+                    )
+                    Box(modifier = Modifier.weight(2.5f)) {
+                        PercentTextField(
+                            amountState = saveValue.text,
+                            onValueChange = { newValue ->
+                                saveValue = TextFieldValue(newValue)
+                                // Loại bỏ việc gọi calculateRemainingValue()
+                            },
+                            enabled = false // Không cho phép người dùng nhập vào ô này
                         )
                     }
 
@@ -736,24 +811,34 @@ fun PopUpSetValueDialog(
     }
 }
 
+
 @Composable
-fun PercentTextField(amountState: String, onValueChange: (String) -> Unit) {
+fun PercentTextField(
+    amountState: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy(
+        keyboardType = KeyboardType.Number,
+        imeAction = ImeAction.Next // Mặc định là "Next", có thể tùy chỉnh
+    ),
+    keyboardActions: KeyboardActions = KeyboardActions.Default
+) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
-    val focusRequester = FocusRequester()
     var isFocused by remember { mutableStateOf(false) }
 
     BasicTextField(
         value = amountState,
         onValueChange = { newInput ->
             if (newInput == "0" && amountState.isEmpty()) {
-                // do nothing to block the first '0'
+                // Không làm gì để chặn '0' đầu tiên
             } else {
-                val filteredInput = newInput.filter { it.isDigit() || it == '.' }
+                val filteredInput = newInput.filter { it.isDigit() }
                 onValueChange(
-                    if (filteredInput.isNotEmpty() && filteredInput != "0" && filteredInput != ".") {
+                    if (filteredInput.isNotEmpty() && filteredInput != "0") {
                         filteredInput
-                    } else if (filteredInput == "0" && !amountState.isEmpty()) {
+                    } else if (filteredInput == "0" && amountState.isNotEmpty()) {
                         filteredInput
                     } else {
                         ""
@@ -762,8 +847,8 @@ fun PercentTextField(amountState: String, onValueChange: (String) -> Unit) {
             }
         },
         singleLine = true,
-        modifier = Modifier
-            .focusRequester(focusRequester)
+        enabled = enabled,
+        modifier = modifier
             .onFocusChanged { focusState ->
                 isFocused = focusState.isFocused
             }
@@ -783,16 +868,8 @@ fun PercentTextField(amountState: String, onValueChange: (String) -> Unit) {
             fontWeight = FontWeight.Bold,
             color = Color.Black
         ),
-        keyboardOptions = KeyboardOptions.Default.copy(
-            keyboardType = KeyboardType.Number,
-            imeAction = ImeAction.Done
-        ),
-        keyboardActions = KeyboardActions(
-            onDone = {
-                focusManager.clearFocus()  // Clear focus from the text field
-                keyboardController?.hide()  // Hide the keyboard
-            }
-        ),
+        keyboardOptions = keyboardOptions,
+        keyboardActions = keyboardActions,
         decorationBox = { innerTextField ->
             Box(
                 modifier = Modifier
@@ -800,8 +877,8 @@ fun PercentTextField(amountState: String, onValueChange: (String) -> Unit) {
                     .padding(vertical = 10.dp)
             ) {
                 if (amountState.isEmpty()) {
-                    androidx.compose.material3.Text(
-                        if (isFocused) "" else "0",
+                    Text(
+                        text = if (isFocused) "" else "0",
                         color = TextColor,
                         fontWeight = FontWeight.Bold,
                         fontFamily = monsterrat,
@@ -814,6 +891,7 @@ fun PercentTextField(amountState: String, onValueChange: (String) -> Unit) {
         }
     )
 }
+
 
 
 @Composable
