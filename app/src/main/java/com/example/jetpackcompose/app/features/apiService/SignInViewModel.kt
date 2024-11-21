@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.jetpackcompose.app.network.ApiService
+import com.example.jetpackcompose.app.network.BaseURL
 import com.example.jetpackcompose.app.network.LoginData
 import com.example.jetpackcompose.app.network.LoginResponse
 import com.google.gson.GsonBuilder
@@ -22,7 +23,7 @@ class SignInViewModel(private val context: Context) : ViewModel() {
         .create()
 
     private val api = Retrofit.Builder()
-        .baseUrl("https://464d-1-55-164-3.ngrok-free.app") // Thay thế bằng base URL API của bạn
+        .baseUrl(BaseURL.baseURl) // Thay thế bằng base URL API của bạn
         .addConverterFactory(GsonConverterFactory.create(gson))
         .build()
         .create(ApiService::class.java)

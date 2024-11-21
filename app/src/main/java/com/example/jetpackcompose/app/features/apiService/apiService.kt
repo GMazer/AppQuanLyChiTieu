@@ -4,6 +4,10 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.POST
 
+object BaseURL {
+    val baseURl = "https://59c7-113-185-53-14.ngrok-free.app"
+}
+
 data class RegistrationData(
     val phone_number: String,
     val email: String,

@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.jetpackcompose.app.network.ApiService
+import com.example.jetpackcompose.app.network.BaseURL
 import com.example.jetpackcompose.app.network.RegistrationData
 import com.example.jetpackcompose.app.network.RegistrationResponse
 import com.google.gson.GsonBuilder
@@ -19,7 +20,7 @@ class SignUpViewModel : ViewModel() {
         .create()
 
     private val api = Retrofit.Builder()
-        .baseUrl("https://464d-1-55-164-3.ngrok-free.app")
+        .baseUrl(BaseURL.baseURl)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
         .create(ApiService::class.java)
