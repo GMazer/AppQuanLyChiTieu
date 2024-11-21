@@ -25,6 +25,8 @@ import androidx.compose.ui.unit.sp
 import com.example.jetpackcompose.ui.theme.topBarColor
 import androidx.compose.material3.TopAppBar
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.nativeCanvas
@@ -32,7 +34,9 @@ import androidx.compose.ui.input.pointer.motionEventSpy
 import com.example.jetpackcompose.components.YearPickerDialog
 import com.example.jetpackcompose.components.YearPickerButton
 import com.example.jetpackcompose.components.BarChartWithLine
+import com.example.jetpackcompose.components.ReportMonth
 import com.example.jetpackcompose.ui.theme.colorPrimary
+import com.example.jetpackcompose.ui.theme.highGray
 import java.util.Calendar
 import androidx.compose.ui.graphics.Color as ComposeColor
 
@@ -104,21 +108,54 @@ fun ReportScreen() {
                 }
             }
         ) { paddingValues ->
-            Column(
+
+            // Sử dụng LazyColumn để có thể cuộn được
+            LazyColumn(
                 modifier = Modifier
                     .padding(paddingValues)
                     .fillMaxHeight()
+                    .background(color = Color.LightGray)
             ) {
-                // Spacer giữa TopAppBar và biểu đồ
-                Spacer(modifier = Modifier.height(16.dp))
+                item {
+                    // Phần header
+                    Column(
+                        modifier = Modifier
+                            .background(color = Color.White)
+                    ) {
+                        // Spacer giữa TopAppBar và biểu đồ
+                        Spacer(modifier = Modifier.height(16.dp))
 
-               YearPickerButton(onYearSelected = { year ->
-                   selectedYear = year
-               })
+                        YearPickerButton(onYearSelected = { year ->
+                            selectedYear = year
+                        })
 
-                Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(24.dp))
 
-                BarChartWithLine(values = values, index = indexs, months = months) // Hiển thị biểu đồ cột với các tháng
+                        BarChartWithLine(values = values, index = indexs, months = months) // Hiển thị biểu đồ cột với các tháng
+                    }
+                }
+
+                item {
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+
+                // Thêm các phần tử khác vào LazyColumn
+                item {
+                    ReportMonth("Total", 1000)
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+
+
+                for(month in months) {
+                    item {
+                        ReportMonth(month, 100)
+                        Divider(
+                            color = highGray,
+                            thickness = 1.dp
+                        )
+                    }
+                }
+
             }
         }
     }

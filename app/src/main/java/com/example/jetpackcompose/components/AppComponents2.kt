@@ -92,12 +92,12 @@ fun BarChartWithLine(values: List<Int>, index: List<Int>, months: List<String>) 
     Box(
         modifier = Modifier
             .fillMaxWidth()  // Lấp đầy chiều rộng màn hình
-            .height(350.dp)  // Chiều cao của biểu đồ
+            .height(240.dp)  // Chiều cao của biểu đồ
             .wrapContentSize(Alignment.Center)  // Căn giữa canvas
     ) {
         Canvas(modifier = Modifier
             .width(chartWidth.dp)  // Thiết lập chiều rộng biểu đồ theo chiều rộng tính toán
-            .height(400.dp) // Chiều cao của canvas
+            .height(240.dp) // Chiều cao của canvas
             .padding(start = 28.dp) // Padding vào trục Y, không ảnh hưởng đến các đường ngang
         ) {
             val maxValue = (values.maxOrNull() ?: 0 ) * 1.2f
@@ -928,7 +928,47 @@ fun OtherTab(value: String, onClick: () -> Unit, painter: Painter) {
     }
 }
 
-
+@Composable
+fun ReportMonth(tag: String, value: Int) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(64.dp)
+            .background(Color.White), // Thêm màu nền
+        contentAlignment = Alignment.CenterStart // Căn chỉnh nội dung
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically, // Căn giữa theo chiều dọc
+            horizontalArrangement = Arrangement.Start, // Căn trái theo chiều ngang
+            modifier = Modifier.fillMaxWidth() // Chiếm toàn bộ chiều rộng của Box
+        ) {
+            Spacer(modifier = Modifier.width(24.dp))
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = tag,
+                color = Color.Black,
+                fontWeight = FontWeight.Normal,
+                fontSize = 16.sp,
+                modifier = Modifier.width(48.dp)
+            )
+            Spacer(modifier = Modifier.width(240.dp))
+            Text(
+                text = "$value",
+                color = Color.Black,
+                fontWeight = FontWeight.Normal,
+                fontSize = 16.sp,
+                modifier = Modifier.width(48.dp)
+            )
+            Spacer(modifier = Modifier.width(12.dp))
+            Text(
+                text = "₫",
+                color = Color.Black,
+                fontWeight = FontWeight.Normal,
+                fontSize = 16.sp
+            )
+        }
+    }
+}
 
 
 
