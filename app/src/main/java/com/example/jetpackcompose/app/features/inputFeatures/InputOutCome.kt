@@ -204,7 +204,7 @@ fun OutComeContent() {
                         // Ghi log thông tin giao dịch
                         Log.i("ExpenseContent", "Transaction: $transaction")
                     },
-
+                    modifier = Modifier.width(248.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = buttonColor)
                 ) {
                     Text(

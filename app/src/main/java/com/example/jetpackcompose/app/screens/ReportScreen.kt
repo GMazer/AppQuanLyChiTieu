@@ -31,6 +31,7 @@ import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.input.pointer.motionEventSpy
 import com.example.jetpackcompose.components.YearPickerDialog
 import com.example.jetpackcompose.components.YearPickerButton
+import com.example.jetpackcompose.ui.theme.colorPrimary
 import java.util.Calendar
 import androidx.compose.ui.graphics.Color as ComposeColor
 
@@ -152,13 +153,31 @@ fun BarChartWithLine(values: List<Int>, index: List<Int>, months: List<String>) 
                 topLeft = Offset(0f, 0f)
             )
 
-            // Vẽ trục Y
-            drawLine(
-                color = Color.Black,
-                start = Offset(0f, 0f),  // Điểm bắt đầu của trục Y
-                end = Offset(0f, canvasHeight),
-                strokeWidth = 4f
-            )
+            // Vẽ các đường ngang song song với trục X
+            val stepSize = maxValue / 5f
+            for (i in 0..5) {
+                val yPos = canvasHeight - (i * stepSize * scaleFactor)
+
+                // Vẽ đường ngang từ trục Y tới hết chiều rộng
+                drawLine(
+                    color = Color.LightGray,
+                    start = Offset(0f, yPos),
+                    end = Offset(chartWidth, yPos),  // Đảm bảo đường ngang kéo dài đến hết biểu đồ
+                    strokeWidth = 1f
+                )
+
+                // Vẽ giá trị trục Y bên trái
+                drawContext.canvas.nativeCanvas.drawText(
+                    "${(i * stepSize).toInt()}",
+                    -10f,  // Vị trí căn trái cho giá trị
+                    yPos,
+                    android.graphics.Paint().apply {
+                        textSize = 36f
+                        color = android.graphics.Color.BLACK
+                        textAlign = android.graphics.Paint.Align.RIGHT
+                    }
+                )
+            }
 
             // Vẽ các cột màu cam
             values.forEachIndexed { index, value ->
@@ -168,7 +187,7 @@ fun BarChartWithLine(values: List<Int>, index: List<Int>, months: List<String>) 
                 val bottom = canvasHeight // Đảm bảo đáy cột nằm ở trục X
 
                 drawRoundRect(
-                    color = ComposeColor(0xFFFF5722), // Màu cam
+                    color = colorPrimary, // Màu cam
                     topLeft = Offset(left, top),
                     size = androidx.compose.ui.geometry.Size(barWidth, bottom - top),
                     cornerRadius = androidx.compose.ui.geometry.CornerRadius.Zero
@@ -213,32 +232,6 @@ fun BarChartWithLine(values: List<Int>, index: List<Int>, months: List<String>) 
                 color = ComposeColor(0xFF2196F3), // Màu xanh dương cho đường nối
                 style = androidx.compose.ui.graphics.drawscope.Stroke(width = 2f)
             )
-
-            // Vẽ các đường ngang song song với trục X
-            val stepSize = maxValue / 5f
-            for (i in 0..5) {
-                val yPos = canvasHeight - (i * stepSize * scaleFactor)
-
-                // Vẽ đường ngang từ trục Y tới hết chiều rộng
-                drawLine(
-                    color = Color.LightGray,
-                    start = Offset(0f, yPos),
-                    end = Offset(chartWidth, yPos),  // Đảm bảo đường ngang kéo dài đến hết biểu đồ
-                    strokeWidth = 1f
-                )
-
-                // Vẽ giá trị trục Y bên trái
-                drawContext.canvas.nativeCanvas.drawText(
-                    "${(i * stepSize).toInt()}",
-                    -10f,  // Vị trí căn trái cho giá trị
-                    yPos,
-                    android.graphics.Paint().apply {
-                        textSize = 30f
-                        color = android.graphics.Color.BLACK
-                        textAlign = android.graphics.Paint.Align.RIGHT
-                    }
-                )
-            }
 
             // Vẽ tên các tháng trên trục X
             months.forEachIndexed { index, month ->
