@@ -569,7 +569,6 @@ fun InputTab() {
                 tabIndex = tabIndex,
                 onTabSelected = { tabIndex = it },
                 titles = tabTitles,
-                listtab = tabs,
                 pagerStatement = pagerState,
                 coroutineScoper = coroutineScope,
                 modifier = Modifier.padding(horizontal = 16.dp)
