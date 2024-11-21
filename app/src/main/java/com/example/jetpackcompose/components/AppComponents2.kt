@@ -617,7 +617,7 @@ fun PopUpSetValueDialog(
                         fontWeight = FontWeight.Normal,
                         modifier = Modifier.weight(2f)
                     )
-                    Box(modifier = Modifier.weight(2.5f)) {
+                    Box(modifier = Modifier.weight(5.5f)) {
                         PercentTextField(
                             amountState = basicValue.text,
                             onValueChange = { newValue ->
@@ -633,7 +633,7 @@ fun PopUpSetValueDialog(
                         color = TextColor,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Normal,
-                        modifier = Modifier.weight(3.5f),
+                        modifier = Modifier.weight(0.5f),
                         textAlign = TextAlign.Start
                     )
                 }
@@ -653,7 +653,7 @@ fun PopUpSetValueDialog(
                         fontWeight = FontWeight.Normal,
                         modifier = Modifier.weight(2f)
                     )
-                    Box(modifier = Modifier.weight(2.5f)) {
+                    Box(modifier = Modifier.weight(5.5f)) {
                         PercentTextField(
                             amountState = entertainmentValue.text,
                             onValueChange = { newValue ->
@@ -669,7 +669,7 @@ fun PopUpSetValueDialog(
                         color = TextColor,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Normal,
-                        modifier = Modifier.weight(3.5f),
+                        modifier = Modifier.weight(0.5f),
                         textAlign = TextAlign.Start
                     )
                 }
@@ -689,7 +689,7 @@ fun PopUpSetValueDialog(
                         fontWeight = FontWeight.Normal,
                         modifier = Modifier.weight(2f)
                     )
-                    Box(modifier = Modifier.weight(2.5f)) {
+                    Box(modifier = Modifier.weight(5.5f)) {
                         PercentTextField(
                             amountState = investValue.text,
                             onValueChange = { newValue ->
@@ -705,7 +705,7 @@ fun PopUpSetValueDialog(
                         color = TextColor,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Normal,
-                        modifier = Modifier.weight(3.5f),
+                        modifier = Modifier.weight(0.5f),
                         textAlign = TextAlign.Start
                     )
                 }
@@ -725,7 +725,7 @@ fun PopUpSetValueDialog(
                         fontWeight = FontWeight.Normal,
                         modifier = Modifier.weight(2f)
                     )
-                    Box(modifier = Modifier.weight(2.5f)) {
+                    Box(modifier = Modifier.weight(5.5f)) {
                         PercentTextField(
                             amountState = incidentalValue.text,
                             onValueChange = { newValue ->
@@ -751,7 +751,7 @@ fun PopUpSetValueDialog(
                         color = TextColor,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Normal,
-                        modifier = Modifier.weight(3.5f),
+                        modifier = Modifier.weight(0.5f),
                         textAlign = TextAlign.Start
                     )
                 }
@@ -771,7 +771,7 @@ fun PopUpSetValueDialog(
                         fontWeight = FontWeight.Normal,
                         modifier = Modifier.weight(2f)
                     )
-                    Box(modifier = Modifier.weight(2.5f)) {
+                    Box(modifier = Modifier.weight(5.5f)) {
                         PercentTextField(
                             amountState = saveValue.text,
                             onValueChange = { newValue ->
@@ -788,7 +788,7 @@ fun PopUpSetValueDialog(
                         color = TextColor,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Normal,
-                        modifier = Modifier.weight(3.5f),
+                        modifier = Modifier.weight(0.5f),
                         textAlign = TextAlign.Start
                     )
                 }
@@ -853,7 +853,7 @@ fun PercentTextField(
                 isFocused = focusState.isFocused
             }
             .height(45.dp)
-            .width(250.dp)
+            .fillMaxWidth()
             .background(Color(0xFFe1e1e1), shape = RoundedCornerShape(8.dp))
             .border(
                 1.dp,
