@@ -9,7 +9,7 @@ import com.example.jetpackcompose.app.screens.login_signup.SignUpScreen
 import com.example.jetpackcompose.app.screens.login_signup.SignInScreen
 import com.example.jetpackcompose.app.features.MainScreen
 import com.example.jetpackcompose.app.screens.OtherScreen
-import com.example.jetpackcompose.app.screens.other_screens.anualScreen.AnualScreen
+import com.example.jetpackcompose.app.screens.anual_sceens.AnualScreen
 
 @Composable
 fun AppQuanLyChiTieu() {

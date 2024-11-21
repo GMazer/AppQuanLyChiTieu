@@ -1,4 +1,4 @@
-package com.example.jetpackcompose.app.screens.other_screens.anualScreen
+package com.example.jetpackcompose.app.screens.anual_sceens
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.painterResource
