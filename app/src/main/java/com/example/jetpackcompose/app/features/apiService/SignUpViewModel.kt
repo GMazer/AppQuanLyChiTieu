@@ -19,7 +19,7 @@ class SignUpViewModel : ViewModel() {
         .create()
 
     private val api = Retrofit.Builder()
-        .baseUrl("https://59c7-113-185-53-14.ngrok-free.app")
+        .baseUrl("https://464d-1-55-164-3.ngrok-free.app")
         .addConverterFactory(GsonConverterFactory.create())
         .build()
         .create(ApiService::class.java)

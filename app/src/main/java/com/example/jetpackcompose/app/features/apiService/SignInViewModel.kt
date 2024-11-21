@@ -22,7 +22,7 @@ class SignInViewModel(private val context: Context) : ViewModel() {
         .create()
 
     private val api = Retrofit.Builder()
-        .baseUrl("https://59c7-113-185-53-14.ngrok-free.app") // Thay thế bằng base URL API của bạn
+        .baseUrl("https://464d-1-55-164-3.ngrok-free.app") // Thay thế bằng base URL API của bạn
         .addConverterFactory(GsonConverterFactory.create(gson))
         .build()
         .create(ApiService::class.java)

@@ -203,7 +203,6 @@ fun CustomTabRow(
     tabIndex: Int,
     onTabSelected: (Int) -> Unit,
     titles: List<String>,
-    listtab: List<TabItem>,
     pagerStatement: PagerState,
     coroutineScoper: CoroutineScope,
     modifier: Modifier = Modifier

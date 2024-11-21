@@ -9,5 +9,6 @@
     <string name= "number">Vui lòng nhập số điện thoại</string>
     <string name= "enter_password">Mật khẩu</string>
     <string name= "re_enter_password">Nhập lại mật khẩu</string>
+    <string name= "base_url">https://464d-1-55-164-3.ngrok-free.app</string>
 
 </resources>
