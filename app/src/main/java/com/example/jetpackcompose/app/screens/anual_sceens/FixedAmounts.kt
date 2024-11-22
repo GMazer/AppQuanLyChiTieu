@@ -23,11 +23,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.jetpackcompose.app.features.inputFeatures.CustomTabRow
 import com.example.jetpackcompose.app.features.inputFeatures.IncomeContent
 import com.example.jetpackcompose.app.features.inputFeatures.OutComeContent
 import com.example.jetpackcompose.app.features.inputFeatures.TabItem
 import com.example.jetpackcompose.app.features.inputFeatures.monsterrat
+import com.example.jetpackcompose.components.FixedExpense
+import com.example.jetpackcompose.components.FixedIncome
+import com.example.jetpackcompose.components.FixedTabRow
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -50,10 +52,10 @@ fun InputFixedTab() {
 
     val tabs = listOf(
         TabItem("Expense", icon = Icons.Default.ArrowBack) {
-            OutComeContent()
+            FixedExpense()
         },
         TabItem("Income", icon = Icons.Default.ArrowForward) {
-            IncomeContent()
+            FixedIncome()
         }
     )
 
@@ -74,7 +76,7 @@ fun InputFixedTab() {
                 .background(Color(0xFFF1F1F1))
                 .fillMaxSize()
         ) {
-            CustomTabRow(
+            FixedTabRow(
                 tabIndex = tabIndex,
                 onTabSelected = { tabIndex = it }, // Sửa cách gán giá trị tabIndex
                 titles = tabTitles,
