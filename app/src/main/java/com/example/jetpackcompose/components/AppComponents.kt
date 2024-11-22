@@ -563,7 +563,8 @@ fun InputTab() {
 
         Column(modifier = Modifier
             .background(Color(0xFFF1F1F1))
-            .fillMaxSize()) {
+            .fillMaxSize())
+        {
             // Đặt CustomTabRow bên ngoài Scaffold
             CustomTabRow(
                 tabIndex = tabIndex,

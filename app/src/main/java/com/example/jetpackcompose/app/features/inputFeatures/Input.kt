@@ -39,6 +39,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -56,6 +57,7 @@ import com.example.jetpackcompose.components.InputTab
 import com.example.jetpackcompose.components.PopUpSetValueDialog
 import com.example.jetpackcompose.ui.theme.colorPrimary
 import com.example.jetpackcompose.ui.theme.componentShapes
+import com.example.jetpackcompose.ui.theme.topBarColor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -219,7 +221,7 @@ fun CustomTabRow(
             modifier = modifier
                 .height(50.dp)
                 .fillMaxWidth()
-                .background(color = Color.Transparent),
+                .background(topBarColor),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center // Căn giữa TabRow
         ) {
@@ -234,7 +236,7 @@ fun CustomTabRow(
             TabRow(
                 selectedTabIndex = tabIndex,
                 modifier = Modifier
-                    .background(Color.Transparent)
+                    .background(topBarColor)
                     .width(200.dp),
                 indicator = {
                 },  // Không có chỉ báo
@@ -263,10 +265,9 @@ fun CustomTabRow(
                         modifier = Modifier
                             .width(200.dp)
                             .height(36.dp)
-                            .background(
-                                color = inactiveColor,
-                                shape = shape
-                            ),
+                            .background(topBarColor)
+                            .background(inactiveColor, shape = shape)
+                            .clip(shape),
                         contentAlignment = Alignment.Center
                     ) {
                         Tab(
@@ -275,6 +276,7 @@ fun CustomTabRow(
                                 .height(32.dp)
                                 .padding(horizontal = 2.dp)
                                 .background(tabColor, shape = componentShapes.medium)
+                                .clip(componentShapes.medium)
                             else Modifier.width(100.dp),
                             selected = isSelected,
                             onClick = {

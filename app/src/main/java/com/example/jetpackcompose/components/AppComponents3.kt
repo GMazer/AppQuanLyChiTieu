@@ -28,8 +28,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.jetpackcompose.app.screens.DailyTransaction
 import com.example.jetpackcompose.ui.theme.colorPrimary
 import com.example.jetpackcompose.ui.theme.componentShapes
+import com.example.jetpackcompose.ui.theme.highGray
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -189,4 +191,98 @@ fun FixedIncome() {
             color = colorPrimary
         )
     }
+}
+
+
+@Composable
+fun DayIndex(DailyTransactions: List<DailyTransaction>) {
+    for (transaction in DailyTransactions) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            Row (
+                verticalAlignment = Alignment.CenterVertically, // Căn giữa theo chiều dọc
+                horizontalArrangement = Arrangement.Start, // Căn trái theo chiều ngang
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(color = Color.LightGray)
+                    .height(40.dp)
+            ) {
+                Spacer(modifier = Modifier.width(12.dp))
+                Text(
+                    text = "${transaction.date}",
+                    fontFamily = monsterrat,
+                    color = Color(0xFF444444),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
+            }
+
+            Divider(
+                color = highGray,
+                thickness = 1.dp
+            )
+
+            Row (
+                verticalAlignment = Alignment.CenterVertically, // Căn giữa theo chiều dọc
+                horizontalArrangement = Arrangement.Start, // Căn trái theo chiều ngang
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(color = Color.White)
+                    .height(64.dp)
+            ) {
+                Spacer(modifier = Modifier.width(24.dp))
+                Text(
+                    text = "Tiền thu:",
+                    fontFamily = monsterrat,
+                    color = Color(0xFF444444),
+                    modifier = Modifier
+                        .width(64.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "${transaction.amountIncome}",
+                    fontFamily = monsterrat,
+                    color = Color(0xFF444444)
+                )
+            }
+
+            Divider(
+                color = highGray,
+                thickness = 1.dp
+            )
+
+            Row (
+                verticalAlignment = Alignment.CenterVertically, // Căn giữa theo chiều dọc
+                horizontalArrangement = Arrangement.Start, // Căn trái theo chiều ngang
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(color = Color.White)
+                    .height(64.dp)
+            ) {
+                Spacer(modifier = Modifier.width(24.dp))
+                Text(
+                    text = "Tiền chi:",
+                    fontFamily = monsterrat,
+                    color = Color(0xFF444444),
+                    modifier = Modifier
+                        .width(64.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "${transaction.amountExpense}",
+                    fontFamily = monsterrat,
+                    color = Color(0xFF444444)
+                )
+            }
+
+            Divider(
+                color = highGray,
+                thickness = 1.dp
+            )
+
+        }
+    }
+
 }

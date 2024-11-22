@@ -63,7 +63,7 @@ fun OtherScreen(navController: NavHostController) {
                             Box(
                                 modifier = Modifier
                                     .fillMaxSize()
-                                    .padding(16.dp),
+                                    .padding(start = 16.dp, end = 32.dp),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Text(

@@ -28,6 +28,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.SmallTopAppBar
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.input.pointer.motionEventSpy
@@ -39,7 +40,6 @@ import com.example.jetpackcompose.ui.theme.colorPrimary
 import com.example.jetpackcompose.ui.theme.highGray
 import java.util.Calendar
 import androidx.compose.ui.graphics.Color as ComposeColor
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -80,7 +80,7 @@ fun ReportScreen() {
                             Box(
                                 modifier = Modifier
                                     .fillMaxSize()
-                                    .padding(16.dp),
+                                    .padding(start = 16.dp, end = 32.dp),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Text(
@@ -95,6 +95,8 @@ fun ReportScreen() {
                                 )
                             }
                         },
+                        navigationIcon = {},
+                        actions = {},
                         colors = TopAppBarDefaults.smallTopAppBarColors(
                             containerColor = topBarColor
                         ),
@@ -141,7 +143,7 @@ fun ReportScreen() {
 
                 // Thêm các phần tử khác vào LazyColumn
                 item {
-                    ReportMonth("Total", 1000)
+                    ReportMonth("Total", 10000000)
                     Spacer(modifier = Modifier.height(16.dp))
                 }
 

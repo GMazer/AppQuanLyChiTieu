@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.layout.LazyLayout
 import androidx.compose.material.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material.Scaffold
@@ -31,10 +33,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.jetpackcompose.components.CustomCalendar
+import com.example.jetpackcompose.components.DayIndex
 import com.example.jetpackcompose.components.MonthPickerButton
 import com.example.jetpackcompose.ui.theme.topBarColor
 import java.util.Calendar
 
+data class DailyTransaction(
+    val date: String,
+    val amountIncome: Long,
+    val amountExpense: Long
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -47,6 +55,16 @@ fun CalendarScreen() {
         val year = calendar.get(Calendar.YEAR)
         "$month/$year"
     }
+
+    val firstTransaction = DailyTransaction(
+        date = "12/2023",
+        amountIncome = 100000,
+        amountExpense = 50000
+    )
+
+    val listTransaction = listOf<DailyTransaction>(
+        firstTransaction
+    )
 
     var selectedMonthYear by remember { mutableStateOf(currentMonthYear) }
 
@@ -76,7 +94,7 @@ fun CalendarScreen() {
                             Box(
                                 modifier = Modifier
                                     .fillMaxSize()
-                                    .padding(16.dp),
+                                    .padding(start = 16.dp, end = 32.dp),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Text(
@@ -121,6 +139,12 @@ fun CalendarScreen() {
 
                 Spacer(modifier = Modifier.height(16.dp))
                 CustomCalendar(selectedMonthYear = selectedMonthYear)
+
+                LazyColumn {
+                    item {
+                        DayIndex(listTransaction)
+                    }
+                }
 
             }
         }

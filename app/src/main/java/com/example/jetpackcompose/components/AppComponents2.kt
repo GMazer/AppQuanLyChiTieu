@@ -83,8 +83,8 @@ import androidx.compose.ui.graphics.Color as ComposeColor
 @Composable
 fun BarChartWithLine(values: List<Int>, index: List<Int>, months: List<String>) {
     val canvasHeight = 500f
-    val barWidth = 40f
-    val spaceBetweenBars = 40f  // Khoảng cách giữa các cột
+    val barWidth = 35f
+    val spaceBetweenBars = 35f  // Khoảng cách giữa các cột
 
     // Tính chiều rộng của canvas dựa trên số lượng cột và khoảng cách giữa các cột
     val chartWidth = (barWidth + spaceBetweenBars) * values.size - spaceBetweenBars + 50f
@@ -98,7 +98,7 @@ fun BarChartWithLine(values: List<Int>, index: List<Int>, months: List<String>) 
         Canvas(modifier = Modifier
             .width(chartWidth.dp)  // Thiết lập chiều rộng biểu đồ theo chiều rộng tính toán
             .height(240.dp) // Chiều cao của canvas
-            .padding(start = 28.dp) // Padding vào trục Y, không ảnh hưởng đến các đường ngang
+            .padding(start = 48.dp) // Padding vào trục Y, không ảnh hưởng đến các đường ngang
         ) {
             val maxValue = (values.maxOrNull() ?: 0 ) * 1.2f
             val scaleFactor = canvasHeight / maxValue
@@ -130,7 +130,7 @@ fun BarChartWithLine(values: List<Int>, index: List<Int>, months: List<String>) 
                     yPos,
                     android.graphics.Paint().apply {
                         textSize = 36f
-                        color = android.graphics.Color.BLACK
+                        color = android.graphics.Color.LTGRAY
                         textAlign = android.graphics.Paint.Align.RIGHT
                     }
                 )
@@ -138,7 +138,7 @@ fun BarChartWithLine(values: List<Int>, index: List<Int>, months: List<String>) 
 
             // Vẽ các cột màu cam
             values.forEachIndexed { index, value ->
-                val left = (barWidth + spaceBetweenBars) * index.toFloat() + 50f  // Thêm padding vào trục Y
+                val left = (barWidth + spaceBetweenBars) * index.toFloat() + 48f  // Thêm padding vào trục Y
                 val top = canvasHeight - value * scaleFactor
                 val right = left + barWidth
                 val bottom = canvasHeight // Đảm bảo đáy cột nằm ở trục X
@@ -162,7 +162,7 @@ fun BarChartWithLine(values: List<Int>, index: List<Int>, months: List<String>) 
             // Tạo các điểm để vẽ đường uốn lượn
             val points = mutableListOf<Offset>()
             index.forEachIndexed { index, value ->
-                val x = (barWidth + spaceBetweenBars) * index.toFloat() + barWidth / 2 + 50f  // Thêm padding vào trục Y
+                val x = (barWidth + spaceBetweenBars) * index.toFloat() + barWidth / 2 + 48f  // Thêm padding vào trục Y
                 val y = canvasHeight - value * scaleFactor
                 points.add(Offset(x, y))
             }
@@ -201,14 +201,14 @@ fun BarChartWithLine(values: List<Int>, index: List<Int>, months: List<String>) 
 
             // Vẽ tên các tháng trên trục X
             months.forEachIndexed { index, month ->
-                val xPos = (barWidth + spaceBetweenBars) * index.toFloat() + barWidth / 2 + 50f  // Thêm padding vào trục Y
+                val xPos = (barWidth + spaceBetweenBars) * index.toFloat() + barWidth / 2 + 48f  // Thêm padding vào trục Y
                 drawContext.canvas.nativeCanvas.drawText(
                     month,
                     xPos,
                     canvasHeight + 30f,
                     android.graphics.Paint().apply {
                         textSize = 30f
-                        color = android.graphics.Color.BLACK
+                        color = android.graphics.Color.LTGRAY
                         textAlign = android.graphics.Paint.Align.CENTER
                     }
                 )
@@ -920,7 +920,8 @@ fun OtherTab(value: String, onClick: () -> Unit, painter: Painter) {
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = value,
-                color = Color.Black,
+                fontFamily = monsterrat,
+                color = Color(0xFF444444),
                 fontWeight = FontWeight.Normal,
                 fontSize = 16.sp
             )
@@ -946,23 +947,27 @@ fun ReportMonth(tag: String, value: Int) {
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = tag,
-                color = Color.Black,
+                fontFamily = monsterrat,
+                color = Color(0xFF444444),
                 fontWeight = FontWeight.Normal,
                 fontSize = 16.sp,
                 modifier = Modifier.width(48.dp)
             )
-            Spacer(modifier = Modifier.width(240.dp))
+            Spacer(modifier = Modifier.width(170.dp))
             Text(
                 text = "$value",
-                color = Color.Black,
+                fontFamily = monsterrat,
+                color = Color(0xFF444444),
                 fontWeight = FontWeight.Normal,
                 fontSize = 16.sp,
-                modifier = Modifier.width(48.dp)
+                modifier = Modifier.width(100.dp),
+                textAlign = TextAlign.End,
             )
-            Spacer(modifier = Modifier.width(12.dp))
+            Spacer(modifier = Modifier.width(4.dp))
             Text(
                 text = "₫",
-                color = Color.Black,
+                fontFamily = monsterrat,
+                color = Color(0xFF444444),
                 fontWeight = FontWeight.Normal,
                 fontSize = 16.sp
             )

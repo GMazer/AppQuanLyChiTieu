@@ -5,7 +5,7 @@ import retrofit2.http.Body
 import retrofit2.http.POST
 
 object BaseURL {
-    val baseURl = "https://59c7-113-185-53-14.ngrok-free.app"
+    val baseURl = "https://d398-1-54-7-77.ngrok-free.app"
 }
 
 data class RegistrationData(
