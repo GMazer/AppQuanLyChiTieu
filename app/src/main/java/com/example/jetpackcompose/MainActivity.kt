@@ -7,7 +7,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.jetpackcompose.app.AppQuanLyChiTieu
-import com.example.jetpackcompose.components.AppNavigation
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

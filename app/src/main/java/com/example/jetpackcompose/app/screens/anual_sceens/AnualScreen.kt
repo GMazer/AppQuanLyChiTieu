@@ -55,7 +55,7 @@ fun AnualScreen(navController: NavHostController) {
 
             // Nút chuyển hướng (dấu +)
             IconButton(onClick = {
-                navController.navigate("inputFixedTab") // Điều hướng tới màn hình InputFixedTab
+                navController.navigate("inputfixedtab") // Điều hướng tới màn hình InputFixedTab
             }) {
                 Icon(
                     imageVector = Icons.Default.Add, // Biểu tượng dấu +
