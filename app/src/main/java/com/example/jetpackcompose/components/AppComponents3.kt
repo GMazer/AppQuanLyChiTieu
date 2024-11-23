@@ -49,6 +49,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -500,6 +501,22 @@ fun DropdownRow(
         )
     }
 }
+
+@Composable
+fun SubNavHost(navController: NavHostController) {
+    NavHost(
+        navController = navController,
+        startDestination = "anualScreen"
+    ) {
+        composable("anualScreen") {
+            AnualScreen(navController)
+        }
+        composable("inputFixedTab") {
+            InputFixedTab(navController)
+        }
+    }
+}
+
 
 @Preview
 @Composable
