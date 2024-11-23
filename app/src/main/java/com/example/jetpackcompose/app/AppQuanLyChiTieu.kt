@@ -40,8 +40,6 @@ fun AppQuanLyChiTieu() {
             composable("other") { OtherScreen(navController)}
         }
     }
-
-
 }
 
 

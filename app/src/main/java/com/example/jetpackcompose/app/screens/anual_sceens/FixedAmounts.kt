@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import com.example.jetpackcompose.app.features.inputFeatures.IncomeContent
 import com.example.jetpackcompose.app.features.inputFeatures.OutComeContent
 import com.example.jetpackcompose.app.features.inputFeatures.TabItem
@@ -34,7 +35,7 @@ import com.example.jetpackcompose.components.FixedTabRow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun InputFixedTab() {
+fun InputFixedTab(navController: NavHostController) {
     val customTypography = Typography(
         bodyLarge = TextStyle(fontFamily = monsterrat),
         bodyMedium = TextStyle(fontFamily = monsterrat),
@@ -94,5 +95,7 @@ fun InputFixedTab() {
 @Preview
 @Composable
 fun InputFixedTabPreview() {
-    InputFixedTab()
+    InputFixedTab(navController = NavHostController(
+        context = TODO()
+    ))
 }
