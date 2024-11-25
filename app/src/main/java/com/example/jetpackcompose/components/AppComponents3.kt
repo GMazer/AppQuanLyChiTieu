@@ -25,6 +25,8 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.AlertDialog
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.LocalTextStyle
@@ -81,7 +83,8 @@ fun FixedTabRow(
     coroutineScoper: CoroutineScope,
     pagerStatement: PagerState,
     navController: NavHostController, // Add NavHostController parameter
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onSaveData: (Int) -> Unit // Callback để xử lý lưu dữ liệu dựa trên tabIndex
 ) {
     val inactiveColor = Color(0xFFe1e1e1)
     val inactiveTextColor = Color(0xFFF35E17)
@@ -96,7 +99,7 @@ fun FixedTabRow(
         ) {
             // Nút "Trở lại" ở ngoài cùng bên trái
             ClickableText("Trở lại") {
-                navController.navigate("anual") // Navigate to AnualScreen
+                navController.navigate("anualScreen") // Navigate to AnualScreen
             }
 
             Spacer(modifier = Modifier.weight(1f))
@@ -163,6 +166,12 @@ fun FixedTabRow(
             }
 
             Spacer(modifier = Modifier.weight(1f))
+
+            // Nút "Lưu"
+            ClickableText("Lưu") {
+                onSaveData(tabIndex) // Navigate to AnualScreen
+            }
+
         }
     }
     Divider(
@@ -170,6 +179,7 @@ fun FixedTabRow(
         thickness = 1.dp
     )
 }
+
 
 @Composable
 fun ClickableText(

@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.example.jetpackcompose.R
+import com.example.jetpackcompose.app.features.inputFeatures.TransactionType
 import com.example.jetpackcompose.components.DatePickerRow
 import com.example.jetpackcompose.components.DropdownRow
 import com.example.jetpackcompose.components.EndDateRow
@@ -32,7 +33,7 @@ import java.util.Locale
 
 @SuppressLint("NewApi")
 @Composable
-fun FixedIncome() {
+fun FixedIncome(onDataChanged: (PeriodicTransaction) -> Unit) {
 
     val vietnamLocale = Locale("vi", "VN") // Đặt Locale Việt Nam
     val currentDate = remember {
@@ -45,6 +46,18 @@ fun FixedIncome() {
     var selectedRepeat by remember { mutableStateOf("") }
     var endDate by remember { mutableStateOf("Không") }
     var numberState by remember { mutableStateOf(TextFieldValue("")) }
+
+    fun createTransaction(): PeriodicTransaction {
+        return PeriodicTransaction(
+            title = titleState.text,
+            startDate = selectedDate,
+            endDate = endDate,
+            note = selectedRepeat,
+            amount = numberState.text.toLongOrNull() ?: 0L,
+            category = selectedCategory,
+            type = TransactionType.INCOME
+        )
+    }
 
     Column(
         modifier = Modifier
@@ -66,6 +79,7 @@ fun FixedIncome() {
                     textState = titleState,
                     onValueChange = { newValue ->
                         titleState = newValue
+                        onDataChanged(createTransaction())
                     }
                 )
                 Divider(
@@ -76,6 +90,7 @@ fun FixedIncome() {
                     textState = numberState,
                     onValueChange = { newValue ->
                         numberState = newValue // Cập nhật giá trị khi người dùng nhập
+                        onDataChanged(createTransaction())
                     }
                 )
                 Divider(
@@ -93,6 +108,7 @@ fun FixedIncome() {
                 ) { category ->
                     // Xử lý khi danh mục được chọn thay đổi
                     selectedCategory = category
+                    onDataChanged(createTransaction())
                 }
             }
         }
@@ -115,9 +131,10 @@ fun FixedIncome() {
                         Pair(null, "Hàng tuần"),
                         Pair(null, "Hàng tháng"),
                     )
-                ) { selRepeat ->
+                ) { repeat ->
                     // Xử lý khi danh mục được chọn thay đổi
-                    selectedRepeat = selRepeat
+                    selectedRepeat = repeat
+                    onDataChanged(createTransaction())
                 }
                 Divider(
                     color = Color(0xFFd4d4d4), // Màu của đường chia tách
@@ -129,7 +146,7 @@ fun FixedIncome() {
                 ) { date ->
                     // Cập nhật ngày được chọn
                     selectedDate = date.toString()
-
+                    onDataChanged(createTransaction())
                 }
                 Divider(
                     color = Color(0xFFd4d4d4), // Màu của đường chia tách
@@ -140,8 +157,8 @@ fun FixedIncome() {
                 ) { date ->
                     // Xử lý khi danh mục được chọn thay đổi
                     endDate = date
+                    onDataChanged(createTransaction())
                 }
-
             }
         }
     }

@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    kotlin("plugin.serialization") version "1.8.21"
 }
 
 android {
@@ -94,5 +95,11 @@ dependencies {
 
     // Shape
     implementation ("androidx.compose.ui:ui:1.5.0")
+
+    // Serialization
+    implementation ("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+
+    //Gson
+    implementation (libs.gson)
 
 }

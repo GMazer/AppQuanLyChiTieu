@@ -1,5 +1,6 @@
 package com.example.jetpackcompose.app.screens.anual_sceens
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -29,9 +30,10 @@ import com.example.jetpackcompose.app.features.inputFeatures.monsterrat
 import com.example.jetpackcompose.components.FixedTabRow
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InputFixedTab(navController: NavHostController) {
+    var expenseData by rememberSaveable { mutableStateOf<PeriodicTransaction?>(null) }
+    var incomeData by rememberSaveable { mutableStateOf<PeriodicTransaction?>(null) }
     val customTypography = Typography(
         bodyLarge = TextStyle(fontFamily = monsterrat),
         bodyMedium = TextStyle(fontFamily = monsterrat),
@@ -49,10 +51,14 @@ fun InputFixedTab(navController: NavHostController) {
 
     val tabs = listOf(
         TabItem("Expense", icon = Icons.Default.ArrowBack) {
-            FixedExpense()
+            FixedExpense { data ->
+                expenseData = data
+            }
         },
         TabItem("Income", icon = Icons.Default.ArrowForward) {
-            FixedIncome()
+            FixedIncome { data ->
+                incomeData = data
+            }
         }
     )
 
@@ -75,17 +81,40 @@ fun InputFixedTab(navController: NavHostController) {
         ) {
             FixedTabRow(
                 tabIndex = tabIndex,
-                onTabSelected = { tabIndex = it }, // Sửa cách gán giá trị tabIndex
+                onTabSelected = { tabIndex = it },
                 titles = tabTitles,
                 pagerStatement = pagerState,
                 navController = navController,
                 coroutineScoper = coroutineScope,
-                modifier = Modifier.padding(horizontal = 16.dp)
+                modifier = Modifier.padding(horizontal = 16.dp),
+                onSaveData = { tabIndex ->
+                    // Xử lý lưu dữ liệu dựa trên tabIndex
+                    when (tabIndex) {
+                        0 -> {
+                            // Xử lý lưu dữ liệu cho Tiền chi
+                            expenseData?.let { transaction ->
+                                val json = convertToJson(transaction)
+                                Log.d("InputFixedTab", "JSON gửi đi (Tiền chi): $json")
+                                sendToApi(json)
+                            }
+                        }
+                        1 -> {
+                            // Xử lý lưu dữ liệu cho Tiền thu
+                            incomeData?.let { transaction ->
+                                val json = convertToJson(transaction)
+                                Log.d("InputFixedTab", "JSON gửi đi (Tiền thu): $json")
+                                sendToApi(json)
+                            }
+                        }
+                    }
+                }
             )
+
             HorizontalPager(state = pagerState, userScrollEnabled = false) {
                 tabs[it].screen()
             }
         }
     }
 }
+
 
