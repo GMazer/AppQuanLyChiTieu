@@ -1,5 +1,7 @@
 package com.example.jetpackcompose.components
 
+import android.annotation.SuppressLint
+import android.app.DatePickerDialog
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -37,6 +39,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
@@ -46,22 +49,22 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import com.example.jetpackcompose.app.features.fixedIncomeAndExpenses.InputFixedTab
+import com.example.jetpackcompose.R
 import com.example.jetpackcompose.app.screens.DailyTransaction
-import com.example.jetpackcompose.app.screens.anual_sceens.AnualScreen
 import com.example.jetpackcompose.ui.theme.TextColor
 import com.example.jetpackcompose.ui.theme.colorPrimary
 import com.example.jetpackcompose.ui.theme.componentShapes
 import com.example.jetpackcompose.ui.theme.highGray
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun FixedTabRow(
@@ -190,7 +193,7 @@ fun ClickableText(
 }
 
 @Composable
-fun FixedExpense() {
+fun FixedIncome() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -227,32 +230,67 @@ fun FixedExpense() {
                 DropdownRow(
                     label = "Danh mục",
                     options = listOf(
-                        Pair(0, "Thiết yếu"),
-                        Pair(0, "Giải trí"),
-                        Pair(0,"Đầu tư"),
-                        Pair(0, "Dự phòng"),
+                        Pair(R.drawable.essentials, "Tiền lương"),
+                        Pair(R.drawable.entertainment, "Phụ cấp"),
+                        Pair(R.drawable.invest, "Tiền thưởng"),
+                        Pair(R.drawable.hedgefund, "Thu nhập khác"),
                     )
                 ) { selectedCategory ->
                     // Xử lý khi danh mục được chọn thay đổi
                 }
             }
         }
-    }
-}
+        Spacer(modifier = Modifier.height(16.dp))
+        Box(
+            modifier = Modifier
+                .fillMaxWidth() // Chiều rộng tối đa (có thể tùy chỉnh)
+                .padding(16.dp) // Khoảng cách xung quanh Box
+                .background(
+                    color = Color.White, // Màu nền trắng
+                    shape = RoundedCornerShape(8.dp) // Bo góc 8.dp
+                )
+        ) {
+            Column() {
+                DropdownRow(
+                    label = "Lặp lại",
+                    options = listOf(
+                        Pair(null, "Không lặp lại"),
+                        Pair(null, "Hàng ngày"),
+                        Pair(null, "Hàng tuần"),
+                        Pair(null, "Hàng tháng"),
+                    )
+                ) { selectedCategory ->
+                    // Xử lý khi danh mục được chọn thay đổi
+                }
+                Divider(
+                    color = Color(0xFFd4d4d4), // Màu của đường chia tách
+                    thickness = 0.5.dp // Độ dày của đường chia tách
+                )
+                DatePickerRow(
+                    label = "Bắt đầu",
+                    initialDate = LocalDate.now()
+                ) { date ->
+                    // Cập nhật ngày được chọn
 
-@Composable
-fun FixedIncome() {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-    ) {
-        Text(
-            text = "Fixed Income",
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            color = colorPrimary
-        )
+                }
+                Divider(
+                    color = Color(0xFFd4d4d4), // Màu của đường chia tách
+                    thickness = 0.5.dp // Độ dày của đường chia tách
+                )
+                DropdownRow(
+                    label = "Kết thúc",
+                    options = listOf(
+                        Pair(R.drawable.essentials, "Không"),
+                        Pair(R.drawable.entertainment, "Ngày chỉ định"),
+                        Pair(R.drawable.invest, "Đầu tư"),
+                        Pair(R.drawable.hedgefund, "Dự phòng"),
+                    )
+                ) { selectedCategory ->
+                    // Xử lý khi danh mục được chọn thay đổi
+                }
+
+            }
+        }
     }
 }
 
@@ -381,11 +419,13 @@ fun RowTextField(
                 unfocusedBorderColor = Color.Transparent,
                 cursorColor = colorPrimary
             ),
-            placeholder = { Text(
-                "Chưa nhập",
-                color = Color.LightGray,
-                fontFamily = monsterrat,
-            ) },
+            placeholder = {
+                Text(
+                    "Chưa nhập",
+                    color = Color.LightGray,
+                    fontFamily = monsterrat,
+                )
+            },
             textStyle = TextStyle(
                 fontSize = 16.sp,
                 fontFamily = monsterrat,
@@ -410,7 +450,7 @@ fun RowTextField(
 @Composable
 fun DropdownRow(
     label: String, // Label của hàng
-    options: List<Pair<Int, String>>, // Danh sách lựa chọn (Icon và Text)
+    options: List<Pair<Int?, String>>, // Danh sách lựa chọn (Icon và Text)
     onChangeValue: (String) -> Unit // Callback khi giá trị được chọn thay đổi
 ) {
     // State để lưu giá trị được chọn
@@ -440,90 +480,150 @@ fun DropdownRow(
                 .clickable { setShowDialog(true) }
         ) {
             // Icon của danh mục (nếu có)
+            options.firstOrNull { it.second == selectedOption }?.first?.let { iconId ->
+                Icon(
+                    painter = painterResource(id = iconId),
+                    contentDescription = null,
+                    tint = Color.Green, // Màu sắc của icon
+                    modifier = Modifier.size(24.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp)) // Khoảng cách giữa Icon và Text
+
+                // Text hiển thị danh mục được chọn
+                Text(
+                    text = selectedOption,
+                    fontWeight = FontWeight.Normal,
+                    fontFamily = monsterrat,
+                    color = TextColor
+                )
+            }
+
+            // Mũi tên
             Icon(
-                painter = painterResource(id = options.first { it.second == selectedOption }.first),
+                imageVector = Icons.Default.KeyboardArrowRight,
                 contentDescription = null,
-                tint = Color.Green, // Màu sắc của icon
+                tint = Color.Gray,
                 modifier = Modifier.size(24.dp)
             )
-            Spacer(modifier = Modifier.width(8.dp)) // Khoảng cách giữa Icon và Text
+        }
 
-            // Text hiển thị danh mục được chọn
+        // Dialog trượt
+        if (showDialog) {
+            AlertDialog(
+                onDismissRequest = { setShowDialog(false) },
+                title = { Text(text = "Chọn $label") },
+                text = {
+                    LazyColumn {
+                        items(options) { option ->
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        setSelectedOption(option.second)
+                                        onChangeValue(option.second) // Trả giá trị về qua callback
+                                        setShowDialog(false)
+                                    }
+                                    .padding(16.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                            }
+                            options.firstOrNull { it.second == selectedOption }?.first?.let { iconId ->
+                                Icon(
+                                    painter = painterResource(id = iconId),
+                                    contentDescription = null,
+                                    tint = Color.Green,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(text = option.second)
+                            }
+                        }
+                    }
+                },
+                buttons = {}
+            )
+        }
+    }
+}
+
+
+
+@SuppressLint("NewApi")
+@Composable
+fun DatePickerRow(
+    label: String, // Label của hàng
+    initialDate: LocalDate = LocalDate.now(), // Ngày ban đầu, mặc định là ngày hiện tại
+    onDateSelected: (LocalDate) -> Unit // Callback để trả ngày được chọn
+) {
+    // State để lưu trữ ngày được chọn
+    var selectedDate by remember { mutableStateOf(initialDate) }
+    val context = LocalContext.current
+
+    // Sử dụng SimpleDateFormat với Locale Việt Nam
+    val vietnamLocale = Locale("vi", "VN")
+    val dateFormat = SimpleDateFormat("dd/MM/yyyy (E)", vietnamLocale)
+
+    // Chuyển đổi ngày thành chuỗi hiển thị
+    val formattedDate = remember(selectedDate) {
+        dateFormat.format(
+            Date.from(selectedDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
+        )
+    }
+
+    // Row hiển thị
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Label
+        Text(
+            text = label,
+            fontWeight = FontWeight.Normal,
+            fontFamily = monsterrat,
+            modifier = Modifier.weight(1f)
+        )
+
+        // Ngày hiển thị
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .weight(2f)
+                .clickable {
+                    // Hiển thị DatePickerDialog
+                    val datePicker = DatePickerDialog(
+                        context,
+                        { _, year, month, dayOfMonth ->
+                            // Cập nhật ngày khi người dùng chọn
+                            val newDate = LocalDate.of(year, month + 1, dayOfMonth)
+                            selectedDate = newDate
+                            onDateSelected(newDate) // Trả ngày được chọn qua callback
+                        },
+                        selectedDate.year,
+                        selectedDate.monthValue - 1,
+                        selectedDate.dayOfMonth
+                    )
+                    datePicker.show()
+                }
+        ) {
             Text(
-                text = selectedOption,
+                text = formattedDate,
                 fontWeight = FontWeight.Normal,
                 fontFamily = monsterrat,
                 color = TextColor
             )
-        }
 
-        // Mũi tên
-        Icon(
-            imageVector = Icons.Default.KeyboardArrowRight,
-            contentDescription = null,
-            tint = Color.Gray,
-            modifier = Modifier.size(24.dp)
-        )
-    }
+            Spacer(modifier = Modifier.width(8.dp))
 
-    // Dialog trượt
-    if (showDialog) {
-        AlertDialog(
-            onDismissRequest = { setShowDialog(false) },
-            title = { Text(text = "Chọn $label") },
-            text = {
-                LazyColumn {
-                    items(options) { option ->
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable {
-                                    setSelectedOption(option.second)
-                                    onChangeValue(option.second) // Trả giá trị về qua callback
-                                    setShowDialog(false)
-                                }
-                                .padding(16.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                painter = painterResource(id = option.first),
-                                contentDescription = null,
-                                tint = Color.Green,
-                                modifier = Modifier.size(24.dp)
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(text = option.second)
-                        }
-                    }
-                }
-            },
-            buttons = {}
-        )
-    }
-}
-
-@Composable
-fun SubNavHost(navController: NavHostController) {
-    NavHost(
-        navController = navController,
-        startDestination = "anualScreen"
-    ) {
-        composable("anualScreen") {
-            AnualScreen(navController)
-        }
-        composable("inputFixedTab") {
-            InputFixedTab(navController)
+            // Mũi tên
+            Icon(
+                imageVector = Icons.Default.KeyboardArrowRight,
+                contentDescription = null,
+                tint = Color.Gray,
+                modifier = Modifier.size(24.dp)
+            )
         }
     }
 }
 
-
-@Preview
-@Composable
-fun PreviewRowTextField() {
-    RowTextField(
-        label = "Ghi chú",
-        textState = TextFieldValue(""),
-        onValueChange = {}
-    )
-}

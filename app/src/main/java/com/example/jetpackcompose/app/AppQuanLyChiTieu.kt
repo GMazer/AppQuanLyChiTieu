@@ -12,7 +12,7 @@ import com.example.jetpackcompose.app.screens.login_signup.SignInScreen
 import com.example.jetpackcompose.app.features.MainScreen
 import com.example.jetpackcompose.app.features.apiService.SignInViewModel
 import com.example.jetpackcompose.app.features.apiService.SignInViewModelFactory
-import com.example.jetpackcompose.app.features.fixedIncomeAndExpenses.InputFixedTab
+import com.example.jetpackcompose.app.screens.anual_sceens.InputFixedTab
 import com.example.jetpackcompose.app.screens.OtherScreen
 import com.example.jetpackcompose.app.screens.anual_sceens.AnualScreen
 
@@ -31,7 +31,7 @@ fun AppQuanLyChiTieu() {
             composable("mainscreen") { MainScreen(navController)}
             composable("anual") { AnualScreen(navController) }
             composable("other") { OtherScreen(navController)}
-            composable("inputfixedtab") { InputFixedTab(navController)}
+            composable("inputfixedtab") { InputFixedTab() }
         }
     } else {
         NavHost(navController = navController, startDestination = "mainscreen") {
@@ -40,7 +40,7 @@ fun AppQuanLyChiTieu() {
             composable("mainscreen") { MainScreen(navController)}
             composable("anual") { AnualScreen(navController) }
             composable("other") { OtherScreen(navController)}
-            composable("inputfixedtab") { InputFixedTab(navController)}
+            composable("inputfixedtab") { InputFixedTab() }
         }
     }
 }
