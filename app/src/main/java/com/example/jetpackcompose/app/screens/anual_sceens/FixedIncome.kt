@@ -20,7 +20,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.example.jetpackcompose.R
-import com.example.jetpackcompose.app.features.inputFeatures.Category
 import com.example.jetpackcompose.components.DatePickerRow
 import com.example.jetpackcompose.components.DropdownRow
 import com.example.jetpackcompose.components.EndDateRow
@@ -33,8 +32,8 @@ import java.util.Locale
 
 @SuppressLint("NewApi")
 @Composable
-fun FixedExpense() {
-    //Ngày mặc điịnh
+fun FixedIncome() {
+
     val vietnamLocale = Locale("vi", "VN") // Đặt Locale Việt Nam
     val currentDate = remember {
         SimpleDateFormat("dd/MM/yyyy", vietnamLocale).format(Date()) // Định dạng ngày hiện tại
@@ -86,10 +85,10 @@ fun FixedExpense() {
                 DropdownRow(
                     label = "Danh mục",
                     options = listOf(
-                        Pair(R.drawable.essentials, "Thiết yếu"),
-                        Pair(R.drawable.entertainment, "Giải trí"),
+                        Pair(R.drawable.essentials, "Lương"),
+                        Pair(R.drawable.entertainment, "Phụ cấp"),
                         Pair(R.drawable.invest, "Đầu tư"),
-                        Pair(R.drawable.hedgefund, "Dự phòng"),
+                        Pair(R.drawable.hedgefund, "Thu nhập phụ"),
                     )
                 ) { category ->
                     // Xử lý khi danh mục được chọn thay đổi

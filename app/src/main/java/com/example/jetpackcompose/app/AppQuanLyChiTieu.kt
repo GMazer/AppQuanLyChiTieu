@@ -31,7 +31,7 @@ fun AppQuanLyChiTieu() {
             composable("mainscreen") { MainScreen(navController)}
             composable("anual") { AnualScreen(navController) }
             composable("other") { OtherScreen(navController)}
-            composable("inputfixedtab") { InputFixedTab() }
+            composable("inputfixedtab") { InputFixedTab(navController) }
         }
     } else {
         NavHost(navController = navController, startDestination = "mainscreen") {
@@ -40,7 +40,7 @@ fun AppQuanLyChiTieu() {
             composable("mainscreen") { MainScreen(navController)}
             composable("anual") { AnualScreen(navController) }
             composable("other") { OtherScreen(navController)}
-            composable("inputfixedtab") { InputFixedTab() }
+            composable("inputfixedtab") { InputFixedTab(navController) }
         }
     }
 }

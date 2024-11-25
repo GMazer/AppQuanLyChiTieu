@@ -30,6 +30,7 @@ import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.graphics.RectangleShape
 import com.example.jetpackcompose.R
+import com.example.jetpackcompose.components.monsterrat
 import com.example.jetpackcompose.ui.theme.colorPrimary
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -72,7 +73,7 @@ fun CustomBottomAppBar(pagerState: PagerState, coroutineScope: CoroutineScope) {
                         tint = if (selectedPage == 0) colorPrimary else Color.Gray // Sử dụng tint thay vì contentColor
                     )
                 }
-                Text("Nhập vào", color = if (selectedPage == 0) colorPrimary else Color.Gray, fontSize = 12.sp)
+                Text("Nhập vào", color = if (selectedPage == 0) colorPrimary else Color.Gray, fontFamily = monsterrat, fontSize = 12.sp)
             }
 
             // Mục Lịch

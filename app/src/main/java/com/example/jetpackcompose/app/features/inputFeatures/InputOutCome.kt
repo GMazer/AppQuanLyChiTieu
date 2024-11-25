@@ -60,25 +60,25 @@ fun OutComeContent() {
     val categories = listOf(
         Category(
             "Thiết yếu",
-            { painterResource(R.drawable.outline_ramen_dining_24) },
+            { painterResource(R.drawable.essentials) },
             Color(0xFFfb791d),
             percentage = 0.80f // 80%
         ),
         Category(
             "Giải trí",
-            { painterResource(R.drawable.outline_grocery_24) },
+            { painterResource(R.drawable.entertainment) },
             Color(0xFF37c166),
             percentage = 0.60f // 60%
         ),
         Category(
             "Đầu tư",
-            { painterResource(R.drawable.outline_apparel_24) },
+            { painterResource(R.drawable.invest) },
             Color(0xFF283eaa),
             percentage = 0.45f // 45%
         ),
         Category(
             "Phát sinh",
-            { painterResource(R.drawable.outline_cosmetic) },
+            { painterResource(R.drawable.hedgefund) },
             Color(0xFFf95aa9),
             percentage = 0.25f // 25%
         )
