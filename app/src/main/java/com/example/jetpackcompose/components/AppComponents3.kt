@@ -192,6 +192,7 @@ fun ClickableText(
     )
 }
 
+@SuppressLint("NewApi")
 @Composable
 fun FixedIncome() {
     Column(
