@@ -51,6 +51,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.example.jetpackcompose.R
 import com.example.jetpackcompose.app.screens.DailyTransaction
 import com.example.jetpackcompose.ui.theme.TextColor
@@ -71,8 +72,8 @@ fun FixedTabRow(
     tabIndex: Int,
     onTabSelected: (Int) -> Unit,
     titles: List<String>,
-    pagerStatement: PagerState,
     coroutineScoper: CoroutineScope,
+    pagerStatement: PagerState,
     modifier: Modifier = Modifier
 ) {
     val inactiveColor = Color(0xFFe1e1e1)  // Màu cho tab không chọn
@@ -91,9 +92,7 @@ fun FixedTabRow(
         ) {
             // Nút "Trở lại" ở ngoài cùng bên trái
             ClickableText("Trở lại") {
-                coroutineScoper.launch {
-                    pagerStatement.scrollToPage(3)
-                }
+                // Xử lý khi nút được nhấn
             }
 
             // Spacer để đẩy TabRow ra giữa
