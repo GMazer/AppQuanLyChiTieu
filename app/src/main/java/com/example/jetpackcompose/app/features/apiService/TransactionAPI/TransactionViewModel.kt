@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.jetpackcompose.app.network.ApiService
 import com.example.jetpackcompose.app.network.BaseURL
-import com.example.jetpackcompose.app.network.LoginResponse
 import com.example.jetpackcompose.app.screens.DailyTransaction
 import com.google.gson.GsonBuilder
 import kotlinx.coroutines.launch
@@ -23,7 +22,7 @@ class TransactionViewModel(private val context: Context) : ViewModel() {
         .create()
 
     private val api = Retrofit.Builder()
-        .baseUrl(BaseURL.baseURl)
+        .baseUrl(BaseURL.baseUrl)
         .addConverterFactory(GsonConverterFactory.create(gson))
         .build()
         .create(ApiService::class.java)

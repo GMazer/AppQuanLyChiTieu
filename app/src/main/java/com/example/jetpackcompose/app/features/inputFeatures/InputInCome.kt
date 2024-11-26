@@ -58,7 +58,7 @@ fun IncomeContent () {
     val categories = listOf(
         Category(
             "Lương",
-            { painterResource(R.drawable.baseline_monetization_on_24) },
+            { painterResource(R.drawable.salary) },
             Color(0xFFfb791d),
             percentage = 0.75f // 75%
         ),
@@ -69,8 +69,8 @@ fun IncomeContent () {
             percentage = 0.65f // 90%
         ),
         Category(
-            "Cướp",
-            { painterResource(R.drawable.baseline_person_off_24) },
+            "Thu nhập phụ",
+            { painterResource(R.drawable.secondary) },
             Color(0xFFf95aa9),
             percentage = 0.30f // 30%
         ),

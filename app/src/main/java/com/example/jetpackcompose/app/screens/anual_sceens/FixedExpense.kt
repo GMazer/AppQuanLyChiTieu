@@ -20,8 +20,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.example.jetpackcompose.R
-import com.example.jetpackcompose.app.features.inputFeatures.Category
 import com.example.jetpackcompose.app.features.inputFeatures.TransactionType
+import com.example.jetpackcompose.app.screens.anual_sceens.ViewModel.PeriodicTransaction
 import com.example.jetpackcompose.components.DatePickerRow
 import com.example.jetpackcompose.components.DropdownRow
 import com.example.jetpackcompose.components.EndDateRow
@@ -86,8 +86,8 @@ fun FixedExpense( onDataChanged: (PeriodicTransaction) -> Unit) {
                     }
                 )
                 Divider(
-                    color = Color(0xFFd4d4d4), // Màu của đường chia tách
-                    thickness = 0.5.dp // Độ dày của đường chia tách
+                    color = Color(0xFFd4d4d4),
+                    thickness = 0.5.dp
                 )
                 RowNumberField(
                     textState = numberState,
@@ -96,8 +96,8 @@ fun FixedExpense( onDataChanged: (PeriodicTransaction) -> Unit) {
                     }
                 )
                 Divider(
-                    color = Color(0xFFd4d4d4), // Màu của đường chia tách
-                    thickness = 0.5.dp // Độ dày của đường chia tách
+                    color = Color(0xFFd4d4d4),
+                    thickness = 0.5.dp
                 )
                 DropdownRow(
                     label = "Danh mục",
@@ -120,8 +120,8 @@ fun FixedExpense( onDataChanged: (PeriodicTransaction) -> Unit) {
                 .fillMaxWidth() // Chiều rộng tối đa (có thể tùy chỉnh)
                 .padding(16.dp) // Khoảng cách xung quanh Box
                 .background(
-                    color = Color.White, // Màu nền trắng
-                    shape = RoundedCornerShape(8.dp) // Bo góc 8.dp
+                    color = Color.White,
+                    shape = RoundedCornerShape(8.dp) //
                 )
         ) {
             Column() {
@@ -140,8 +140,8 @@ fun FixedExpense( onDataChanged: (PeriodicTransaction) -> Unit) {
 
                 }
                 Divider(
-                    color = Color(0xFFd4d4d4), // Màu của đường chia tách
-                    thickness = 0.5.dp // Độ dày của đường chia tách
+                    color = Color(0xFFd4d4d4),
+                    thickness = 0.5.dp
                 )
                 DatePickerRow(
                     label = "Bắt đầu",
@@ -167,5 +167,4 @@ fun FixedExpense( onDataChanged: (PeriodicTransaction) -> Unit) {
             }
         }
     }
-
 }

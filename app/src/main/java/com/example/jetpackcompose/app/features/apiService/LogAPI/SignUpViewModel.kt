@@ -20,7 +20,7 @@ class SignUpViewModel : ViewModel() {
         .create()
 
     private val api = Retrofit.Builder()
-        .baseUrl(BaseURL.baseURl)
+        .baseUrl(BaseURL.baseUrl)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
         .create(ApiService::class.java)

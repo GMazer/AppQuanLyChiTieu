@@ -4,15 +4,11 @@ import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
@@ -21,33 +17,34 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.jetpackcompose.app.features.inputFeatures.TabItem
-import com.example.jetpackcompose.app.features.inputFeatures.monsterrat
+import com.example.jetpackcompose.app.screens.anual_sceens.ViewModel.FixedExpenseViewModel
+import com.example.jetpackcompose.app.screens.anual_sceens.ViewModel.FixedExpenseViewModelFactory
+import com.example.jetpackcompose.app.screens.anual_sceens.ViewModel.FixedIncomeViewModel
+import com.example.jetpackcompose.app.screens.anual_sceens.ViewModel.FixedIncomeViewModelFactory
+import com.example.jetpackcompose.app.screens.anual_sceens.ViewModel.PeriodicTransaction
 import com.example.jetpackcompose.components.FixedTabRow
+import kotlinx.coroutines.launch
 
 
 @Composable
 fun InputFixedTab(navController: NavHostController) {
+    val context = LocalContext.current
+
+    // Tạo instance của FixedExpenseViewModel với Factory
+    val fixedExpenseViewModel: FixedExpenseViewModel = viewModel(
+        factory = FixedExpenseViewModelFactory(context)
+    )
+
+    val fixedIncomeViewModel: FixedIncomeViewModel = viewModel(
+        factory = FixedIncomeViewModelFactory(context)
+    )
+
     var expenseData by rememberSaveable { mutableStateOf<PeriodicTransaction?>(null) }
     var incomeData by rememberSaveable { mutableStateOf<PeriodicTransaction?>(null) }
-    val customTypography = Typography(
-        bodyLarge = TextStyle(fontFamily = monsterrat),
-        bodyMedium = TextStyle(fontFamily = monsterrat),
-        bodySmall = TextStyle(fontFamily = monsterrat),
-        titleLarge = TextStyle(fontFamily = monsterrat),
-        titleMedium = TextStyle(fontFamily = monsterrat),
-        titleSmall = TextStyle(fontFamily = monsterrat),
-        labelLarge = TextStyle(fontFamily = monsterrat),
-        labelMedium = TextStyle(fontFamily = monsterrat),
-        labelSmall = TextStyle(fontFamily = monsterrat),
-        headlineLarge = TextStyle(fontFamily = monsterrat),
-        headlineMedium = TextStyle(fontFamily = monsterrat),
-        headlineSmall = TextStyle(fontFamily = monsterrat)
-    )
 
     val tabs = listOf(
         TabItem("Expense", icon = Icons.Default.ArrowBack) {
@@ -68,53 +65,60 @@ fun InputFixedTab(navController: NavHostController) {
 
     val coroutineScope = rememberCoroutineScope()
 
-    MaterialTheme(
-        typography = customTypography
+    Column(
+        modifier = Modifier
+            .background(Color(0xFFF1F1F1))
+            .fillMaxSize()
     ) {
-        var tabIndex by rememberSaveable { mutableStateOf(0) }
-        val tabTitles = listOf("Tiền chi", "Tiền thu")
-
-        Column(
-            modifier = Modifier
-                .background(Color(0xFFF1F1F1))
-                .fillMaxSize()
-        ) {
-            FixedTabRow(
-                tabIndex = tabIndex,
-                onTabSelected = { tabIndex = it },
-                titles = tabTitles,
-                pagerStatement = pagerState,
-                navController = navController,
-                coroutineScoper = coroutineScope,
-                modifier = Modifier.padding(horizontal = 16.dp),
-                onSaveData = { tabIndex ->
-                    // Xử lý lưu dữ liệu dựa trên tabIndex
-                    when (tabIndex) {
-                        0 -> {
-                            // Xử lý lưu dữ liệu cho Tiền chi
-                            expenseData?.let { transaction ->
-                                val json = convertToJson(transaction)
-                                Log.d("InputFixedTab", "JSON gửi đi (Tiền chi): $json")
-                                sendToApi(json)
-                            }
+        FixedTabRow(
+            tabIndex = pagerState.currentPage,
+            onTabSelected = { tabIndex ->
+                coroutineScope.launch {
+                    pagerState.scrollToPage(tabIndex)
+                }
+            },
+            titles = listOf("Tiền chi", "Tiền thu"),
+            pagerStatement = pagerState,
+            coroutineScoper = coroutineScope,
+            navController = navController,
+            onSaveData = { tabIndex ->
+                when (tabIndex) {
+                    0 -> {
+                        expenseData?.let { transaction ->
+                            fixedExpenseViewModel.addFixedExpense(
+                                transaction,
+                                onSuccess = { successMessage ->
+                                    Log.d("InputFixedTab", successMessage)
+                                },
+                                onError = { errorMessage ->
+                                    Log.e("InputFixedTab", errorMessage)
+                                }
+                            )
                         }
-                        1 -> {
-                            // Xử lý lưu dữ liệu cho Tiền thu
-                            incomeData?.let { transaction ->
-                                val json = convertToJson(transaction)
-                                Log.d("InputFixedTab", "JSON gửi đi (Tiền thu): $json")
-                                sendToApi(json)
-                            }
+                    }
+                    1 -> {
+                        incomeData?.let { transaction ->
+                            fixedIncomeViewModel.addFixedIncome(
+                                transaction,
+                                onSuccess = { successMessage ->
+                                    Log.d("InputFixedTab", successMessage)
+                                },
+                                onError = { errorMessage ->
+                                    Log.e("InputFixedTab", errorMessage)
+                                }
+                            )
                         }
                     }
                 }
-            )
-
-            HorizontalPager(state = pagerState, userScrollEnabled = false) {
-                tabs[it].screen()
             }
+        )
+
+        HorizontalPager(state = pagerState, userScrollEnabled = false) {
+            tabs[it].screen()
         }
     }
 }
+
+
 
 

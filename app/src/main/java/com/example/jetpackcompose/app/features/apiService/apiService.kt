@@ -1,7 +1,6 @@
 package com.example.jetpackcompose.app.network
 
-import com.example.jetpackcompose.app.features.inputFeatures.Transaction
-import com.example.jetpackcompose.app.screens.DailyTransaction
+import com.example.jetpackcompose.app.screens.anual_sceens.ViewModel.PeriodicTransaction
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -10,7 +9,7 @@ import retrofit2.http.POST
 import retrofit2.http.Query
 
 object BaseURL {
-    val baseURl = "https://d497-1-54-7-77.ngrok-free.app"
+    val baseUrl = "https://0be5-104-28-222-75.ngrok-free.app"
 }
 
 data class RegistrationData(
@@ -33,6 +32,25 @@ data class LoginResponse(
 data class RegistrationResponse(
     val status: String,  // Trạng thái đăng ký (thành công hoặc thất bại)
     val message: String  // Hoặc bất kỳ thông tin nào bạn muốn từ API sau khi đăng ký
+)
+
+data class FixedIncome(
+    val title: String,
+    val amount: Long,
+    val category: String,
+    val date: String
+)
+
+data class FixedExpense(
+    val title: String,
+    val amount: Long,
+    val category: String,
+    val date: String
+)
+
+data class ApiResponse(
+    val status: String,
+    val message: String
 )
 
 data class TransactionResponse(
@@ -60,13 +78,32 @@ data class TransactionResponse(
 }
 
 interface ApiService {
+
+    // API cho đăng ký
     @POST("/api/users/register")
     suspend fun register(@Body registrationData: RegistrationData): Response<RegistrationResponse>
 
+    /// API cho đăng nhập
     @POST("/api/users/login")
     suspend fun login (@Body LoginData: LoginData): Response<LoginResponse>
 
+
+    // API cho giao dịch
     @GET("api/finance")
     suspend fun getTransactions(@Header("Authorization") token: String, @Query("month") month: Int, @Query("year") year: Int): Response<TransactionResponse>
+
+    // API cho Fixed Income
+    @POST("/api/fixed-income")
+    suspend fun addFixedIncome(
+        @Header("Authorization") token: String,
+        @Body fixedIncome: PeriodicTransaction
+    ): Response<ApiResponse>
+
+    // API cho Fixed Expense
+    @POST("/api/fixed-expense")
+    suspend fun addFixedExpense(
+        @Header("Authorization") token: String,
+        @Body fixedExpense: PeriodicTransaction
+    ): Response<ApiResponse>
 
 }
