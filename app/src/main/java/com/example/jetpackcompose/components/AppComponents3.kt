@@ -99,7 +99,7 @@ fun FixedTabRow(
         ) {
             // Nút "Trở lại" ở ngoài cùng bên trái
             ClickableText("Trở lại") {
-                navController.navigate("anualScreen") // Navigate to AnualScreen
+                navController.navigate("anual") // Navigate to AnualScreen
             }
 
             Spacer(modifier = Modifier.weight(1f))
