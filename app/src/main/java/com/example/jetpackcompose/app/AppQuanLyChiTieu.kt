@@ -10,8 +10,8 @@ import androidx.navigation.compose.rememberNavController
 import com.example.jetpackcompose.app.screens.login_signup.SignUpScreen
 import com.example.jetpackcompose.app.screens.login_signup.SignInScreen
 import com.example.jetpackcompose.app.features.MainScreen
-import com.example.jetpackcompose.app.features.apiService.SignInViewModel
-import com.example.jetpackcompose.app.features.apiService.SignInViewModelFactory
+import com.example.jetpackcompose.app.features.apiService.LogAPI.SignInViewModel
+import com.example.jetpackcompose.app.features.apiService.LogAPI.SignInViewModelFactory
 import com.example.jetpackcompose.app.screens.anual_sceens.InputFixedTab
 import com.example.jetpackcompose.app.screens.OtherScreen
 import com.example.jetpackcompose.app.screens.anual_sceens.AnualScreen

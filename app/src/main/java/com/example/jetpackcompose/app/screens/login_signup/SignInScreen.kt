@@ -1,7 +1,6 @@
 // SignInScreen.kt
 package com.example.jetpackcompose.app.screens.login_signup
 
-import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -19,8 +18,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.jetpackcompose.R
-import com.example.jetpackcompose.app.features.apiService.SignInViewModel
-import com.example.jetpackcompose.app.features.apiService.SignInViewModelFactory
+import com.example.jetpackcompose.app.features.apiService.LogAPI.SignInViewModel
+import com.example.jetpackcompose.app.features.apiService.LogAPI.SignInViewModelFactory
 import com.example.jetpackcompose.app.network.LoginData
 import com.example.jetpackcompose.components.*
 

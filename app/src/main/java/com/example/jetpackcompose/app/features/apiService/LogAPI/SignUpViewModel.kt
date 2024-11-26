@@ -1,4 +1,4 @@
-package com.example.jetpackcompose.app.features.apiService
+package com.example.jetpackcompose.app.features.apiService.LogAPI
 
 import android.util.Log
 import androidx.lifecycle.ViewModel

@@ -22,11 +22,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.jetpackcompose.R
-import com.example.jetpackcompose.app.features.apiService.SignUpViewModel
+import com.example.jetpackcompose.app.features.apiService.LogAPI.SignUpViewModel
 import com.example.jetpackcompose.app.network.RegistrationData
 import com.example.jetpackcompose.components.CheckboxComponent
 import com.example.jetpackcompose.components.ClickableTextComponent

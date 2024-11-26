@@ -3,13 +3,13 @@ package com.example.jetpackcompose.app.screens.anual_sceens
 import android.util.Log
 import com.example.jetpackcompose.app.features.inputFeatures.TransactionType
 import com.google.gson.Gson
-import kotlinx.serialization.Serializable
+//import kotlinx.serialization.Serializable
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 
-@Serializable
+//@Serializable
 data class PeriodicTransaction(
     val title: String,
     val startDate: String,

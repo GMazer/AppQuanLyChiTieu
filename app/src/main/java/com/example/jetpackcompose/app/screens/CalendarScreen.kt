@@ -19,6 +19,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,12 +27,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.jetpackcompose.app.features.apiService.TransactionAPI.TransactionViewModel
 import com.example.jetpackcompose.components.CustomCalendar
 import com.example.jetpackcompose.components.DayIndex
 import com.example.jetpackcompose.components.MonthPickerButton
@@ -47,6 +50,7 @@ data class DailyTransaction(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CalendarScreen() {
+    val viewModel: TransactionViewModel = TransactionViewModel(LocalContext.current)
 
     // Lấy tháng và năm hiện tại làm giá trị mặc định
     val currentMonthYear = remember {
@@ -56,34 +60,40 @@ fun CalendarScreen() {
         "$month/$year"
     }
 
-    val firstTransaction = DailyTransaction(
-        date = "12/2023",
-        amountIncome = 100000,
-        amountExpense = 50000
-    )
-
-    val listTransaction = listOf<DailyTransaction>(
-        firstTransaction
-    )
-
     var selectedMonthYear by remember { mutableStateOf(currentMonthYear) }
+    var transactionList by remember { mutableStateOf(listOf<DailyTransaction>()) }
+    var errorMessage by remember { mutableStateOf("") }
 
-    val customTypography = Typography(
-        bodyLarge = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.monsterrat),
-        bodyMedium = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.monsterrat),
-        bodySmall = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.monsterrat),
-        titleLarge = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.monsterrat),
-        titleMedium = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.monsterrat),
-        titleSmall = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.monsterrat),
-        labelLarge = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.monsterrat),
-        labelMedium = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.monsterrat),
-        labelSmall = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.monsterrat),
-        headlineLarge = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.monsterrat),
-        headlineMedium = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.monsterrat),
-        headlineSmall = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.monsterrat)
-    )
+    // Gọi API để lấy danh sách giao dịch
+    LaunchedEffect(selectedMonthYear) {
+        // Tách tháng và năm từ selectedMonthYear
+        val (month, year) = selectedMonthYear.split("/").map { it.toInt() }
 
-    MaterialTheme(typography = customTypography) {
+        viewModel.getTransactions(
+            month = month,
+            year = year,
+            onSuccess = { transactions ->
+                // Chuyển đổi danh sách giao dịch từ API thành danh sách `DailyTransaction`
+                transactionList = transactions.map { transaction ->
+                    DailyTransaction(
+                        date = transaction.date,
+                        amountIncome = transaction.amountIncome,
+                        amountExpense = transaction.amountExpense
+                    )
+                }
+            },
+            onError = { error ->
+                errorMessage = error
+            }
+        )
+    }
+
+    MaterialTheme(
+        typography = Typography(
+            bodyLarge = TextStyle(fontWeight = FontWeight.Normal),
+            titleLarge = TextStyle(fontWeight = FontWeight.Bold)
+        )
+    ) {
         Scaffold(
             topBar = {
                 Column(modifier = Modifier
@@ -131,7 +141,7 @@ fun CalendarScreen() {
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Row(verticalAlignment = Alignment.CenterVertically)  {
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     MonthPickerButton(onDateSelected = { month ->
                         selectedMonthYear = month
                     })
@@ -140,12 +150,22 @@ fun CalendarScreen() {
                 Spacer(modifier = Modifier.height(16.dp))
                 CustomCalendar(selectedMonthYear = selectedMonthYear)
 
-                LazyColumn {
-                    item {
-                        DayIndex(listTransaction)
+                if (errorMessage.isNotEmpty()) {
+                    Text(
+                        text = errorMessage,
+                        color = Color.Red,
+                        style = TextStyle(fontSize = 16.sp, textAlign = TextAlign.Center),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    )
+                } else {
+                    LazyColumn {
+                        item {
+                            DayIndex(transactionList)
+                        }
                     }
                 }
-
             }
         }
     }

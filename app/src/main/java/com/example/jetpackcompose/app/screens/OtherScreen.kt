@@ -28,8 +28,8 @@ import androidx.compose.foundation.background
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.jetpackcompose.ui.theme.highGray
-import com.example.jetpackcompose.app.features.apiService.SignInViewModel
-import com.example.jetpackcompose.app.features.apiService.SignInViewModelFactory
+import com.example.jetpackcompose.app.features.apiService.LogAPI.SignInViewModel
+import com.example.jetpackcompose.app.features.apiService.LogAPI.SignInViewModelFactory
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

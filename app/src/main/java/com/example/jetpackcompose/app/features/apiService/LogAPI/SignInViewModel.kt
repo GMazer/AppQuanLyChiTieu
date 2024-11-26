@@ -1,4 +1,4 @@
-package com.example.jetpackcompose.app.features.apiService
+package com.example.jetpackcompose.app.features.apiService.LogAPI
 
 import android.content.Context
 import android.content.SharedPreferences
