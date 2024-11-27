@@ -99,6 +99,7 @@ fun FixedTabRow(
         ) {
             // Nút "Trở lại" ở ngoài cùng bên trái
             ClickableText("Trở lại") {
+                navController.popBackStack("inputfixedtab", inclusive = true) // Navigate to AnualScreen
                 navController.navigate("anual") // Navigate to AnualScreen
             }
 

@@ -409,6 +409,7 @@ fun CategoriesGrid(
     ) {
         items(categories) { category ->
             CategoryItem(
+                id = category.id,
                 category = category,
                 buttonColor = buttonColor,
                 isSelected = (category == selectedCategory),
@@ -421,6 +422,7 @@ fun CategoriesGrid(
 
 @Composable
 fun CategoryItem(
+    id: Int,
     category: Category,
     buttonColor: Color,
     isSelected: Boolean,
@@ -900,33 +902,47 @@ fun CustomCalendar(selectedMonthYear: String) {
             // Lưới ngày
             val rows = days.chunked(7) // Chia thành các hàng, mỗi hàng 7 ngày
             rows.forEachIndexed { rowIndex, week ->
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceAround
-                ) {
-                    week.forEachIndexed { columnIndex, day ->
-                        rowIndex > 0 || (rowIndex == 0 && day.toIntOrNull() ?: 0 > 7)
+                // Kiểm tra xem có bất kỳ ngày nào trong hàng thuộc tháng hiện tại không
+                val isAnyDayInCurrentMonth = week.any { day ->
+                    val dayInt = day.toIntOrNull()
+                    val dayIndex = rowIndex * 7 + week.indexOf(day)
+                    // Kiểm tra ngày có thuộc tháng hiện tại không
+                    dayInt != null && dayInt in 1..daysInMonth && dayIndex >= firstDayOfWeek && dayIndex < firstDayOfWeek + daysInMonth
+                }
 
-                        Box(
-                            modifier = Modifier
-                                .weight(1f) // Mỗi ô ngày có cùng trọng số
-                                .height(35.dp) // Tùy chỉnh chiều cao
-                                .background(Color.White)
-                                .border(0.25.dp, Color(0xFFd4d4d4)),
-                            contentAlignment = Alignment.TopStart // Đặt vị trí căn chỉnh góc trên trái
-                        ) {
-                            Text(
-                                text = day,
-                                color = when {
-                                    columnIndex == 6 -> SundayColor // Chủ nhật
-                                    columnIndex == 5 -> SaturDayColor // Thứ 7
-                                    else -> Color.Black
-                                },
-                                fontFamily = monsterrat,
-                                fontSize = 8.sp,
-                                textAlign = TextAlign.Start,
-                                modifier = Modifier.padding(4.dp) // Padding để di chuyển Text khỏi viền
-                            )
+                // Nếu ít nhất một ngày trong hàng thuộc tháng hiện tại thì mới hiển thị hàng đó
+                if (isAnyDayInCurrentMonth) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceAround
+                    ) {
+                        week.forEachIndexed { columnIndex, day ->
+                            val dayIndex = rowIndex * 7 + columnIndex // Vị trí của ngày trong danh sách days
+                            val isCurrentMonth = dayIndex >= firstDayOfWeek && dayIndex < firstDayOfWeek + daysInMonth // Kiểm tra ngày có thuộc tháng hiện tại hay không
+
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f) // Mỗi ô ngày có cùng trọng số
+                                    .height(35.dp) // Tùy chỉnh chiều cao
+                                    .background(
+                                        if (isCurrentMonth) Color.White else Color.LightGray // Nền màu trắng nếu là tháng hiện tại, màu LightGray nếu không phải
+                                    )
+                                    .border(0.25.dp, Color(0xFFd4d4d4)),
+                                contentAlignment = Alignment.TopStart // Đặt vị trí căn chỉnh góc trên trái
+                            ) {
+                                Text(
+                                    text = day,
+                                    color = when {
+                                        columnIndex == 6 -> SundayColor // Chủ nhật
+                                        columnIndex == 5 -> SaturDayColor // Thứ 7
+                                        else -> if (isCurrentMonth) Color.Black else Color.Gray // Làm nhạt màu cho ngày không phải tháng hiện tại
+                                    },
+                                    fontFamily = monsterrat,
+                                    fontSize = 8.sp,
+                                    textAlign = TextAlign.Start,
+                                    modifier = Modifier.padding(4.dp) // Padding để di chuyển Text khỏi viền
+                                )
+                            }
                         }
                     }
                 }
@@ -934,6 +950,7 @@ fun CustomCalendar(selectedMonthYear: String) {
         }
     }
 }
+
 
 
 

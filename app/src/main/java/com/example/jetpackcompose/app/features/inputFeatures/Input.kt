@@ -20,8 +20,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -33,7 +31,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -51,7 +48,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModel
 import com.example.jetpackcompose.R
 import com.example.jetpackcompose.components.InputTab
 import com.example.jetpackcompose.components.PopUpSetValueDialog
@@ -74,7 +70,13 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+enum class TransactionType {
+    INCOME, // Tiền thu
+    EXPENSE // Tiền chi
+}
+
 data class Category(
+    val id: Int,
     val name: String,
     val iconPainter: @Composable () -> Painter,
     val iconColor: Color,
@@ -90,28 +92,12 @@ val monsterrat = FontFamily(
 
 data class TabItem(val text: String, val icon: ImageVector, val screen: @Composable () -> Unit)
 
-enum class TransactionType {
-    INCOME, // Tiền thu
-    EXPENSE // Tiền chi
-}
-
 data class Transaction(
-    val date: String,
-    val note: String,
+    val category_id: Int,
     val amount: Long,
-    val category: String,
-    val type: TransactionType // Thêm thuộc tính type
+    val transaction_date: String,
+    val note: String
 )
-
-class TransactionViewModel : ViewModel() {
-    private val _transactions = mutableStateListOf<Transaction>()
-    val transactions: List<Transaction> = _transactions
-
-    // Hàm thêm giao dịch
-    fun addTransaction(transaction: Transaction) {
-        _transactions.add(transaction)
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -121,7 +107,7 @@ fun DatePickerButton(onDateSelected: (String) -> Unit) {
     val calendar = Calendar.getInstance()
 
     // Định dạng ngày tháng năm thứ
-    val dateFormat = SimpleDateFormat("dd/MM/yyyy (E)", Locale("vi", "VN"))
+    val dateFormat = SimpleDateFormat("yyyy-MM-dd (E)", Locale("vi", "VN"))
 
     // Cập nhật ngày hiện tại khi khởi tạo
     LaunchedEffect(key1 = true) {

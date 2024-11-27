@@ -17,7 +17,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,58 +24,60 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.jetpackcompose.R
+import com.example.jetpackcompose.app.features.apiService.TransactionAPI.PostTransactionViewModel
 import com.example.jetpackcompose.components.CategoriesGrid
 import com.example.jetpackcompose.components.DrawBottomLine
 import com.example.jetpackcompose.components.NoteTextField
 import com.example.jetpackcompose.components.NumberTextField
-import com.example.jetpackcompose.components.PopUpSetValueDialog
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun OutComeContent() {
+fun OutComeContent(viewModel: PostTransactionViewModel = PostTransactionViewModel(LocalContext.current)) {
 
     var tabIndex by remember { mutableStateOf(0) }
     var textNote by remember { mutableStateOf(TextFieldValue()) }
     var amountValue by remember { mutableStateOf(TextFieldValue()) }
     var selectedDate by remember { mutableStateOf("Chưa chọn ngày") }
     var selectedCategory by remember { mutableStateOf<Category?>(null) }
+    var selectedIdCategory by remember { mutableStateOf(0) }
+
+    var errorMessage by remember { mutableStateOf("") }
+    var successMessage by remember { mutableStateOf("") }
 
     val buttonColor = Color(0xFFF35E17)
 
-    var transactionType by remember { mutableStateOf(TransactionType.EXPENSE) }
-
-    LaunchedEffect(tabIndex) {
-        transactionType = if (tabIndex == 0) TransactionType.EXPENSE else TransactionType.INCOME
-        Log.i("ExpenseContent", "Loại giao dịch hiện tại: $transactionType")
-    }
-
     val categories = listOf(
         Category(
+            1,
             "Thiết yếu",
             { painterResource(R.drawable.essentials) },
             Color(0xFFfb791d),
             percentage = 0.80f // 80%
         ),
         Category(
+            2,
             "Giải trí",
             { painterResource(R.drawable.entertainment) },
             Color(0xFF37c166),
             percentage = 0.60f // 60%
         ),
         Category(
+            3,
             "Đầu tư",
             { painterResource(R.drawable.invest) },
             Color(0xFF283eaa),
             percentage = 0.45f // 45%
         ),
         Category(
+            4,
             "Phát sinh",
             { painterResource(R.drawable.hedgefund) },
             Color(0xFFf95aa9),
@@ -186,20 +187,28 @@ fun OutComeContent() {
                 Button(
                     onClick = {
                         val amount = amountValue.text.toLongOrNull() ?: 0L
-                        val categoryName = selectedCategory?.name ?: "Chưa chọn danh mục"
 
                         val transaction = Transaction(
-                            date = selectedDate,
+                            transaction_date = selectedDate.substring(0, 11),
                             note = textNote.text,
                             amount = amount,
-                            category = categoryName,
-                            type = transactionType // Thêm loại giao dịch
+                            category_id = selectedCategory?.id ?: 0
                         )
-                        TransactionViewModel().addTransaction(transaction)
 
-                        // Xóa dữ liệu nhập sau khi lưu
-                        textNote = TextFieldValue("")
-                        amountValue = TextFieldValue("")
+
+                        viewModel.postTransaction(
+                            transaction,
+                            onSuccess = {
+                                errorMessage = it
+                            },
+                            onError = {
+                                successMessage = it
+                            }
+                        )
+
+//                        // Xóa dữ liệu nhập sau khi lưu
+//                        textNote = TextFieldValue("")
+//                        amountValue = TextFieldValue("")
 
                         // Ghi log thông tin giao dịch
                         Log.i("ExpenseContent", "Transaction: $transaction")
@@ -214,8 +223,16 @@ fun OutComeContent() {
                         fontWeight = FontWeight.Bold
                     )
                 }
+            }
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxSize()
+            ){
+                Text(text = errorMessage, color = Color.Red, style = androidx.compose.material3.MaterialTheme.typography.bodyMedium)
 
-
+                Text(text = successMessage, color = Color.Green, style = androidx.compose.material3.MaterialTheme.typography.bodyMedium)
             }
         }
     }

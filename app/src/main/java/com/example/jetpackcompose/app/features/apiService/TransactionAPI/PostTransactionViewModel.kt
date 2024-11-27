@@ -4,16 +4,16 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.jetpackcompose.app.features.inputFeatures.Transaction
+import com.example.jetpackcompose.app.network.ApiResponse
 import com.example.jetpackcompose.app.network.ApiService
 import com.example.jetpackcompose.app.network.BaseURL
-import com.example.jetpackcompose.app.screens.DailyTransaction
 import com.google.gson.GsonBuilder
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-
-class TransactionViewModel(private val context: Context) : ViewModel() {
+class PostTransactionViewModel(private val context: Context) : ViewModel() {
 
     private val sharedPreferences = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
 
@@ -27,9 +27,6 @@ class TransactionViewModel(private val context: Context) : ViewModel() {
         .build()
         .create(ApiService::class.java)
 
-    var transactionList: List<DailyTransaction> = emptyList()
-        private set
-
     var transactionStatus: String = ""
         private set
 
@@ -38,11 +35,10 @@ class TransactionViewModel(private val context: Context) : ViewModel() {
         return sharedPreferences.getString("auth_token", null)
     }
 
-    // Hàm lấy danh sách giao dịch
-    fun getTransactions(
-        month: Int,
-        year: Int,
-        onSuccess: (List<DailyTransaction>) -> Unit,
+    // Hàm post transaction
+    fun postTransaction(
+        data: Transaction,
+        onSuccess: (String) -> Unit,
         onError: (String) -> Unit
     ) {
         val token = getToken()
@@ -55,39 +51,29 @@ class TransactionViewModel(private val context: Context) : ViewModel() {
 
         viewModelScope.launch {
             try {
-                Log.d("TransactionViewModel", "Token: $token")
+                Log.d("PostTransactionViewModel", "Token: $token")
+                Log.d("PostTransactionViewModel", "Transaction Data: $data")
 
-                val response = api.getTransactions("Bearer $token", month, year)
-                Log.d("TransactionViewModel", "Response Code: ${response.code()}")
-                Log.d("TransactionViewModel", "Response Error Body: ${response.errorBody()?.string()}")
+                val response = api.postTransaction("Bearer $token", data)
+                Log.d("PostTransactionViewModel", "Response Code: ${response.code()}")
 
                 if (response.isSuccessful) {
-                    val transactionsResponse = response.body()
-                    if (transactionsResponse != null) {
-                        // Lấy dailyTransactions từ response và chuyển đổi thành danh sách
-                        val dailyTransactionList = transactionsResponse.dailyTransactions.map { (date, dailyTransaction) ->
-                            DailyTransaction(
-                                date = date,
-                                amountIncome = dailyTransaction.totalDailyIncome,
-                                amountExpense = dailyTransaction.totalDailyExpense
-                            )
-                        }
-
-                        transactionList = dailyTransactionList
-                        transactionStatus = "Transactions fetched successfully"
-                        onSuccess(transactionList)
+                    val responseBody = response.body()
+                    if (responseBody != null) {
+                        transactionStatus = "Transaction successful"
+                        onSuccess(transactionStatus)
                     } else {
                         transactionStatus = "Error: Empty response from server"
                         onError(transactionStatus)
                     }
                 } else {
                     val errorBodyString = response.errorBody()?.string()
-                    transactionStatus = "Error fetching transactions: $errorBodyString"
+                    transactionStatus = "Error posting transaction: $errorBodyString"
                     onError(transactionStatus)
                 }
             } catch (e: Exception) {
                 transactionStatus = "Error: ${e.localizedMessage}"
-                Log.e("TransactionViewModel", "Error fetching transactions: ${e.localizedMessage}", e)
+                Log.e("PostTransactionViewModel", "Error posting transaction: ${e.localizedMessage}", e)
                 onError(transactionStatus)
             }
         }

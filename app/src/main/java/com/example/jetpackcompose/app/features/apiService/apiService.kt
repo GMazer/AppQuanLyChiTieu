@@ -1,5 +1,6 @@
 package com.example.jetpackcompose.app.network
 
+import com.example.jetpackcompose.app.features.inputFeatures.Transaction
 import com.example.jetpackcompose.app.screens.anual_sceens.ViewModel.PeriodicTransaction
 import retrofit2.Response
 import retrofit2.http.Body
@@ -9,7 +10,7 @@ import retrofit2.http.POST
 import retrofit2.http.Query
 
 object BaseURL {
-    val baseUrl = "https://0be5-104-28-222-75.ngrok-free.app"
+    val baseUrl = "https://0502-2401-d800-9fff-cb7b-1cb2-9270-9d95-a561.ngrok-free.app"
 }
 
 data class RegistrationData(
@@ -46,6 +47,15 @@ data class FixedExpense(
     val amount: Long,
     val category: String,
     val date: String
+)
+
+data class PostTransactionResponse(
+    val categoryName: String,
+    val amount: Double,
+    val transactionDate: List<Int>,
+    val note: String,
+    val type: String,
+    val transactionId: Int
 )
 
 data class ApiResponse(
@@ -91,6 +101,10 @@ interface ApiService {
     // API cho giao dịch
     @GET("api/finance")
     suspend fun getTransactions(@Header("Authorization") token: String, @Query("month") month: Int, @Query("year") year: Int): Response<TransactionResponse>
+
+    //API cho nhập transaction
+    @POST("api/transactions")
+    suspend fun postTransaction(@Header("Authorization") token: String, @Body transaction: Transaction): Response<PostTransactionResponse>
 
     // API cho Fixed Income
     @POST("/api/fixed-income")

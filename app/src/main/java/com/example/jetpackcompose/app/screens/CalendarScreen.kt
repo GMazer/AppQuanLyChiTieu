@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.layout.LazyLayout
 import androidx.compose.material.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material.Scaffold
@@ -34,7 +33,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.jetpackcompose.app.features.apiService.TransactionAPI.TransactionViewModel
+import com.example.jetpackcompose.app.features.apiService.TransactionAPI.GetTransactionViewModel
 import com.example.jetpackcompose.components.CustomCalendar
 import com.example.jetpackcompose.components.DayIndex
 import com.example.jetpackcompose.components.MonthPickerButton
@@ -50,7 +49,7 @@ data class DailyTransaction(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CalendarScreen() {
-    val viewModel: TransactionViewModel = TransactionViewModel(LocalContext.current)
+    val viewModel: GetTransactionViewModel = GetTransactionViewModel(LocalContext.current)
 
     // Lấy tháng và năm hiện tại làm giá trị mặc định
     val currentMonthYear = remember {
