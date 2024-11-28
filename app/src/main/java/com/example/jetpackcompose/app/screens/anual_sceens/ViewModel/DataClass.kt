@@ -17,10 +17,10 @@ data class FixedTransaction(
 )
 
 enum class RepeatFrequency(val displayName: String) {
-    daily("Hàng ngày"),
-    weekly("Hàng tuần"),
-    monthly("Hàng tháng"),
-    yearly("Hàng năm");
+    daily("daily"),
+    weekly("weekly"),
+    monthly("monthly"),
+    yearly("yearly");
 
     // Hàm để lấy tên hiển thị của enum
     override fun toString(): String {

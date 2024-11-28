@@ -144,10 +144,10 @@ fun FixedIncome(viewModel: FixedTransactionViewModel = FixedTransactionViewModel
 
                 val fixedTransaction = FixedTransaction(
                     category_id = when (selectedCategory) {
-                        "Thiết yếu" -> 1
-                        "Giải trí" -> 2
-                        "Đầu tư" -> 3
-                        "Dự phòng" -> 4
+                        "Lương" -> 1
+                        "Thưởng" -> 2
+                        "Thu nhập phụ" -> 3
+                        "Khác" -> 4
                         else -> 0
                     },
                     title = titleState.text,
