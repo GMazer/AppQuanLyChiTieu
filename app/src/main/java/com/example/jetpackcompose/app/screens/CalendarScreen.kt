@@ -37,8 +37,14 @@ import com.example.jetpackcompose.app.features.apiService.TransactionAPI.GetTran
 import com.example.jetpackcompose.components.CustomCalendar
 import com.example.jetpackcompose.components.DayIndex
 import com.example.jetpackcompose.components.MonthPickerButton
+import com.example.jetpackcompose.components.monsterrat
+import com.example.jetpackcompose.ui.theme.TextColor
+import com.example.jetpackcompose.ui.theme.colorPrimary
 import com.example.jetpackcompose.ui.theme.topBarColor
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
 import java.util.Calendar
+import java.util.Locale
 
 data class DailyTransaction(
     val date: String,
@@ -57,6 +63,20 @@ fun CalendarScreen() {
         val month = String.format("%02d", calendar.get(Calendar.MONTH) + 1)
         val year = calendar.get(Calendar.YEAR)
         "$month/$year"
+    }
+
+    val currencyFormatter = remember {
+        // Lấy DecimalFormatSymbols mặc định cho Việt Nam
+        val symbols = DecimalFormatSymbols(Locale("vi", "VN"))
+
+        // Thay đổi dấu phân cách thập phân và phân cách hàng nghìn
+        symbols.decimalSeparator = '.'
+        symbols.groupingSeparator = ','
+
+        // Tạo một DecimalFormat mới sử dụng các biểu tượng đã thay đổi
+        val format = DecimalFormat("#,###", symbols)
+
+        format
     }
 
     var selectedMonthYear by remember { mutableStateOf(currentMonthYear) }
@@ -85,6 +105,15 @@ fun CalendarScreen() {
                 errorMessage = error
             }
         )
+    }
+
+    val totalExpense = transactionList.sumOf { it.amountExpense }
+    val totalIncome = transactionList.sumOf { it.amountIncome }
+    val totalBalance = totalIncome - totalExpense
+    val formattedBalance = if (totalBalance >= 0) {
+        "+${currencyFormatter.format(totalBalance)}₫"
+    } else {
+        "${currencyFormatter.format(totalBalance)}₫"
     }
 
     MaterialTheme(
@@ -147,12 +176,88 @@ fun CalendarScreen() {
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
-                CustomCalendar(selectedMonthYear = selectedMonthYear)
 
+                CustomCalendar(selectedMonthYear = selectedMonthYear, transactionList)
+
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = "Thu nhập",
+                                style = TextStyle(
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 12.sp,
+                                ),
+                                color = TextColor,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                            )
+                            Text(
+                                text = "${currencyFormatter.format(totalIncome)}₫",
+                                style = TextStyle(
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 16.sp,
+                                ),
+                                color = Color(0xff37c8ec),
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                            )
+                    }
+                    Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = "Chi tiêu",
+                                style = TextStyle(
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 12.sp,
+                                ),
+                                color = TextColor,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                            )
+                            Text(
+                                text = "${currencyFormatter.format(totalExpense)}₫",
+                                style = TextStyle(
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 16.sp,
+                                ),
+                                color = colorPrimary,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                            )
+                    }
+                    Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = "Tổng",
+                                style = TextStyle(
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 12.sp,
+                                ),
+                                color = TextColor,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                            )
+                            Text(
+                                text = formattedBalance,
+                                style = TextStyle(
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 16.sp,
+                                ),
+                                color = if (totalBalance >= 0) Color(0xff37c8ec) else colorPrimary,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                            )
+                    }
+                }
                 if (errorMessage.isNotEmpty()) {
                     Text(
                         text = errorMessage,
                         color = Color.Red,
+                        fontFamily = monsterrat,
                         style = TextStyle(fontSize = 16.sp, textAlign = TextAlign.Center),
                         modifier = Modifier
                             .fillMaxWidth()

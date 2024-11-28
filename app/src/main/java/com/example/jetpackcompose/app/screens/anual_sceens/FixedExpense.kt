@@ -151,7 +151,6 @@ fun FixedExpense(viewModel: FixedTransactionViewModel = FixedTransactionViewMode
                     },
                     title = titleState.text,
                     amount = amount,
-                    type = "expense",
                     repeat_frequency = selectedRepeat, // Sử dụng enum RepeatFrequency
                     start_date = selectedDate,
                     end_date = selectedEndDate

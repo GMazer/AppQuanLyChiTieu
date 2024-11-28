@@ -10,7 +10,6 @@ data class FixedTransaction(
     val amount: Long,
     val category_id: Int,
     val title: String,
-    val type: String, // "income" or "expense"
     val repeat_frequency: RepeatFrequency, // "weekly", "monthly", etc.
     val start_date: String,
     val end_date: String

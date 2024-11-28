@@ -111,10 +111,14 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.buildAnnotatedString
+import com.example.jetpackcompose.app.screens.DailyTransaction
 import com.example.jetpackcompose.app.screens.InputScreen
 import com.example.jetpackcompose.ui.theme.SaturDayColor
 import com.example.jetpackcompose.ui.theme.SundayColor
 import java.lang.StrictMath.PI
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
+import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -124,7 +128,8 @@ import kotlin.math.sin
 val monsterrat = FontFamily(
     Font(R.font.montserrat_regular, FontWeight.Normal),
     Font(R.font.montserrat_bold, FontWeight.Bold),
-    Font(R.font.montserrat_light, FontWeight.Light)
+    Font(R.font.montserrat_light, FontWeight.Light),
+    Font(R.font.montserrat_medium, FontWeight.Medium)
 )
 
 @Composable
@@ -822,11 +827,26 @@ fun MonthPickerButton(onDateSelected: (String) -> Unit) {
 
 
 
-
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
-fun CustomCalendar(selectedMonthYear: String) {
+fun CustomCalendar(
+    selectedMonthYear: String,
+    transactionList: List<DailyTransaction> // Nhận transactionList từ bên ngoài
+) {
     val calendar = Calendar.getInstance()
+    val currencyFormatter = remember {
+        // Lấy DecimalFormatSymbols mặc định cho Việt Nam
+        val symbols = DecimalFormatSymbols(Locale("vi", "VN"))
+
+        // Thay đổi dấu phân cách thập phân và phân cách hàng nghìn
+        symbols.decimalSeparator = '.'
+        symbols.groupingSeparator = ','
+
+        // Tạo một DecimalFormat mới sử dụng các biểu tượng đã thay đổi
+        val format = DecimalFormat("#,###", symbols)
+
+        format
+    }
 
     // Tách tháng và năm từ chuỗi truyền vào
     val parts = selectedMonthYear.split("/")
@@ -841,22 +861,16 @@ fun CustomCalendar(selectedMonthYear: String) {
     // Tính toán số ngày trong tháng và các ngày cần hiển thị
     val daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
     val firstDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK) - 1 // Chủ nhật = 0
-    val previousMonth = calendar.clone() as Calendar
-    previousMonth.add(Calendar.MONTH, -1)
-    val daysInPreviousMonth = previousMonth.getActualMaximum(Calendar.DAY_OF_MONTH)
 
     val days = mutableListOf<String>()
-    // Thêm ngày cuối tháng trước nếu cần
-    for (i in (daysInPreviousMonth - firstDayOfWeek + 1)..daysInPreviousMonth) {
-        days.add(i.toString())
+    // Thêm ngày trống trước khi bắt đầu tháng hiện tại (tháng trước)
+    val leadingEmptyDays = firstDayOfWeek // Số ngày trống trước khi bắt đầu tháng
+    for (i in 1..leadingEmptyDays) {
+        days.add("") // Thêm ô trống cho các ngày của tháng trước
     }
+
     // Thêm ngày trong tháng hiện tại
     for (i in 1..daysInMonth) {
-        days.add(i.toString())
-    }
-    // Thêm ngày đầu tháng sau nếu cần
-    val remainingDays = 42 - days.size // 6 hàng x 7 cột = 42 ô
-    for (i in 1..remainingDays) {
         days.add(i.toString())
     }
 
@@ -864,7 +878,7 @@ fun CustomCalendar(selectedMonthYear: String) {
     val daysOfWeek = listOf("T2", "T3", "T4", "T5", "T6", "T7", "CN")
 
     // Kích thước lịch
-    val calendarHeight = 300.dp
+    val calendarHeight = 200.dp
 
     BoxWithConstraints(
         modifier = Modifier
@@ -902,46 +916,68 @@ fun CustomCalendar(selectedMonthYear: String) {
             // Lưới ngày
             val rows = days.chunked(7) // Chia thành các hàng, mỗi hàng 7 ngày
             rows.forEachIndexed { rowIndex, week ->
-                // Kiểm tra xem có bất kỳ ngày nào trong hàng thuộc tháng hiện tại không
-                val isAnyDayInCurrentMonth = week.any { day ->
-                    val dayInt = day.toIntOrNull()
-                    val dayIndex = rowIndex * 7 + week.indexOf(day)
-                    // Kiểm tra ngày có thuộc tháng hiện tại không
-                    dayInt != null && dayInt in 1..daysInMonth && dayIndex >= firstDayOfWeek && dayIndex < firstDayOfWeek + daysInMonth
-                }
-
-                // Nếu ít nhất một ngày trong hàng thuộc tháng hiện tại thì mới hiển thị hàng đó
-                if (isAnyDayInCurrentMonth) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceAround
-                    ) {
-                        week.forEachIndexed { columnIndex, day ->
-                            val dayIndex = rowIndex * 7 + columnIndex // Vị trí của ngày trong danh sách days
-                            val isCurrentMonth = dayIndex >= firstDayOfWeek && dayIndex < firstDayOfWeek + daysInMonth // Kiểm tra ngày có thuộc tháng hiện tại hay không
-
-                            Box(
-                                modifier = Modifier
-                                    .weight(1f) // Mỗi ô ngày có cùng trọng số
-                                    .height(35.dp) // Tùy chỉnh chiều cao
-                                    .background(
-                                        if (isCurrentMonth) Color.White else Color.LightGray // Nền màu trắng nếu là tháng hiện tại, màu LightGray nếu không phải
-                                    )
-                                    .border(0.25.dp, Color(0xFFd4d4d4)),
-                                contentAlignment = Alignment.TopStart // Đặt vị trí căn chỉnh góc trên trái
-                            ) {
-                                Text(
-                                    text = day,
-                                    color = when {
-                                        columnIndex == 6 -> SundayColor // Chủ nhật
-                                        columnIndex == 5 -> SaturDayColor // Thứ 7
-                                        else -> if (isCurrentMonth) Color.Black else Color.Gray // Làm nhạt màu cho ngày không phải tháng hiện tại
-                                    },
-                                    fontFamily = monsterrat,
-                                    fontSize = 8.sp,
-                                    textAlign = TextAlign.Start,
-                                    modifier = Modifier.padding(4.dp) // Padding để di chuyển Text khỏi viền
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceAround
+                ) {
+                    week.forEachIndexed { columnIndex, day ->
+                        Box(
+                            modifier = Modifier
+                                .weight(1f) // Mỗi ô ngày có cùng trọng số
+                                .height(35.dp) // Tùy chỉnh chiều cao
+                                .background(
+                                    if (day.isNotEmpty()) Color.White else Color.Transparent // Nền trắng nếu có ngày, trong suốt nếu không có
                                 )
+                                .border(0.25.dp, Color(0xFFd4d4d4)),
+                            contentAlignment = Alignment.TopStart // Đặt vị trí căn chỉnh góc trên trái
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(4.dp)
+                            ) {
+                                if (day.isNotEmpty()) {
+                                    Text(
+                                        text = day,
+                                        color = if (columnIndex == 6) SundayColor else if (columnIndex == 5) SaturDayColor else Color.Black,
+                                        fontFamily = monsterrat,
+                                        fontSize = 8.sp,
+                                        textAlign = TextAlign.Start
+                                    )
+
+                                    // Kiểm tra xem ngày có giao dịch không và hiển thị amountIncome và amountExpense
+                                    val transaction = transactionList.find { it.date == "$year-${month + 1}-$day" }
+                                    transaction?.let {
+                                        // Hiển thị amountIncome nếu không bằng 0
+                                        if (it.amountIncome > 0) {
+                                            Row(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                horizontalArrangement = Arrangement.End // Căn lề phải
+                                            ) {
+                                                Text(
+                                                    text = "${currencyFormatter.format(it.amountIncome)}",
+                                                    color = Color(0xff37c8ec),
+                                                    fontSize = 7.sp,
+                                                    textAlign = TextAlign.End,
+                                                    fontFamily = monsterrat
+                                                )
+                                            }
+                                        }
+                                        // Hiển thị amountExpense nếu không bằng 0
+                                        if (it.amountExpense > 0) {
+                                            Row(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                horizontalArrangement = Arrangement.End // Căn lề phải
+                                            ) {
+                                                Text(
+                                                    text = "${currencyFormatter.format(it.amountExpense)}",
+                                                    color = colorPrimary,
+                                                    fontSize = 7.sp,
+                                                    textAlign = TextAlign.End,
+                                                    fontFamily = monsterrat
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -950,6 +986,11 @@ fun CustomCalendar(selectedMonthYear: String) {
         }
     }
 }
+
+
+
+
+
 
 
 

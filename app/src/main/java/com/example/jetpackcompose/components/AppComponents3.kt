@@ -68,6 +68,9 @@ import com.example.jetpackcompose.ui.theme.componentShapes
 import com.example.jetpackcompose.ui.theme.highGray
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
+import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.ZoneId
@@ -204,32 +207,56 @@ fun ClickableText(
 
 @Composable
 fun DayIndex(DailyTransactions: List<DailyTransaction>) {
+
+    val dateFormat = remember { SimpleDateFormat("yyyy-MM-dd", Locale("vi", "VN")) }
+    val displayDateFormat = remember { SimpleDateFormat("dd/MM/yyyy (E)", Locale("vi", "VN")) }
+    val currencyFormatter = remember {
+        // Lấy DecimalFormatSymbols mặc định cho Việt Nam
+        val symbols = DecimalFormatSymbols(Locale("vi", "VN"))
+
+        // Thay đổi dấu phân cách thập phân và phân cách hàng nghìn
+        symbols.decimalSeparator = '.'
+        symbols.groupingSeparator = ','
+
+        // Tạo một DecimalFormat mới sử dụng các biểu tượng đã thay đổi
+        val format = DecimalFormat("#,###", symbols)
+
+        format
+    }
+
     for (transaction in DailyTransactions) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
         ) {
+            val formattedDate = try {
+                val date = dateFormat.parse(transaction.date)
+                displayDateFormat.format(date)
+            } catch (e: Exception) {
+                transaction.date
+            }
+
             Row(
                 verticalAlignment = Alignment.CenterVertically, // Căn giữa theo chiều dọc
                 horizontalArrangement = Arrangement.Start, // Căn trái theo chiều ngang
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(color = Color.LightGray)
-                    .height(40.dp)
+                    .background(color = Color(0xfff1f1f1))
+                    .height(35.dp)
             ) {
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(
-                    text = "${transaction.date}",
+                    text = formattedDate,
                     fontFamily = monsterrat,
                     color = Color(0xFF444444),
                     fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp
+                    fontSize = 12.sp
                 )
             }
 
             Divider(
                 color = highGray,
-                thickness = 1.dp
+                thickness = 0.7.dp
             )
 
             Row(
@@ -238,27 +265,29 @@ fun DayIndex(DailyTransactions: List<DailyTransaction>) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(color = Color.White)
-                    .height(64.dp)
+                    .height(50.dp)
             ) {
                 Spacer(modifier = Modifier.width(24.dp))
                 Text(
                     text = "Tiền thu:",
                     fontFamily = monsterrat,
+                    fontWeight = FontWeight.Medium,
                     color = Color(0xFF444444),
                     modifier = Modifier
                         .width(64.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "${transaction.amountIncome}",
+                    text = "${currencyFormatter.format(transaction.amountIncome)}₫",
                     fontFamily = monsterrat,
+                    fontWeight = FontWeight.Medium,
                     color = Color(0xFF444444)
                 )
             }
 
             Divider(
                 color = highGray,
-                thickness = 1.dp
+                thickness = 0.7.dp
             )
 
             Row(
@@ -267,27 +296,29 @@ fun DayIndex(DailyTransactions: List<DailyTransaction>) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(color = Color.White)
-                    .height(64.dp)
+                    .height(50.dp)
             ) {
                 Spacer(modifier = Modifier.width(24.dp))
                 Text(
                     text = "Tiền chi:",
                     fontFamily = monsterrat,
+                    fontWeight = FontWeight.Medium,
                     color = Color(0xFF444444),
                     modifier = Modifier
                         .width(64.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "${transaction.amountExpense}",
+                    text = "${currencyFormatter.format(transaction.amountExpense)}₫",
                     fontFamily = monsterrat,
+                    fontWeight = FontWeight.Medium,
                     color = Color(0xFF444444)
                 )
             }
 
             Divider(
                 color = highGray,
-                thickness = 1.dp
+                thickness = 0.7.dp
             )
 
         }

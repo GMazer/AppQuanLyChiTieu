@@ -209,7 +209,7 @@ fun IncomeContent (viewModel: PostTransactionViewModel = PostTransactionViewMode
 //                        amountValue = TextFieldValue("")
 
                         // Ghi log thông tin giao dịch
-                        Log.i("ExpenseContent", "Transaction: $transaction")
+                        Log.i("IncomeContent", "Transaction: $transaction")
                     },
                     modifier = Modifier.width(248.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = buttonColor)

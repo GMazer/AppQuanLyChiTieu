@@ -144,15 +144,14 @@ fun FixedIncome(viewModel: FixedTransactionViewModel = FixedTransactionViewModel
 
                 val fixedTransaction = FixedTransaction(
                     category_id = when (selectedCategory) {
-                        "Lương" -> 1
-                        "Thưởng" -> 2
-                        "Thu nhập phụ" -> 3
-                        "Khác" -> 4
+                        "Lương" -> 6
+                        "Thưởng" -> 7
+                        "Thu nhập phụ" -> 8
+                        "Khác" -> 9
                         else -> 0
                     },
                     title = titleState.text,
                     amount = amount,
-                    type = "income", // Chắc chắn đây là chi tiêu
                     repeat_frequency = selectedRepeat, // Sử dụng enum RepeatFrequency
                     start_date = selectedDate,
                     end_date = selectedEndDate // Chưa xử lý ngày kết thúc
