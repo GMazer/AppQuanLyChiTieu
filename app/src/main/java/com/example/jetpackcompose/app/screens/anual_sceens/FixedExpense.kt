@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -17,14 +18,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.example.jetpackcompose.R
-import com.example.jetpackcompose.app.features.inputFeatures.TransactionType
-import com.example.jetpackcompose.app.screens.anual_sceens.ViewModel.PeriodicTransaction
+import com.example.jetpackcompose.app.screens.anual_sceens.ViewModel.FixedExpenseViewModel
+import com.example.jetpackcompose.app.screens.anual_sceens.ViewModel.FixedTransaction
 import com.example.jetpackcompose.components.DatePickerRow
 import com.example.jetpackcompose.components.DropdownRow
 import com.example.jetpackcompose.components.EndDateRow
+import com.example.jetpackcompose.components.MyButtonComponent
 import com.example.jetpackcompose.components.RowNumberField
 import com.example.jetpackcompose.components.RowTextField
 import java.text.SimpleDateFormat
@@ -34,32 +37,26 @@ import java.util.Locale
 
 @SuppressLint("NewApi")
 @Composable
-fun FixedExpense( onDataChanged: (PeriodicTransaction) -> Unit) {
+fun FixedExpense(viewModel: FixedExpenseViewModel = FixedExpenseViewModel(LocalContext.current)) {
 
-
-    //Ngày mặc điịnh
-    val vietnamLocale = Locale("vi", "VN") // Đặt Locale Việt Nam
-    val currentDate = remember {
-        SimpleDateFormat("dd/MM/yyyy", vietnamLocale).format(Date()) // Định dạng ngày hiện tại
-    }
+    // Dữ liệu cần thiết cho form
+    val vietnamLocale = Locale("vi", "VN")
+    val currentDate = remember { SimpleDateFormat("dd/MM/yyyy", vietnamLocale).format(Date()) }
 
     var titleState by remember { mutableStateOf(TextFieldValue("")) }
-    var selectedCategory by remember { mutableStateOf("") }
+    var selectedCategory by remember { mutableStateOf("Thiết yếu") }
+    var selectedRepeat by remember { mutableStateOf("Không lặp lại") }
     var selectedDate by remember { mutableStateOf(currentDate) }
-    var selectedRepeat by remember { mutableStateOf("") }
-    var endDate by remember { mutableStateOf("Không") }
-    var numberState by remember { mutableStateOf(TextFieldValue("")) }
+    var selectedEndDate by remember { mutableStateOf("") }
+    var amountState by remember { mutableStateOf(TextFieldValue("")) }
 
-    fun createTransaction(): PeriodicTransaction {
-        return PeriodicTransaction(
-            title = titleState.text,
-            startDate = selectedDate,
-            endDate = endDate,
-            note = selectedRepeat,
-            amount = numberState.text.toLongOrNull() ?: 0L,
-            category = selectedCategory,
-            type = TransactionType.EXPENSE
-        )
+    // State for handling success/error message
+    var statusMessage by remember { mutableStateOf("") }
+    var statusColor by remember { mutableStateOf(Color.Red) }
+
+    // Hiển thị kết quả từ ViewModel
+    if (statusMessage.isNotEmpty()) {
+        Text(text = statusMessage, color = statusColor)
     }
 
     Column(
@@ -67,104 +64,123 @@ fun FixedExpense( onDataChanged: (PeriodicTransaction) -> Unit) {
             .fillMaxWidth()
             .padding(8.dp)
     ) {
+
+        // Tiêu đề và số tiền
         Box(
             modifier = Modifier
-                .fillMaxWidth() // Chiều rộng tối đa (có thể tùy chỉnh)
-                .padding(16.dp) // Khoảng cách xung quanh Box
-                .background(
-                    color = Color.White, // Màu nền trắng
-                    shape = RoundedCornerShape(8.dp) // Bo góc 8.dp
-                )
+                .fillMaxWidth()
+                .padding(16.dp)
+                .background(color = Color.White, shape = RoundedCornerShape(8.dp))
         ) {
-            Column() {
+            Column {
                 RowTextField(
                     label = "Tiêu đề",
                     textState = titleState,
-                    onValueChange = { newValue ->
-                        titleState = newValue
-                        onDataChanged(createTransaction())
-                    }
+                    onValueChange = { newValue -> titleState = newValue }
                 )
-                Divider(
-                    color = Color(0xFFd4d4d4),
-                    thickness = 0.5.dp
-                )
+                Divider(color = Color(0xFFd4d4d4), thickness = 0.5.dp)
+
                 RowNumberField(
-                    textState = numberState,
-                    onValueChange = { newValue ->
-                        numberState = newValue // Cập nhật giá trị khi người dùng nhập
-                    }
+                    textState = amountState,
+                    onValueChange = { newValue -> amountState = newValue }
                 )
-                Divider(
-                    color = Color(0xFFd4d4d4),
-                    thickness = 0.5.dp
-                )
+                Divider(color = Color(0xFFd4d4d4), thickness = 0.5.dp)
+
                 DropdownRow(
                     label = "Danh mục",
                     options = listOf(
                         Pair(R.drawable.essentials, "Thiết yếu"),
                         Pair(R.drawable.entertainment, "Giải trí"),
                         Pair(R.drawable.invest, "Đầu tư"),
-                        Pair(R.drawable.hedgefund, "Dự phòng"),
+                        Pair(R.drawable.hedgefund, "Dự phòng")
                     )
                 ) { category ->
-                    // Xử lý khi danh mục được chọn thay đổi
                     selectedCategory = category
-                    onDataChanged(createTransaction())
                 }
             }
         }
+
         Spacer(modifier = Modifier.height(16.dp))
+
+        // Lặp lại và ngày bắt đầu
         Box(
             modifier = Modifier
-                .fillMaxWidth() // Chiều rộng tối đa (có thể tùy chỉnh)
-                .padding(16.dp) // Khoảng cách xung quanh Box
-                .background(
-                    color = Color.White,
-                    shape = RoundedCornerShape(8.dp) //
-                )
+                .fillMaxWidth()
+                .padding(16.dp)
+                .background(color = Color.White, shape = RoundedCornerShape(8.dp))
         ) {
-            Column() {
+            Column {
                 DropdownRow(
                     label = "Lặp lại",
                     options = listOf(
-                        Pair(null, "Không lặp lại"),
-                        Pair(null, "Hàng ngày"),
-                        Pair(null, "Hàng tuần"),
-                        Pair(null, "Hàng tháng"),
+                        Pair(null, "daily"),
+                        Pair(null, "weakly"),
+                        Pair(null, "monthly"),
+                        Pair(null, "yearly")
                     )
                 ) { repeat ->
-                    // Xử lý khi danh mục được chọn thay đổi
                     selectedRepeat = repeat
-                    onDataChanged(createTransaction())
-
                 }
-                Divider(
-                    color = Color(0xFFd4d4d4),
-                    thickness = 0.5.dp
-                )
+                Divider(color = Color(0xFFd4d4d4), thickness = 0.5.dp)
+
                 DatePickerRow(
                     label = "Bắt đầu",
                     initialDate = LocalDate.now()
                 ) { date ->
-                    // Cập nhật ngày được chọn
                     selectedDate = date.toString()
-                    onDataChanged(createTransaction())
-
                 }
-                Divider(
-                    color = Color(0xFFd4d4d4), // Màu của đường chia tách
-                    thickness = 0.5.dp // Độ dày của đường chia tách
-                )
-                EndDateRow (
-                    label = "Kết thúc"
-                ) { date ->
-                    // Xử lý khi danh mục được chọn thay đổi
-                    endDate = date
-                    onDataChanged(createTransaction())
-                }
+                Divider(color = Color(0xFFd4d4d4), thickness = 0.5.dp)
 
+                EndDateRow { endDate ->
+                    // Xử lý ngày kết thúc
+                    selectedEndDate = endDate
+                }
             }
         }
+
+        // Nút thêm giao dịch
+        MyButtonComponent(
+            value = "Thêm",
+            onClick = {
+                // Chuyển giá trị sang FixedTransaction và gọi ViewModel để thêm
+                val amount = amountState.text.toLongOrNull() ?: 0L
+
+                val fixedTransaction = FixedTransaction(
+                    category_id = when (selectedCategory) {
+                        "Thiết yếu" -> 1
+                        "Giải trí" -> 2
+                        "Đầu tư" -> 3
+                        "Dự phòng" -> 4
+                        else -> 0
+                    },
+                    title = titleState.text,
+                    amount = amount,
+                    type = "expense", // Chắc chắn đây là chi tiêu
+                    repeat_frequency = selectedRepeat,
+                    start_date = selectedDate,
+                    end_date = selectedEndDate // Chưa xử lý ngày kết thúc
+                )
+
+                // Gọi ViewModel để thêm giao dịch và xử lý kết quả
+                viewModel.addFixedTransaction(fixedTransaction,
+                    onSuccess = { message ->
+                        // Cập nhật thông báo thành công
+                        statusMessage = message
+                        statusColor = Color.Green
+                    },
+                    onError = { message ->
+                        // Cập nhật thông báo lỗi
+                        statusMessage = message
+                        statusColor = Color.Red
+                    }
+                )
+            }
+        )
     }
 }
+
+
+
+
+
+

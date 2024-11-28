@@ -1,10 +1,8 @@
 package com.example.jetpackcompose.app.screens.anual_sceens.ViewModel
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.util.Log
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.jetpackcompose.app.network.ApiService
 import com.example.jetpackcompose.app.network.BaseURL
@@ -15,62 +13,72 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class FixedExpenseViewModel(private val context: Context) : ViewModel() {
 
-    private val sharedPreferences: SharedPreferences = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
-    private val gson = GsonBuilder().setLenient().create()
+    private val sharedPreferences = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+
+    private val gson = GsonBuilder()
+        .setLenient()
+        .create()
+
     private val api = Retrofit.Builder()
-        .baseUrl(BaseURL.baseUrl)  // Base URL của API của bạn
+        .baseUrl(BaseURL.baseUrl)
         .addConverterFactory(GsonConverterFactory.create(gson))
         .build()
         .create(ApiService::class.java)
 
-    var fixedExpenseStatus: String = ""
+    var transactionStatus: String = ""
         private set
 
+    // Lấy token từ SharedPreferences
     private fun getToken(): String? {
         return sharedPreferences.getString("auth_token", null)
     }
 
-    fun addFixedExpense(fixedExpense: PeriodicTransaction, onSuccess: (String) -> Unit, onError: (String) -> Unit) {
+    // Hàm post fixed expense
+    fun addFixedTransaction (
+        fixedExpense: FixedTransaction,
+        onSuccess: (String) -> Unit,
+        onError: (String) -> Unit
+    ) {
         val token = getToken()
 
         if (token.isNullOrEmpty()) {
-            fixedExpenseStatus = "Error: Token not found. Please log in again."
-            onError(fixedExpenseStatus)
+            transactionStatus = "Error: Token not found. Please log in again."
+            onError(transactionStatus)
             return
         }
 
         viewModelScope.launch {
             try {
-                val response = api.addFixedExpense("Bearer $token", fixedExpense)
+                Log.d("FixedExpenseViewModel", "Token: $token")
+                Log.d("FixedExpenseViewModel", "FixedExpense Data: $fixedExpense")
+
+                // Gửi yêu cầu API để thêm FixedExpense
+                val response = api.addFixedTransaction("Bearer $token", fixedExpense)
+                Log.d("FixedExpenseViewModel", "Response Code: ${response.code()}")
+
                 if (response.isSuccessful) {
                     val responseBody = response.body()
                     if (responseBody != null) {
-                        fixedExpenseStatus = "Fixed Expense added successfully: ${responseBody.message}"
-                        onSuccess(fixedExpenseStatus)
+                        transactionStatus = "Fixed Expense added successfully"
+                        onSuccess(transactionStatus)
                     } else {
-                        fixedExpenseStatus = "Error: Empty response from server"
-                        onError(fixedExpenseStatus)
+                        transactionStatus = "Error: Empty response from server"
+                        onError(transactionStatus)
                     }
                 } else {
                     val errorBodyString = response.errorBody()?.string()
-                    fixedExpenseStatus = "Error adding Fixed Expense: $errorBodyString"
-                    onError(fixedExpenseStatus)
+                    transactionStatus = "Error adding Fixed Expense: $errorBodyString"
+                    onError(transactionStatus)
                 }
             } catch (e: Exception) {
-                fixedExpenseStatus = "Error: ${e.localizedMessage}"
-                Log.e("FixedExpenseViewModel", "Error: ${e.localizedMessage}", e)
-                onError(fixedExpenseStatus)
+                transactionStatus = "Error: ${e.localizedMessage}"
+                Log.e("FixedExpenseViewModel", "Error adding Fixed Expense: ${e.localizedMessage}", e)
+                onError(transactionStatus)
             }
         }
     }
 }
 
-class FixedExpenseViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(FixedExpenseViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return FixedExpenseViewModel(context) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
-    }
-}
+
+
+

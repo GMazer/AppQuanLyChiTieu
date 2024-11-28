@@ -29,14 +29,12 @@ class FixedIncomeViewModel(private val context: Context) : ViewModel() {
     var fixedIncomeStatus: String = ""
         private set
 
-    // Lấy token từ SharedPreferences
     private fun getToken(): String? {
         return sharedPreferences.getString("auth_token", null)
     }
 
-    // Thêm Fixed Income
     fun addFixedIncome(
-        fixedIncome: PeriodicTransaction,
+        fixedIncome: FixedTransaction,
         onSuccess: (String) -> Unit,
         onError: (String) -> Unit
     ) {
@@ -48,55 +46,31 @@ class FixedIncomeViewModel(private val context: Context) : ViewModel() {
             return
         }
 
-        fun addFixedIncome(
-            fixedIncome: PeriodicTransaction,
-            onSuccess: (String) -> Unit,
-            onError: (String) -> Unit
-        ) {
-            val token = getToken()
+        viewModelScope.launch {
+            try {
+                val response = api.addFixedTransaction("Bearer $token", fixedIncome)
 
-            if (token.isNullOrEmpty()) {
-                fixedIncomeStatus = "Error: Token not found. Please log in again."
-                onError(fixedIncomeStatus)
-                return
-            }
-
-            viewModelScope.launch {
-                try {
-                    val response = api.addFixedIncome("Bearer $token", fixedIncome)
-
-                    if (response.isSuccessful) {
-                        val responseBody = response.body()
-                        if (responseBody != null) {
-                            fixedIncomeStatus =
-                                "Fixed Income added successfully: ${responseBody.message}"
-                            onSuccess(fixedIncomeStatus)
-                        } else {
-                            fixedIncomeStatus = "Error: Empty response from server"
-                            onError(fixedIncomeStatus)
-                        }
+                if (response.isSuccessful) {
+                    val responseBody = response.body()
+                    if (responseBody != null) {
+                        fixedIncomeStatus = "Fixed Income added successfully: ${responseBody.message}"
+                        onSuccess(fixedIncomeStatus)
                     } else {
-                        val errorBodyString = response.errorBody()?.string()
-                        fixedIncomeStatus = "Error adding Fixed Income: $errorBodyString"
+                        fixedIncomeStatus = "Error: Empty response from server"
                         onError(fixedIncomeStatus)
                     }
-                } catch (e: Exception) {
-                    fixedIncomeStatus = "Error: ${e.localizedMessage}"
-                    Log.e("FixedIncomeViewModel", "Error: ${e.localizedMessage}", e)
+                } else {
+                    val errorBodyString = response.errorBody()?.string()
+                    fixedIncomeStatus = "Error adding Fixed Income: $errorBodyString"
                     onError(fixedIncomeStatus)
                 }
+            } catch (e: Exception) {
+                fixedIncomeStatus = "Error: ${e.localizedMessage}"
+                Log.e("FixedIncomeViewModel", "Error: ${e.localizedMessage}", e)
+                onError(fixedIncomeStatus)
             }
         }
     }
 }
 
-class FixedIncomeViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(FixedIncomeViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return FixedIncomeViewModel(context) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
-    }
-}
 

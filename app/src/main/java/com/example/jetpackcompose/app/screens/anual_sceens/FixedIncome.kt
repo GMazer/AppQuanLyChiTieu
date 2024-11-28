@@ -21,7 +21,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.example.jetpackcompose.R
 import com.example.jetpackcompose.app.features.inputFeatures.TransactionType
-import com.example.jetpackcompose.app.screens.anual_sceens.ViewModel.PeriodicTransaction
+import com.example.jetpackcompose.app.screens.anual_sceens.ViewModel.FixedTransaction
 import com.example.jetpackcompose.components.DatePickerRow
 import com.example.jetpackcompose.components.DropdownRow
 import com.example.jetpackcompose.components.EndDateRow
@@ -34,7 +34,7 @@ import java.util.Locale
 
 @SuppressLint("NewApi")
 @Composable
-fun FixedIncome(onDataChanged: (PeriodicTransaction) -> Unit) {
+fun FixedIncome(onDataChanged: (FixedTransaction) -> Unit) {
 
     val vietnamLocale = Locale("vi", "VN") // Đặt Locale Việt Nam
     val currentDate = remember {
@@ -42,21 +42,23 @@ fun FixedIncome(onDataChanged: (PeriodicTransaction) -> Unit) {
     }
 
     var titleState by remember { mutableStateOf(TextFieldValue("")) }
-    var selectedCategory by remember { mutableStateOf("") }
-    var selectedDate by remember { mutableStateOf(currentDate) }
+    var selectedCategory by remember { mutableStateOf(currentDate) }
+    var selectedDate by remember { mutableStateOf("") }
     var selectedRepeat by remember { mutableStateOf("") }
-    var endDate by remember { mutableStateOf("Không") }
     var numberState by remember { mutableStateOf(TextFieldValue("")) }
+    var endDate by remember { mutableStateOf("Không") }
 
-    fun createTransaction(): PeriodicTransaction {
-        return PeriodicTransaction(
+
+    // Tạo FixedTransaction từ các dữ liệu đầu vào
+    fun createTransaction(): FixedTransaction {
+        return FixedTransaction(
+            category_id = selectedCategory.toInt(), // Category id
             title = titleState.text,
-            startDate = selectedDate,
-            endDate = endDate,
-            note = selectedRepeat,
+            start_date = selectedDate,
+            end_date = endDate,
+            repeat_frequency = selectedRepeat,
             amount = numberState.text.toLongOrNull() ?: 0L,
-            category = selectedCategory,
-            type = TransactionType.INCOME
+            type = "expense"  // Type: expense hoặc income
         )
     }
 
@@ -157,8 +159,8 @@ fun FixedIncome(onDataChanged: (PeriodicTransaction) -> Unit) {
                     label = "Kết thúc"
                 ) { date ->
                     // Xử lý khi danh mục được chọn thay đổi
-                    endDate = date
-                    onDataChanged(createTransaction())
+//                    endDate = date
+//                    onDataChanged(createTransaction())
                 }
             }
         }

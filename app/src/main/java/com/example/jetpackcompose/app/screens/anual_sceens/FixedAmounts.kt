@@ -1,6 +1,5 @@
 package com.example.jetpackcompose.app.screens.anual_sceens
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,35 +21,19 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.jetpackcompose.app.features.inputFeatures.TabItem
 import com.example.jetpackcompose.app.screens.anual_sceens.ViewModel.FixedExpenseViewModel
-import com.example.jetpackcompose.app.screens.anual_sceens.ViewModel.FixedExpenseViewModelFactory
-import com.example.jetpackcompose.app.screens.anual_sceens.ViewModel.FixedIncomeViewModel
-import com.example.jetpackcompose.app.screens.anual_sceens.ViewModel.FixedIncomeViewModelFactory
-import com.example.jetpackcompose.app.screens.anual_sceens.ViewModel.PeriodicTransaction
+import com.example.jetpackcompose.app.screens.anual_sceens.ViewModel.FixedTransaction
 import com.example.jetpackcompose.components.FixedTabRow
 import kotlinx.coroutines.launch
 
 
 @Composable
 fun InputFixedTab(navController: NavHostController) {
-    val context = LocalContext.current
-
     // Tạo instance của FixedExpenseViewModel với Factory
-    val fixedExpenseViewModel: FixedExpenseViewModel = viewModel(
-        factory = FixedExpenseViewModelFactory(context)
-    )
-
-    val fixedIncomeViewModel: FixedIncomeViewModel = viewModel(
-        factory = FixedIncomeViewModelFactory(context)
-    )
-
-    var expenseData by rememberSaveable { mutableStateOf<PeriodicTransaction?>(null) }
-    var incomeData by rememberSaveable { mutableStateOf<PeriodicTransaction?>(null) }
+    var incomeData by rememberSaveable { mutableStateOf<FixedTransaction?>(null) }
 
     val tabs = listOf(
         TabItem("Expense", icon = Icons.Default.ArrowBack) {
-            FixedExpense { data ->
-                expenseData = data
-            }
+            FixedExpense()
         },
         TabItem("Income", icon = Icons.Default.ArrowForward) {
             FixedIncome { data ->
@@ -80,37 +63,7 @@ fun InputFixedTab(navController: NavHostController) {
             titles = listOf("Tiền chi", "Tiền thu"),
             pagerStatement = pagerState,
             coroutineScoper = coroutineScope,
-            navController = navController,
-            onSaveData = { tabIndex ->
-                when (tabIndex) {
-                    0 -> {
-                        expenseData?.let { transaction ->
-                            fixedExpenseViewModel.addFixedExpense(
-                                transaction,
-                                onSuccess = { successMessage ->
-                                    Log.d("InputFixedTab", successMessage)
-                                },
-                                onError = { errorMessage ->
-                                    Log.e("InputFixedTab", errorMessage)
-                                }
-                            )
-                        }
-                    }
-                    1 -> {
-                        incomeData?.let { transaction ->
-                            fixedIncomeViewModel.addFixedIncome(
-                                transaction,
-                                onSuccess = { successMessage ->
-                                    Log.d("InputFixedTab", successMessage)
-                                },
-                                onError = { errorMessage ->
-                                    Log.e("InputFixedTab", errorMessage)
-                                }
-                            )
-                        }
-                    }
-                }
-            }
+            navController = navController
         )
 
         HorizontalPager(state = pagerState, userScrollEnabled = false) {

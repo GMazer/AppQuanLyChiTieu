@@ -83,8 +83,7 @@ fun FixedTabRow(
     coroutineScoper: CoroutineScope,
     pagerStatement: PagerState,
     navController: NavHostController, // Add NavHostController parameter
-    modifier: Modifier = Modifier,
-    onSaveData: (Int) -> Unit // Callback để xử lý lưu dữ liệu dựa trên tabIndex
+    modifier: Modifier = Modifier
 ) {
     val inactiveColor = Color(0xFFe1e1e1)
     val inactiveTextColor = Color(0xFFF35E17)
@@ -169,8 +168,8 @@ fun FixedTabRow(
             Spacer(modifier = Modifier.weight(1f))
 
             // Nút "Lưu"
-            ClickableText("Lưu") {
-                onSaveData(tabIndex) // Navigate to AnualScreen
+            ClickableText("  ") {
+            //
             }
 
         }
@@ -457,7 +456,7 @@ fun DatePickerRow(
 
     // Sử dụng SimpleDateFormat với Locale Việt Nam
     val vietnamLocale = Locale("vi", "VN")
-    val dateFormat = SimpleDateFormat("dd/MM/yyyy (E)", vietnamLocale)
+    val dateFormat = SimpleDateFormat("dd-MM-yyyy", vietnamLocale)
 
     // Chuyển đổi ngày thành chuỗi hiển thị
     val formattedDate = remember(selectedDate) {
@@ -602,7 +601,7 @@ fun RowNumberField(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EndDateRow(
-    label: String = "Ngày kết thúc",
+    label: String = "Kết thúc",
     onDateSelected: (String) -> Unit // Callback trả về giá trị (Không hoặc ngày được chọn)
 ) {
     val options = listOf("Không", "Ngày chỉ định") // Các tùy chọn
@@ -699,7 +698,7 @@ fun EndDateRow(
                 val newDate = Calendar.getInstance().apply {
                     set(year, month, dayOfMonth)
                 }.time
-                selectedDate = SimpleDateFormat("dd/MM/yyyy", vietnamLocale).format(newDate) // Cập nhật ngày
+                selectedDate = SimpleDateFormat("dd-MM-yyyy", vietnamLocale).format(newDate) // Cập nhật ngày
                 onDateSelected(selectedDate) // Gửi ngày đã chọn qua callback
                 showDatePicker = false // Tắt trạng thái hiển thị DatePickerDialog
             },

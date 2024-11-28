@@ -42,12 +42,10 @@ import com.example.jetpackcompose.components.NumberTextField
 @Composable
 fun OutComeContent(viewModel: PostTransactionViewModel = PostTransactionViewModel(LocalContext.current)) {
 
-    var tabIndex by remember { mutableStateOf(0) }
     var textNote by remember { mutableStateOf(TextFieldValue()) }
     var amountValue by remember { mutableStateOf(TextFieldValue()) }
     var selectedDate by remember { mutableStateOf("Chưa chọn ngày") }
     var selectedCategory by remember { mutableStateOf<Category?>(null) }
-    var selectedIdCategory by remember { mutableStateOf(0) }
 
     var errorMessage by remember { mutableStateOf("") }
     var successMessage by remember { mutableStateOf("") }
@@ -206,9 +204,6 @@ fun OutComeContent(viewModel: PostTransactionViewModel = PostTransactionViewMode
                             }
                         )
 
-//                        // Xóa dữ liệu nhập sau khi lưu
-//                        textNote = TextFieldValue("")
-//                        amountValue = TextFieldValue("")
 
                         // Ghi log thông tin giao dịch
                         Log.i("ExpenseContent", "Transaction: $transaction")
