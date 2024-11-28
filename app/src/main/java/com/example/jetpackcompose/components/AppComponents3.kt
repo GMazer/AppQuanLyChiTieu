@@ -456,7 +456,7 @@ fun DatePickerRow(
 
     // Sử dụng SimpleDateFormat với Locale Việt Nam
     val vietnamLocale = Locale("vi", "VN")
-    val dateFormat = SimpleDateFormat("dd-MM-yyyy", vietnamLocale)
+    val dateFormat = SimpleDateFormat("yyyy-MM-dd", vietnamLocale)
 
     // Chuyển đổi ngày thành chuỗi hiển thị
     val formattedDate = remember(selectedDate) {
@@ -698,7 +698,7 @@ fun EndDateRow(
                 val newDate = Calendar.getInstance().apply {
                     set(year, month, dayOfMonth)
                 }.time
-                selectedDate = SimpleDateFormat("dd-MM-yyyy", vietnamLocale).format(newDate) // Cập nhật ngày
+                selectedDate = SimpleDateFormat("yyyy-MM-dd", vietnamLocale).format(newDate) // Cập nhật ngày
                 onDateSelected(selectedDate) // Gửi ngày đã chọn qua callback
                 showDatePicker = false // Tắt trạng thái hiển thị DatePickerDialog
             },
