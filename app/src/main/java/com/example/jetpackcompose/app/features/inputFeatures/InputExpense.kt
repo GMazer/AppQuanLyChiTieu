@@ -237,5 +237,5 @@ fun OutComeContent(viewModel: PostTransactionViewModel = PostTransactionViewMode
 @Preview
 @Composable
 fun PreviewOutComeContent() {
-    OutComeContent()
+//    OutComeContent()
 }

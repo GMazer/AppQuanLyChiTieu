@@ -1,10 +1,14 @@
 package com.example.jetpackcompose.app.screens.anual_sceens
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -47,7 +51,7 @@ fun FixedExpense(viewModel: FixedExpenseViewModel = FixedExpenseViewModel(LocalC
 
     var titleState by remember { mutableStateOf(TextFieldValue("")) }
     var selectedCategory by remember { mutableStateOf("Thiết yếu") }
-    var selectedRepeat by remember { mutableStateOf(RepeatFrequency.DAILY) } // Thay đổi thành enum
+    var selectedRepeat by remember { mutableStateOf(RepeatFrequency.daily) } // Thay đổi thành enum
     var selectedDate by remember { mutableStateOf(currentDate) }
     var selectedEndDate by remember { mutableStateOf("") }
     var amountState by remember { mutableStateOf(TextFieldValue("")) }
@@ -55,11 +59,6 @@ fun FixedExpense(viewModel: FixedExpenseViewModel = FixedExpenseViewModel(LocalC
     // State for handling success/error message
     var statusMessage by remember { mutableStateOf("") }
     var statusColor by remember { mutableStateOf(Color.Red) }
-
-    // Hiển thị kết quả từ ViewModel
-    if (statusMessage.isNotEmpty()) {
-        Text(text = statusMessage, color = statusColor)
-    }
 
     Column(
         modifier = Modifier
@@ -158,6 +157,8 @@ fun FixedExpense(viewModel: FixedExpenseViewModel = FixedExpenseViewModel(LocalC
                     end_date = selectedEndDate // Chưa xử lý ngày kết thúc
                 )
 
+                Log.i("FixedExpense", "FixedTransaction: $fixedTransaction")
+
                 // Gọi ViewModel để thêm giao dịch và xử lý kết quả
                 viewModel.addFixedTransaction(fixedTransaction,
                     onSuccess = { message ->
@@ -173,6 +174,14 @@ fun FixedExpense(viewModel: FixedExpenseViewModel = FixedExpenseViewModel(LocalC
                 )
             }
         )
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxSize()
+        ){
+            Text(text = statusMessage, color = statusColor, style = androidx.compose.material3.MaterialTheme.typography.bodyMedium)
+        }
     }
 }
 
