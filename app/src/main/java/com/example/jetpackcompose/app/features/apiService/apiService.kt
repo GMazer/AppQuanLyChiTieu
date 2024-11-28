@@ -102,7 +102,7 @@ interface ApiService {
 
 
     // API cho Fixed
-    @POST("/api/fixed_transaction")
+    @POST("/api/fixed-transactions")
     suspend fun addFixedTransaction(
         @Header("Authorization") token: String,
         @Body fixedTransaction: FixedTransaction // Dùng FixedTransaction mà không phân biệt loại giao dịch

@@ -24,7 +24,9 @@ import androidx.compose.ui.unit.dp
 import com.example.jetpackcompose.R
 import com.example.jetpackcompose.app.screens.anual_sceens.ViewModel.FixedExpenseViewModel
 import com.example.jetpackcompose.app.screens.anual_sceens.ViewModel.FixedTransaction
+import com.example.jetpackcompose.app.screens.anual_sceens.ViewModel.RepeatFrequency
 import com.example.jetpackcompose.components.DatePickerRow
+import com.example.jetpackcompose.components.DropdownRepeat
 import com.example.jetpackcompose.components.DropdownRow
 import com.example.jetpackcompose.components.EndDateRow
 import com.example.jetpackcompose.components.MyButtonComponent
@@ -45,7 +47,7 @@ fun FixedExpense(viewModel: FixedExpenseViewModel = FixedExpenseViewModel(LocalC
 
     var titleState by remember { mutableStateOf(TextFieldValue("")) }
     var selectedCategory by remember { mutableStateOf("Thiết yếu") }
-    var selectedRepeat by remember { mutableStateOf("Không lặp lại") }
+    var selectedRepeat by remember { mutableStateOf(RepeatFrequency.DAILY) } // Thay đổi thành enum
     var selectedDate by remember { mutableStateOf(currentDate) }
     var selectedEndDate by remember { mutableStateOf("") }
     var amountState by remember { mutableStateOf(TextFieldValue("")) }
@@ -110,16 +112,11 @@ fun FixedExpense(viewModel: FixedExpenseViewModel = FixedExpenseViewModel(LocalC
                 .background(color = Color.White, shape = RoundedCornerShape(8.dp))
         ) {
             Column {
-                DropdownRow(
+                DropdownRepeat (
                     label = "Lặp lại",
-                    options = listOf(
-                        Pair(null, "daily"),
-                        Pair(null, "weakly"),
-                        Pair(null, "monthly"),
-                        Pair(null, "yearly")
-                    )
+                    options = RepeatFrequency.values().map { it.displayName to it } // Lấy tất cả giá trị enum
                 ) { repeat ->
-                    selectedRepeat = repeat
+                    selectedRepeat = repeat // Lưu enum thay vì chuỗi
                 }
                 Divider(color = Color(0xFFd4d4d4), thickness = 0.5.dp)
 
@@ -156,7 +153,7 @@ fun FixedExpense(viewModel: FixedExpenseViewModel = FixedExpenseViewModel(LocalC
                     title = titleState.text,
                     amount = amount,
                     type = "expense", // Chắc chắn đây là chi tiêu
-                    repeat_frequency = selectedRepeat,
+                    repeat_frequency = selectedRepeat, // Sử dụng enum RepeatFrequency
                     start_date = selectedDate,
                     end_date = selectedEndDate // Chưa xử lý ngày kết thúc
                 )
@@ -178,6 +175,7 @@ fun FixedExpense(viewModel: FixedExpenseViewModel = FixedExpenseViewModel(LocalC
         )
     }
 }
+
 
 
 

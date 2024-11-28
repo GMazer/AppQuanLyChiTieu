@@ -32,137 +32,137 @@ import java.time.LocalDate
 import java.util.Date
 import java.util.Locale
 
-@SuppressLint("NewApi")
-@Composable
-fun FixedIncome(onDataChanged: (FixedTransaction) -> Unit) {
-
-    val vietnamLocale = Locale("vi", "VN") // Đặt Locale Việt Nam
-    val currentDate = remember {
-        SimpleDateFormat("dd/MM/yyyy", vietnamLocale).format(Date()) // Định dạng ngày hiện tại
-    }
-
-    var titleState by remember { mutableStateOf(TextFieldValue("")) }
-    var selectedCategory by remember { mutableStateOf(currentDate) }
-    var selectedDate by remember { mutableStateOf("") }
-    var selectedRepeat by remember { mutableStateOf("") }
-    var numberState by remember { mutableStateOf(TextFieldValue("")) }
-    var endDate by remember { mutableStateOf("Không") }
-
-
-    // Tạo FixedTransaction từ các dữ liệu đầu vào
-    fun createTransaction(): FixedTransaction {
-        return FixedTransaction(
-            category_id = selectedCategory.toInt(), // Category id
-            title = titleState.text,
-            start_date = selectedDate,
-            end_date = endDate,
-            repeat_frequency = selectedRepeat,
-            amount = numberState.text.toLongOrNull() ?: 0L,
-            type = "expense"  // Type: expense hoặc income
-        )
-    }
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp)
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth() // Chiều rộng tối đa (có thể tùy chỉnh)
-                .padding(16.dp) // Khoảng cách xung quanh Box
-                .background(
-                    color = Color.White, // Màu nền trắng
-                    shape = RoundedCornerShape(8.dp) // Bo góc 8.dp
-                )
-        ) {
-            Column() {
-                RowTextField(
-                    label = "Tiêu đề",
-                    textState = titleState,
-                    onValueChange = { newValue ->
-                        titleState = newValue
-                        onDataChanged(createTransaction())
-                    }
-                )
-                Divider(
-                    color = Color(0xFFd4d4d4), // Màu của đường chia tách
-                    thickness = 0.5.dp // Độ dày của đường chia tách
-                )
-                RowNumberField(
-                    textState = numberState,
-                    onValueChange = { newValue ->
-                        numberState = newValue // Cập nhật giá trị khi người dùng nhập
-                        onDataChanged(createTransaction())
-                    }
-                )
-                Divider(
-                    color = Color(0xFFd4d4d4), // Màu của đường chia tách
-                    thickness = 0.5.dp // Độ dày của đường chia tách
-                )
-                DropdownRow(
-                    label = "Danh mục",
-                    options = listOf(
-                        Pair(R.drawable.essentials, "Lương"),
-                        Pair(R.drawable.entertainment, "Phụ cấp"),
-                        Pair(R.drawable.invest, "Đầu tư"),
-                        Pair(R.drawable.hedgefund, "Thu nhập phụ"),
-                    )
-                ) { category ->
-                    // Xử lý khi danh mục được chọn thay đổi
-                    selectedCategory = category
-                    onDataChanged(createTransaction())
-                }
-            }
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        Box(
-            modifier = Modifier
-                .fillMaxWidth() // Chiều rộng tối đa (có thể tùy chỉnh)
-                .padding(16.dp) // Khoảng cách xung quanh Box
-                .background(
-                    color = Color.White, // Màu nền trắng
-                    shape = RoundedCornerShape(8.dp) // Bo góc 8.dp
-                )
-        ) {
-            Column() {
-                DropdownRow(
-                    label = "Lặp lại",
-                    options = listOf(
-                        Pair(null, "Không lặp lại"),
-                        Pair(null, "Hàng ngày"),
-                        Pair(null, "Hàng tuần"),
-                        Pair(null, "Hàng tháng"),
-                    )
-                ) { repeat ->
-                    // Xử lý khi danh mục được chọn thay đổi
-                    selectedRepeat = repeat
-                    onDataChanged(createTransaction())
-                }
-                Divider(
-                    color = Color(0xFFd4d4d4), // Màu của đường chia tách
-                    thickness = 0.5.dp // Độ dày của đường chia tách
-                )
-                DatePickerRow(
-                    label = "Bắt đầu",
-                    initialDate = LocalDate.now()
-                ) { date ->
-                    // Cập nhật ngày được chọn
-                    selectedDate = date.toString()
-                    onDataChanged(createTransaction())
-                }
-                Divider(
-                    color = Color(0xFFd4d4d4), // Màu của đường chia tách
-                    thickness = 0.5.dp // Độ dày của đường chia tách
-                )
-                EndDateRow (
-                    label = "Kết thúc"
-                ) { date ->
-                    // Xử lý khi danh mục được chọn thay đổi
-//                    endDate = date
+//@SuppressLint("NewApi")
+//@Composable
+//fun FixedIncome(onDataChanged: (FixedTransaction) -> Unit) {
+//
+//    val vietnamLocale = Locale("vi", "VN") // Đặt Locale Việt Nam
+//    val currentDate = remember {
+//        SimpleDateFormat("dd/MM/yyyy", vietnamLocale).format(Date()) // Định dạng ngày hiện tại
+//    }
+//
+//    var titleState by remember { mutableStateOf(TextFieldValue("")) }
+//    var selectedCategory by remember { mutableStateOf(currentDate) }
+//    var selectedDate by remember { mutableStateOf("") }
+//    var selectedRepeat by remember { mutableStateOf("") }
+//    var numberState by remember { mutableStateOf(TextFieldValue("")) }
+//    var endDate by remember { mutableStateOf("Không") }
+//
+//
+//    // Tạo FixedTransaction từ các dữ liệu đầu vào
+//    fun createTransaction(): FixedTransaction {
+//        return FixedTransaction(
+//            category_id = selectedCategory.toInt(), // Category id
+//            title = titleState.text,
+//            start_date = selectedDate,
+//            end_date = endDate,
+//            repeat_frequency = selectedRepeat,
+//            amount = numberState.text.toLongOrNull() ?: 0L,
+//            type = "expense"  // Type: expense hoặc income
+//        )
+//    }
+//
+//    Column(
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .padding(8.dp)
+//    ) {
+//        Box(
+//            modifier = Modifier
+//                .fillMaxWidth() // Chiều rộng tối đa (có thể tùy chỉnh)
+//                .padding(16.dp) // Khoảng cách xung quanh Box
+//                .background(
+//                    color = Color.White, // Màu nền trắng
+//                    shape = RoundedCornerShape(8.dp) // Bo góc 8.dp
+//                )
+//        ) {
+//            Column() {
+//                RowTextField(
+//                    label = "Tiêu đề",
+//                    textState = titleState,
+//                    onValueChange = { newValue ->
+//                        titleState = newValue
+//                        onDataChanged(createTransaction())
+//                    }
+//                )
+//                Divider(
+//                    color = Color(0xFFd4d4d4), // Màu của đường chia tách
+//                    thickness = 0.5.dp // Độ dày của đường chia tách
+//                )
+//                RowNumberField(
+//                    textState = numberState,
+//                    onValueChange = { newValue ->
+//                        numberState = newValue // Cập nhật giá trị khi người dùng nhập
+//                        onDataChanged(createTransaction())
+//                    }
+//                )
+//                Divider(
+//                    color = Color(0xFFd4d4d4), // Màu của đường chia tách
+//                    thickness = 0.5.dp // Độ dày của đường chia tách
+//                )
+//                DropdownRow(
+//                    label = "Danh mục",
+//                    options = listOf(
+//                        Pair(R.drawable.essentials, "Lương"),
+//                        Pair(R.drawable.entertainment, "Phụ cấp"),
+//                        Pair(R.drawable.invest, "Đầu tư"),
+//                        Pair(R.drawable.hedgefund, "Thu nhập phụ"),
+//                    )
+//                ) { category ->
+//                    // Xử lý khi danh mục được chọn thay đổi
+//                    selectedCategory = category
 //                    onDataChanged(createTransaction())
-                }
-            }
-        }
-    }
-}
+//                }
+//            }
+//        }
+//        Spacer(modifier = Modifier.height(16.dp))
+//        Box(
+//            modifier = Modifier
+//                .fillMaxWidth() // Chiều rộng tối đa (có thể tùy chỉnh)
+//                .padding(16.dp) // Khoảng cách xung quanh Box
+//                .background(
+//                    color = Color.White, // Màu nền trắng
+//                    shape = RoundedCornerShape(8.dp) // Bo góc 8.dp
+//                )
+//        ) {
+//            Column() {
+//                DropdownRow(
+//                    label = "Lặp lại",
+//                    options = listOf(
+//                        Pair(null, "Không lặp lại"),
+//                        Pair(null, "Hàng ngày"),
+//                        Pair(null, "Hàng tuần"),
+//                        Pair(null, "Hàng tháng"),
+//                    )
+//                ) { repeat ->
+//                    // Xử lý khi danh mục được chọn thay đổi
+//                    selectedRepeat = repeat
+//                    onDataChanged(createTransaction())
+//                }
+//                Divider(
+//                    color = Color(0xFFd4d4d4), // Màu của đường chia tách
+//                    thickness = 0.5.dp // Độ dày của đường chia tách
+//                )
+//                DatePickerRow(
+//                    label = "Bắt đầu",
+//                    initialDate = LocalDate.now()
+//                ) { date ->
+//                    // Cập nhật ngày được chọn
+//                    selectedDate = date.toString()
+//                    onDataChanged(createTransaction())
+//                }
+//                Divider(
+//                    color = Color(0xFFd4d4d4), // Màu của đường chia tách
+//                    thickness = 0.5.dp // Độ dày của đường chia tách
+//                )
+//                EndDateRow (
+//                    label = "Kết thúc"
+//                ) { date ->
+//                    // Xử lý khi danh mục được chọn thay đổi
+////                    endDate = date
+////                    onDataChanged(createTransaction())
+//                }
+//            }
+//        }
+//    }
+//}

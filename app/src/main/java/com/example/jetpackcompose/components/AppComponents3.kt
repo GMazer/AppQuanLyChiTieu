@@ -441,6 +441,83 @@ fun DropdownRow(
     }
 }
 
+@Composable
+fun <T : Enum<T>> DropdownRepeat(
+    label: String,
+    options: List<Pair<String, T>>, // Truyền vào danh sách các giá trị enum dưới dạng cặp (displayName, enumValue)
+    onChangeValue: (T) -> Unit // Trả về enum thay vì String
+) {
+    var selectedOption by remember { mutableStateOf(options[0].second) } // Lưu enum thay vì String
+    var showDialog by remember { mutableStateOf(false) }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Label
+        Text(
+            text = label,
+            fontWeight = FontWeight.Bold,
+            fontFamily = monsterrat,
+            color = TextColor,
+            modifier = Modifier.weight(4f)
+        )
+
+        // Nội dung chính
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .weight(6f)
+                .clickable { showDialog = true }
+        ) {
+            Text(
+                text = selectedOption.toString(), // Hiển thị tên enum dưới dạng chuỗi
+                fontWeight = FontWeight.Normal,
+                fontFamily = monsterrat
+            )
+        }
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        // Icon mũi tên
+        Icon(
+            imageVector = Icons.Default.KeyboardArrowRight,
+            contentDescription = null,
+            tint = Color.Gray,
+            modifier = Modifier.size(24.dp)
+        )
+    }
+
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = { Text(text = "Chọn $label") },
+            text = {
+                LazyColumn {
+                    items(options) { option ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    selectedOption = option.second
+                                    onChangeValue(option.second) // Trả về enum thay vì String
+                                    showDialog = false
+                                }
+                                .padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(text = option.first) // Hiển thị tên chuỗi (displayName) từ enum
+                        }
+                    }
+                }
+            },
+            buttons = {}
+        )
+    }
+}
+
 
 
 @SuppressLint("NewApi")

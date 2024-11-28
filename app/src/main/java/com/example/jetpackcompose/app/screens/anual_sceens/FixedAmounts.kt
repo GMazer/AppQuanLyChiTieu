@@ -36,9 +36,9 @@ fun InputFixedTab(navController: NavHostController) {
             FixedExpense()
         },
         TabItem("Income", icon = Icons.Default.ArrowForward) {
-            FixedIncome { data ->
-                incomeData = data
-            }
+//            FixedIncome { data ->
+//                incomeData = data
+//            }
         }
     )
 

@@ -11,16 +11,16 @@ data class FixedTransaction(
     val category_id: Int,
     val title: String,
     val type: String, // "income" or "expense"
-    val repeat_frequency: String, // "weekly", "monthly", etc.
+    val repeat_frequency: RepeatFrequency, // "weekly", "monthly", etc.
     val start_date: String,
     val end_date: String
 )
 
 enum class RepeatFrequency(val displayName: String) {
-    DAILY("daily"),
-    WEEKLY("weekly"),
-    MONTHLY("monthly"),
-    YEARLY("yearly");
+    DAILY("DAILY"),
+    WEEKLY("WEEKLY"),
+    MONTHLY("MONTHLY"),
+    YEARLY("YEARLY");
 
     // Hàm để lấy tên hiển thị của enum
     override fun toString(): String {
