@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class FixedExpenseViewModel(private val context: Context) : ViewModel() {
+class FixedTransactionViewModel(private val context: Context) : ViewModel() {
 
     private val sharedPreferences = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
 

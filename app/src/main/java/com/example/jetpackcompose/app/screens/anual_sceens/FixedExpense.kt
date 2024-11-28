@@ -26,7 +26,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.example.jetpackcompose.R
-import com.example.jetpackcompose.app.screens.anual_sceens.ViewModel.FixedExpenseViewModel
+import com.example.jetpackcompose.app.screens.anual_sceens.ViewModel.FixedTransactionViewModel
 import com.example.jetpackcompose.app.screens.anual_sceens.ViewModel.FixedTransaction
 import com.example.jetpackcompose.app.screens.anual_sceens.ViewModel.RepeatFrequency
 import com.example.jetpackcompose.components.DatePickerRow
@@ -43,7 +43,7 @@ import java.util.Locale
 
 @SuppressLint("NewApi")
 @Composable
-fun FixedExpense(viewModel: FixedExpenseViewModel = FixedExpenseViewModel(LocalContext.current)) {
+fun FixedExpense(viewModel: FixedTransactionViewModel = FixedTransactionViewModel(LocalContext.current)) {
 
     // Dữ liệu cần thiết cho form
     val vietnamLocale = Locale("vi", "VN")
@@ -180,7 +180,12 @@ fun FixedExpense(viewModel: FixedExpenseViewModel = FixedExpenseViewModel(LocalC
                 .fillMaxWidth()
                 .fillMaxSize()
         ){
-            Text(text = statusMessage, color = statusColor, style = androidx.compose.material3.MaterialTheme.typography.bodyMedium)
+            Text(
+                text = statusMessage,
+                color = statusColor,
+                fontFamily = com.example.jetpackcompose.components.monsterrat,
+                style = androidx.compose.material3.MaterialTheme.typography.bodyMedium
+            )
         }
     }
 }
