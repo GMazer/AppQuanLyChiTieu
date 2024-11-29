@@ -73,6 +73,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.input.pointer.motionEventSpy
+import com.example.jetpackcompose.app.features.inputFeatures.LimitTransaction
 import com.example.jetpackcompose.components.YearPickerDialog
 import com.example.jetpackcompose.components.YearPickerButton
 import com.example.jetpackcompose.ui.theme.colorContrast
@@ -500,7 +501,8 @@ fun YearPickerButton(onYearSelected: (String) -> Unit) {
 
 @Composable
 fun PopUpSetValueDialog(
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    onConfirm: (LimitTransaction) -> Unit // Hàm callback nhận LimitTransaction
 ) {
     var basicValue by remember { mutableStateOf(TextFieldValue()) }
     var entertainmentValue by remember { mutableStateOf(TextFieldValue()) }
@@ -511,7 +513,6 @@ fun PopUpSetValueDialog(
 
     // Hàm để tính giá trị còn lại và kiểm tra giới hạn 100%
     fun calculateRemainingValue() {
-        // Sử dụng Int thay vì Double
         val entertainment = entertainmentValue.text.toIntOrNull()
         val invest = investValue.text.toIntOrNull()
         val incidental = incidentalValue.text.toIntOrNull()
@@ -521,15 +522,9 @@ fun PopUpSetValueDialog(
         // Kiểm tra nếu giá trị nhập vào vượt quá 100%
         if ((entertainment ?: 0) > 100 || (invest ?: 0) > 100 || (incidental ?: 0) > 100 || (basic ?: 0) > 100 || (save ?: 0) > 100) {
             errorMessage = "Giá trị không được vượt quá 100%"
-            // Reset lại các trường nhập liệu nếu giá trị vượt quá 100
-            if ((entertainment ?: 0) > 100) entertainmentValue = TextFieldValue("")
-            if ((invest ?: 0) > 100) investValue = TextFieldValue("")
-            if ((incidental ?: 0) > 100) incidentalValue = TextFieldValue("")
-            if ((basic ?: 0) > 100) basicValue = TextFieldValue("")
-            if ((save ?: 0) > 100) saveValue = TextFieldValue("")
             return
         } else {
-            errorMessage = null // Xóa thông báo lỗi nếu không có lỗi
+            errorMessage = null
         }
 
         // Tính tổng giá trị đã nhập
@@ -539,7 +534,7 @@ fun PopUpSetValueDialog(
         // Kiểm tra nếu tổng vượt quá 100%
         if (totalEntered > 100) {
             errorMessage = "Tổng không được vượt quá 100%"
-            return // Đảm bảo tổng không vượt quá 100%
+            return
         }
 
         // Đếm số trường nhập liệu trống
@@ -622,7 +617,6 @@ fun PopUpSetValueDialog(
                             amountState = basicValue.text,
                             onValueChange = { newValue ->
                                 basicValue = TextFieldValue(newValue)
-                                // Loại bỏ việc gọi calculateRemainingValue()
                             },
                         )
                     }
@@ -658,7 +652,6 @@ fun PopUpSetValueDialog(
                             amountState = entertainmentValue.text,
                             onValueChange = { newValue ->
                                 entertainmentValue = TextFieldValue(newValue)
-                                // Loại bỏ việc gọi calculateRemainingValue()
                             },
                         )
                     }
@@ -694,7 +687,6 @@ fun PopUpSetValueDialog(
                             amountState = investValue.text,
                             onValueChange = { newValue ->
                                 investValue = TextFieldValue(newValue)
-                                // Loại bỏ việc gọi calculateRemainingValue()
                             },
                         )
                     }
@@ -730,7 +722,6 @@ fun PopUpSetValueDialog(
                             amountState = incidentalValue.text,
                             onValueChange = { newValue ->
                                 incidentalValue = TextFieldValue(newValue)
-                                // Không gọi calculateRemainingValue() ở đây
                             },
                             keyboardOptions = KeyboardOptions(
                                 imeAction = ImeAction.Done
@@ -738,8 +729,6 @@ fun PopUpSetValueDialog(
                             keyboardActions = KeyboardActions(
                                 onDone = {
                                     calculateRemainingValue()
-                                    // Ẩn bàn phím sau khi hoàn thành
-                                    // Bạn cần truyền `focusManager` vào nếu muốn sử dụng
                                 }
                             )
                         )
@@ -776,7 +765,6 @@ fun PopUpSetValueDialog(
                             amountState = saveValue.text,
                             onValueChange = { newValue ->
                                 saveValue = TextFieldValue(newValue)
-                                // Loại bỏ việc gọi calculateRemainingValue()
                             },
                             enabled = false // Không cho phép người dùng nhập vào ô này
                         )
@@ -801,6 +789,15 @@ fun PopUpSetValueDialog(
                         Text(text = "Huỷ bỏ", fontFamily = monsterrat, color = TextColor)
                     }
                     TextButton(onClick = {
+                        // Lấy dữ liệu và gửi qua callback
+                        val categoryLimits = listOf(
+                            LimitTransaction.CategoryLimit(1, basicValue.text.toIntOrNull() ?: 0),
+                            LimitTransaction.CategoryLimit(2, entertainmentValue.text.toIntOrNull() ?: 0),
+                            LimitTransaction.CategoryLimit(3, investValue.text.toIntOrNull() ?: 0),
+                            LimitTransaction.CategoryLimit(4, incidentalValue.text.toIntOrNull() ?: 0),
+                            LimitTransaction.CategoryLimit(5, saveValue.text.toIntOrNull() ?: 0)
+                        )
+                        onConfirm(LimitTransaction(categoryLimits))
                         onDismiss()
                     }) {
                         Text(text = "OK", fontFamily = monsterrat, color = colorPrimary)
@@ -810,6 +807,8 @@ fun PopUpSetValueDialog(
         }
     }
 }
+
+
 
 
 @Composable
@@ -910,14 +909,14 @@ fun OtherTab(value: String, onClick: () -> Unit, painter: Painter) {
             horizontalArrangement = Arrangement.Start, // Căn trái theo chiều ngang
             modifier = Modifier.fillMaxWidth() // Chiếm toàn bộ chiều rộng của Box
         ) {
-            Spacer(modifier = Modifier.width(24.dp))
+            Spacer(modifier = Modifier.width(16.dp))
             Icon(
                 painter = painter,
                 contentDescription = "Icon",
                 tint = colorPrimary,
                 modifier = Modifier.size(24.dp)
             )
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(24.dp))
             Text(
                 text = value,
                 fontFamily = monsterrat,
@@ -981,5 +980,5 @@ fun ReportMonth(tag: String, value: Int) {
 @Preview
 @Composable
 fun PreviewMonthPickerDialog() {
-    PopUpSetValueDialog {  }
+//    PopUpSetValueDialog {  }
 }

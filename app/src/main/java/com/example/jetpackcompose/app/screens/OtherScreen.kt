@@ -30,6 +30,8 @@ import androidx.navigation.NavHostController
 import com.example.jetpackcompose.ui.theme.highGray
 import com.example.jetpackcompose.app.features.apiService.LogAPI.SignInViewModel
 import com.example.jetpackcompose.app.features.apiService.LogAPI.SignInViewModelFactory
+import com.example.jetpackcompose.ui.theme.bgColor
+import com.example.jetpackcompose.ui.theme.lightGray
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -96,7 +98,7 @@ fun OtherScreen(navController: NavHostController) {
                 modifier = Modifier
                     .padding(paddingValues)
                     .fillMaxHeight()
-                    .background(color = Color.LightGray)
+                    .background(color = lightGray)
             ) {
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -104,8 +106,8 @@ fun OtherScreen(navController: NavHostController) {
                     navController.navigate("anual")
                 })
                 Divider(
-                    color = highGray,
-                    thickness = 2.dp
+                    color = Color.LightGray,
+                    thickness = 1.dp
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -118,8 +120,8 @@ fun OtherScreen(navController: NavHostController) {
                     navController.navigate("signup")
                 })
                 Divider(
-                    color = highGray,
-                    thickness = 2.dp
+                    color = Color.LightGray,
+                    thickness = 1.dp
                 )
 
             }

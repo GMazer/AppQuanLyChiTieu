@@ -38,6 +38,7 @@ import com.example.jetpackcompose.components.BarChartWithLine
 import com.example.jetpackcompose.components.ReportMonth
 import com.example.jetpackcompose.ui.theme.colorPrimary
 import com.example.jetpackcompose.ui.theme.highGray
+import com.example.jetpackcompose.ui.theme.lightGray
 import java.util.Calendar
 import androidx.compose.ui.graphics.Color as ComposeColor
 
@@ -116,7 +117,7 @@ fun ReportScreen() {
                 modifier = Modifier
                     .padding(paddingValues)
                     .fillMaxHeight()
-                    .background(color = Color.LightGray)
+                    .background(color = lightGray)
             ) {
                 item {
                     // Phần header

@@ -2,37 +2,49 @@ package com.example.jetpackcompose.app.features.inputFeatures
 
 import android.app.DatePickerDialog
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
+import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,6 +54,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -49,9 +62,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.jetpackcompose.R
-import com.example.jetpackcompose.components.InputTab
+import com.example.jetpackcompose.app.features.apiService.TransactionAPI.PostLimitTransactionViewModel
 import com.example.jetpackcompose.components.PopUpSetValueDialog
 import com.example.jetpackcompose.ui.theme.colorPrimary
+import com.example.jetpackcompose.ui.theme.colorSecondary
 import com.example.jetpackcompose.ui.theme.componentShapes
 import com.example.jetpackcompose.ui.theme.topBarColor
 import kotlinx.coroutines.CoroutineScope
@@ -73,6 +87,25 @@ class MainActivity : ComponentActivity() {
 enum class TransactionType {
     INCOME, // Tiền thu
     EXPENSE // Tiền chi
+}
+
+data class LimitTransaction(
+    val limits: List<CategoryLimit>
+) {
+    data class CategoryLimit(
+        val categoryId: Int,
+        val percentLimit: Int
+    )
+}
+
+data class RemainLimit(
+    val limits: List<CategoryLimit>
+) {
+    data class CategoryLimit(
+        val categoryId: Int,
+        val percentLimit: Int,
+        val remainingPercent: Double
+    )
 }
 
 data class Category(
@@ -193,6 +226,7 @@ fun CustomTabRow(
     titles: List<String>,
     pagerStatement: PagerState,
     coroutineScoper: CoroutineScope,
+    onLimitTransactionUpdated: (LimitTransaction) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var isDialogOpen by remember { mutableStateOf(false) }
@@ -298,7 +332,12 @@ fun CustomTabRow(
             // Hiển thị PopUpSetValueDialog khi isDialogOpen là true
             if (isDialogOpen) {
                 PopUpSetValueDialog(
-                    onDismiss = { isDialogOpen = false }
+                    onDismiss = { isDialogOpen = false } ,
+                    onConfirm = { newLimitTransaction ->
+                        onLimitTransactionUpdated(newLimitTransaction)
+                        isDialogOpen = false // Đóng dialog sau khi nhận giá trị
+                    }
+
                 )
             }
         }
@@ -308,6 +347,78 @@ fun CustomTabRow(
         thickness = 1.dp
     )
 }
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun InputTab(viewModel: PostLimitTransactionViewModel = PostLimitTransactionViewModel(LocalContext.current)) {
+    val customTypography = Typography(
+        bodyLarge = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.monsterrat),
+        bodyMedium = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.monsterrat),
+        bodySmall = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.monsterrat),
+        titleLarge = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.monsterrat),
+        titleMedium = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.monsterrat),
+        titleSmall = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.monsterrat),
+        labelLarge = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.monsterrat),
+        labelMedium = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.monsterrat),
+        labelSmall = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.monsterrat),
+        headlineLarge = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.monsterrat),
+        headlineMedium = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.monsterrat),
+        headlineSmall = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.monsterrat)
+    )
+
+    val tabs = listOf(
+        TabItem("Expense", icon =  Icons.Default.ArrowBack){
+            OutComeContent()
+        },
+        TabItem("Income", icon =  Icons.Default.ArrowForward){
+            IncomeContent()
+        }
+    )
+
+    val pagerState = rememberPagerState (
+        pageCount = {tabs.size}
+    )
+
+    val coroutineScope = rememberCoroutineScope()
+
+    MaterialTheme(
+        typography = customTypography
+    ) {
+        var tabIndex by rememberSaveable { mutableStateOf(0) }
+        val tabTitles = listOf("Tiền chi", "Tiền thu")
+
+
+        Column(modifier = Modifier
+            .background(Color(0xFFF1F1F1))
+            .fillMaxSize())
+        {
+            // Đặt CustomTabRow bên ngoài Scaffold
+            CustomTabRow(
+                tabIndex = tabIndex,
+                onTabSelected = { tabIndex = it },
+                titles = tabTitles,
+                pagerStatement = pagerState,
+                coroutineScoper = coroutineScope,
+                onLimitTransactionUpdated = { newLimitTransaction ->
+                    val limitTransaction: LimitTransaction = newLimitTransaction // Cập nhật limitTransaction từ dialog
+                    viewModel.addLimitTransaction(
+                        limitTransaction.limits,
+                        onSuccess = {},
+                        onError = {}
+                    )
+                    Log.i("limitTransaction", "$limitTransaction")
+                },
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
+            HorizontalPager(state = pagerState, userScrollEnabled = false) {
+                tabs[it].screen()
+            }
+
+        }
+    }
+}
+
 
 
 @Preview

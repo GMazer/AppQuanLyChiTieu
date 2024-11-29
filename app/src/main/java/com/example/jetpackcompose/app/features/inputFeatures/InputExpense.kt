@@ -17,6 +17,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,16 +32,29 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.jetpackcompose.R
+import com.example.jetpackcompose.app.features.apiService.TransactionAPI.GetLimitTransactionViewModel
 import com.example.jetpackcompose.app.features.apiService.TransactionAPI.PostTransactionViewModel
 import com.example.jetpackcompose.components.CategoriesGrid
 import com.example.jetpackcompose.components.DrawBottomLine
 import com.example.jetpackcompose.components.NoteTextField
 import com.example.jetpackcompose.components.NumberTextField
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun OutComeContent(viewModel: PostTransactionViewModel = PostTransactionViewModel(LocalContext.current)) {
+fun OutComeContent(
+    postViewModel: PostTransactionViewModel = PostTransactionViewModel(LocalContext.current),
+    getRemainLimit: GetLimitTransactionViewModel = GetLimitTransactionViewModel(LocalContext.current)) {
+
+
+    var categoryLimits by remember {
+        mutableStateOf(listOf(
+            RemainLimit.CategoryLimit(categoryId = 1, percentLimit = 0, remainingPercent = 1.00),
+            RemainLimit.CategoryLimit(categoryId = 2, percentLimit = 0, remainingPercent = 1.00),
+            RemainLimit.CategoryLimit(categoryId = 3, percentLimit = 0, remainingPercent = 1.00),
+            RemainLimit.CategoryLimit(categoryId = 4, percentLimit = 0, remainingPercent = 1.00),
+            RemainLimit.CategoryLimit(categoryId = 5, percentLimit = 0, remainingPercent = 1.00)
+        ))
+    }
 
     var textNote by remember { mutableStateOf(TextFieldValue()) }
     var amountValue by remember { mutableStateOf(TextFieldValue()) }
@@ -52,37 +66,42 @@ fun OutComeContent(viewModel: PostTransactionViewModel = PostTransactionViewMode
 
     val buttonColor = Color(0xFFF35E17)
 
-    val categories = listOf(
-        Category(
-            1,
-            "Thiết yếu",
-            { painterResource(R.drawable.essentials) },
-            Color(0xFFfb791d),
-            percentage = 0.80f // 80%
-        ),
-        Category(
-            2,
-            "Giải trí",
-            { painterResource(R.drawable.entertainment) },
-            Color(0xFF37c166),
-            percentage = 0.60f // 60%
-        ),
-        Category(
-            3,
-            "Đầu tư",
-            { painterResource(R.drawable.invest) },
-            Color(0xFF283eaa),
-            percentage = 0.45f // 45%
-        ),
-        Category(
-            4,
-            "Phát sinh",
-            { painterResource(R.drawable.hedgefund) },
-            Color(0xFFf95aa9),
-            percentage = 0.25f // 25%
+    var categories by remember { mutableStateOf(
+        listOf(
+            Category(1, "Thiết yếu", { painterResource(R.drawable.essentials) }, Color(0xFFfb791d), 1.00f),
+            Category(2, "Giải trí", { painterResource(R.drawable.entertainment) }, Color(0xFF37c166), 1.00f),
+            Category(3, "Đầu tư", { painterResource(R.drawable.invest) }, Color(0xFF283eaa), 1.00f),
+            Category(4, "Phát sinh", { painterResource(R.drawable.hedgefund) }, Color(0xFFf95aa9), 1.00f)
         )
-    )
+    ) }
 
+    // Hàm cập nhật percentage cho các danh mục
+    fun updatePercentage(categoryLimits: List<RemainLimit.CategoryLimit>) {
+
+        val updatedCategories = categories.map { category ->
+            val updatedLimit = categoryLimits.find { it.categoryId == category.id }
+            if (updatedLimit != null) {
+                val updatedPercentage = (updatedLimit.remainingPercent / 100.0).toFloat()
+                category.copy(percentage = updatedPercentage)
+            } else {
+                category
+            }
+        }
+        categories = updatedCategories // Cập nhật lại danh sách categories
+    }
+
+    // Lần đầu tiên gọi API, cập nhật categoryLimits và percentage
+    LaunchedEffect(key1 = true) {
+        getRemainLimit.getLimitTransaction(
+            onError = {},
+            onSuccess = {
+                categoryLimits = it
+                updatePercentage(categoryLimits)  // Gọi hàm cập nhật percentage sau khi nhận dữ liệu
+            }
+        )
+    }
+
+    Log.i("Categories", "$categories")
 
     Scaffold(
         containerColor = Color.White,
@@ -166,6 +185,7 @@ fun OutComeContent(viewModel: PostTransactionViewModel = PostTransactionViewMode
             Spacer(Modifier.height(24.dp))
 
             // Gọi danh mục chi tiêu và truyền callback
+
             CategoriesGrid(
                 categories = categories,
                 buttonColor = buttonColor,
@@ -194,13 +214,21 @@ fun OutComeContent(viewModel: PostTransactionViewModel = PostTransactionViewMode
                         )
 
 
-                        viewModel.postTransaction(
+                        postViewModel.postTransaction(
                             transaction,
                             onSuccess = {
                                 errorMessage = it
                             },
                             onError = {
                                 successMessage = it
+                            }
+                        )
+
+                        getRemainLimit.getLimitTransaction(
+                            onError = {},
+                            onSuccess = {
+                                categoryLimits = it
+                                updatePercentage(categoryLimits)  // Gọi hàm cập nhật percentage sau khi nhận dữ liệu
                             }
                         )
 

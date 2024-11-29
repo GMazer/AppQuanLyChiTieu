@@ -264,6 +264,14 @@ fun CalendarScreen() {
                             .padding(16.dp)
                     )
                 } else {
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Divider(
+                        color = Color.LightGray,
+                        thickness = 2.dp
+                    )
+
                     LazyColumn {
                         item {
                             DayIndex(transactionList)

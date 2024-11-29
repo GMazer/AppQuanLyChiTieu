@@ -60,28 +60,28 @@ fun IncomeContent (viewModel: PostTransactionViewModel = PostTransactionViewMode
             "Lương",
             { painterResource(R.drawable.salary) },
             Color(0xFFfb791d),
-            percentage = 0.75f // 75%
+            percentage = 1.00f // 75%
         ),
         Category(
             7,
             "Thưởng",
             { painterResource(R.drawable.baseline_card_giftcard_24) },
             Color(0xFF37c166),
-            percentage = 0.65f // 90%
+            percentage = 1.00f // 90%
         ),
         Category(
             8,
             "Thu nhập phụ",
             { painterResource(R.drawable.secondary) },
             Color(0xFFf95aa9),
-            percentage = 0.30f // 30%
+            percentage = 1.00f // 30%
         ),
         Category(
             9,
             "Khác",
             { painterResource(R.drawable.baseline_more_horiz_24) },
             Color(0xFFfba74a),
-            percentage = 0.50f // 50%
+            percentage = 1.00f // 50%
         )
     )
 

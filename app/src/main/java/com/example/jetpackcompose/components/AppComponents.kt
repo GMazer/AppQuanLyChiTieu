@@ -7,6 +7,7 @@ import android.view.View
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
@@ -109,6 +110,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.buildAnnotatedString
 import com.example.jetpackcompose.app.screens.DailyTransaction
@@ -436,6 +438,9 @@ fun CategoryItem(
 ) {
     val borderColor = if (isSelected) buttonColor else Color.Transparent
 
+    // State to hold the size of the Box
+    var boxHeight by remember { mutableStateOf(0f) }
+
     // Tạo Animatable để điều khiển offset cho sóng
     val waveOffset = remember { Animatable(0f) }
 
@@ -453,6 +458,12 @@ fun CategoryItem(
         )
     }
 
+    // Tạo giá trị sóng thay đổi theo percentage (nâng lên hạ xuống)
+    val waveYOffset by animateFloatAsState(
+        targetValue = boxHeight * (1 - percentage - 0.04f), // Tính giá trị y cho sóng theo percentage
+        animationSpec = tween(durationMillis = 500, easing = LinearEasing)
+    )
+
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
@@ -466,11 +477,15 @@ fun CategoryItem(
             .clickable { onClick() }
             .clip(RoundedCornerShape(8.dp))
             .background(color = Color.White)
+            .onSizeChanged { size ->
+                // Lưu chiều cao của Box khi thay đổi kích thước
+                boxHeight = size.height.toFloat()
+            }
     ) {
         Canvas(modifier = Modifier.fillMaxSize()) {
             val waveHeight = size.height * 0.04f // Giảm waveHeight để sóng nhỏ hơn
             val waveLength = size.width * 0.8f // Giảm waveLength để sóng dày hơn
-            val waveY = size.height * (1 - percentage - 0.04f) // Vị trí sóng
+            val waveY = waveYOffset // Vị trí sóng thay đổi theo hiệu ứng từ animateFloatAsState
             val offset = waveOffset.value * waveLength // Di chuyển sóng theo phương ngang
 
             // Vẽ sóng uốn lượn
@@ -496,7 +511,6 @@ fun CategoryItem(
                 path = wavePath,
                 color = Color(0xFFB3E5FC) // Màu xanh nhạt cho nước
             )
-
         }
 
         // Hiển thị icon và tên danh mục
@@ -528,66 +542,7 @@ fun CategoryItem(
         }
     }
 }
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun InputTab() {
-    val customTypography = Typography(
-        bodyLarge = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.monsterrat),
-        bodyMedium = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.monsterrat),
-        bodySmall = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.monsterrat),
-        titleLarge = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.monsterrat),
-        titleMedium = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.monsterrat),
-        titleSmall = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.monsterrat),
-        labelLarge = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.monsterrat),
-        labelMedium = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.monsterrat),
-        labelSmall = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.monsterrat),
-        headlineLarge = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.monsterrat),
-        headlineMedium = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.monsterrat),
-        headlineSmall = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.monsterrat)
-    )
 
-    val tabs = listOf(
-        TabItem("Expense", icon =  Icons.Default.ArrowBack){
-            OutComeContent()
-        },
-        TabItem("Income", icon =  Icons.Default.ArrowForward){
-            IncomeContent()
-        }
-    )
-
-    val pagerState = rememberPagerState (
-        pageCount = {tabs.size}
-    )
-
-    val coroutineScope = rememberCoroutineScope()
-
-    MaterialTheme(
-        typography = customTypography
-    ) {
-        var tabIndex by rememberSaveable { mutableStateOf(0) }
-        val tabTitles = listOf("Tiền chi", "Tiền thu")
-
-
-        Column(modifier = Modifier
-            .background(Color(0xFFF1F1F1))
-            .fillMaxSize())
-        {
-            // Đặt CustomTabRow bên ngoài Scaffold
-            CustomTabRow(
-                tabIndex = tabIndex,
-                onTabSelected = { tabIndex = it },
-                titles = tabTitles,
-                pagerStatement = pagerState,
-                coroutineScoper = coroutineScope,
-                modifier = Modifier.padding(horizontal = 16.dp)
-            )
-            HorizontalPager(state = pagerState, userScrollEnabled = false) {
-                tabs[it].screen()
-            }
-
-        }
-    }
-}
 
 @Composable
 fun MyButtonComponent(value: String, onClick: () -> Unit)
@@ -614,7 +569,7 @@ fun ClickableTextComponent(value: String, onClick: () -> Unit) {
     Text(
         value,
         color = colorSecondary,
-        fontFamily = monsterrat,
+        fontFamily = com.example.jetpackcompose.components.monsterrat,
         fontWeight = FontWeight.Light,
         fontSize = 8.sp,
         modifier = Modifier
@@ -622,7 +577,6 @@ fun ClickableTextComponent(value: String, onClick: () -> Unit) {
             .clickable(onClick = onClick)
     )
 }
-
 
 
 @Composable
