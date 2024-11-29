@@ -816,6 +816,11 @@ fun CustomCalendar(
     val daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
     val firstDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK) - 1 // Chủ nhật = 0
 
+    // Tính toán số ngày trong tháng sau
+    calendar.add(Calendar.MONTH, 1)
+    val daysInNextMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
+    calendar.add(Calendar.MONTH, -1) // Quay lại tháng hiện tại
+
     val days = mutableListOf<String>()
     // Thêm ngày trống trước khi bắt đầu tháng hiện tại (tháng trước)
     val leadingEmptyDays = firstDayOfWeek // Số ngày trống trước khi bắt đầu tháng
@@ -826,6 +831,12 @@ fun CustomCalendar(
     // Thêm ngày trong tháng hiện tại
     for (i in 1..daysInMonth) {
         days.add(i.toString())
+    }
+
+    // Thêm ngày của tháng sau vào cuối lịch
+    val trailingEmptyDays = (7 - (days.size % 7)) % 7 // Tính số ô trống cần thêm sau ngày cuối của tháng hiện tại
+    for (i in 1..trailingEmptyDays) {
+        days.add("") // Thêm ô trống cho các ngày của tháng sau
     }
 
     // Header cho lịch (Các ngày trong tuần)
@@ -880,7 +891,10 @@ fun CustomCalendar(
                                 .weight(1f) // Mỗi ô ngày có cùng trọng số
                                 .height(35.dp) // Tùy chỉnh chiều cao
                                 .background(
-                                    if (day.isNotEmpty()) Color.White else Color.Transparent // Nền trắng nếu có ngày, trong suốt nếu không có
+                                    when {
+                                        day.isEmpty() -> Color.LightGray // Màu nền cho ngày của tháng trước và tháng sau
+                                        else -> Color.White // Nền trắng nếu là ngày của tháng hiện tại
+                                    }
                                 )
                                 .border(0.25.dp, Color(0xFFd4d4d4)),
                             contentAlignment = Alignment.TopStart // Đặt vị trí căn chỉnh góc trên trái
@@ -889,9 +903,14 @@ fun CustomCalendar(
                                 modifier = Modifier.padding(4.dp)
                             ) {
                                 if (day.isNotEmpty()) {
+                                    // Hiển thị ngày
                                     Text(
                                         text = day,
-                                        color = if (columnIndex == 6) SundayColor else if (columnIndex == 5) SaturDayColor else Color.Black,
+                                        color = when {
+                                            columnIndex == 6 -> SundayColor // Chủ nhật
+                                            columnIndex == 5 -> SaturDayColor // Thứ 7
+                                            else -> Color.Black // Các ngày trong tuần
+                                        },
                                         fontFamily = monsterrat,
                                         fontSize = 8.sp,
                                         textAlign = TextAlign.Start
@@ -940,6 +959,7 @@ fun CustomCalendar(
         }
     }
 }
+
 
 
 
