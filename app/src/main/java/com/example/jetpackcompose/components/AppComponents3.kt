@@ -61,6 +61,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.jetpackcompose.R
+import com.example.jetpackcompose.app.features.inputFeatures.Category
+import com.example.jetpackcompose.app.network.TransactionResponse
 import com.example.jetpackcompose.app.screens.DailyTransaction
 import com.example.jetpackcompose.ui.theme.TextColor
 import com.example.jetpackcompose.ui.theme.colorPrimary
@@ -204,41 +207,117 @@ fun ClickableText(
     )
 }
 
-
 @Composable
-fun DayIndex(DailyTransactions: List<DailyTransaction>) {
+fun CategoryIconWithName(
+    categoryName: String,
+    transactionNote: String,
+    transactionAmount: Long,
+    transactionType: String
+) {
 
-    val dateFormat = remember { SimpleDateFormat("yyyy-MM-dd", Locale("vi", "VN")) }
-    val displayDateFormat = remember { SimpleDateFormat("dd/MM/yyyy (E)", Locale("vi", "VN")) }
     val currencyFormatter = remember {
         // Lấy DecimalFormatSymbols mặc định cho Việt Nam
         val symbols = DecimalFormatSymbols(Locale("vi", "VN"))
-
         // Thay đổi dấu phân cách thập phân và phân cách hàng nghìn
         symbols.decimalSeparator = '.'
         symbols.groupingSeparator = ','
 
         // Tạo một DecimalFormat mới sử dụng các biểu tượng đã thay đổi
         val format = DecimalFormat("#,###", symbols)
-
         format
     }
+    // Danh sách các Category
+    val categories = listOf(
+        Category(1, "Thiết yếu", { painterResource(R.drawable.essentials) }, Color(0xFFfb791d), 1.00f),
+        Category(2, "Giải trí", { painterResource(R.drawable.entertainment) }, Color(0xFF37c166), 1.00f),
+        Category(3, "Đầu tư", { painterResource(R.drawable.invest) }, Color(0xFF283eaa), 1.00f),
+        Category(4, "Phát sinh", { painterResource(R.drawable.hedgefund) }, Color(0xFFf95aa9), 1.00f),
+        Category(5, "Thu nhập", { painterResource(R.drawable.salary) }, Color(0xFFfb791d), 1.00f),
+        Category(6, "Tiết kiệm", { painterResource(R.drawable.baseline_card_giftcard_24) }, Color(0xFF37c166), 1.00f),
+        Category(7, "Trợ cấp", { painterResource(R.drawable.secondary) }, Color(0xFFf95aa9), 1.00f),
+        Category(8, "Khác", { painterResource(R.drawable.baseline_more_horiz_24) }, Color(0xFFfba74a), 1.00f)
+    )
 
-    for (transaction in DailyTransactions) {
-        Column(
+    // Tìm Category phù hợp với categoryName
+    val category = categories.find { it.name == categoryName }
+
+    // Nếu tìm thấy Category, hiển thị icon và tên
+    category?.let {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start,
             modifier = Modifier
                 .fillMaxWidth()
         ) {
+            // Hiển thị icon
+            Icon(
+                painter = it.iconPainter(),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(24.dp) // Điều chỉnh kích thước icon
+                    .padding(end = 8.dp),
+                tint = it.iconColor // Sử dụng màu sắc của Category
+            )
+
+            // Hiển thị tên danh mục
+            Text(
+                text = it.name,
+                fontFamily = monsterrat,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF444444)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            if(transactionNote.isNotEmpty()) {
+                Text(
+                    text = "(${transactionNote})",
+                    fontFamily = monsterrat,
+                    fontWeight = FontWeight.Light,
+                    fontSize = 12.sp,
+                    color = Color(0xFF444444),
+                    modifier = Modifier.weight(1f)
+                )
+            }
+            else {
+                Spacer(modifier = Modifier.weight(1f))
+            }
+            Text(
+                text = "${currencyFormatter.format(transactionAmount)}₫",
+                fontFamily = monsterrat,
+                fontWeight = FontWeight.Bold,
+                color = if (transactionType == "expense") TextColor else Color(0xff37c8ec),
+                textAlign = TextAlign.End
+            )
+
+        }
+    }
+}
+
+
+@Composable
+fun DayIndex(dateTransactionList: Map<String, List<TransactionResponse.TransactionDetail>>) {
+
+    val dateFormat = remember { SimpleDateFormat("yyyy-MM-dd", Locale("vi", "VN")) }
+    val displayDateFormat = remember { SimpleDateFormat("dd/MM/yyyy (E)", Locale("vi", "VN")) }
+
+    // Duyệt qua dateTransactionList (map các ngày và giao dịch)
+    dateTransactionList.forEach { (date, transactions) ->
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
+        ) {
+            // Hiển thị ngày
             val formattedDate = try {
-                val date = dateFormat.parse(transaction.date)
-                displayDateFormat.format(date)
+                val dateParsed = dateFormat.parse(date)
+                displayDateFormat.format(dateParsed)
             } catch (e: Exception) {
-                transaction.date
+                date // Nếu có lỗi thì hiển thị ngày gốc
             }
 
             Row(
-                verticalAlignment = Alignment.CenterVertically, // Căn giữa theo chiều dọc
-                horizontalArrangement = Arrangement.Start, // Căn trái theo chiều ngang
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start,
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(color = Color(0xfff1f1f1))
@@ -259,71 +338,35 @@ fun DayIndex(DailyTransactions: List<DailyTransaction>) {
                 thickness = 0.7.dp
             )
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically, // Căn giữa theo chiều dọc
-                horizontalArrangement = Arrangement.Start, // Căn trái theo chiều ngang
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(color = Color.White)
-                    .height(50.dp)
-            ) {
-                Spacer(modifier = Modifier.width(24.dp))
-                Text(
-                    text = "Tiền thu:",
-                    fontFamily = monsterrat,
-                    fontWeight = FontWeight.Medium,
-                    color = Color(0xFF444444),
+            // Duyệt qua danh sách giao dịch của ngày
+            transactions.forEach { transaction ->
+                // Hiển thị mỗi giao dịch
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Start, // Căn trái
                     modifier = Modifier
-                        .width(64.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = "${currencyFormatter.format(transaction.amountIncome)}₫",
-                    fontFamily = monsterrat,
-                    fontWeight = FontWeight.Medium,
-                    color = Color(0xFF444444)
+                        .fillMaxWidth()
+                        .background(color = Color.White)
+                        .height(50.dp)
+                        .padding(horizontal = 16.dp)
+                ) {
+                    transaction.note?.let { transaction.type?.let { it1 ->
+                        CategoryIconWithName(transaction.categoryName, it, transaction.amount,
+                            it1
+                        )
+                    } }
+                }
+
+                Divider(
+                    color = highGray,
+                    thickness = 0.7.dp
                 )
             }
-
-            Divider(
-                color = highGray,
-                thickness = 0.7.dp
-            )
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically, // Căn giữa theo chiều dọc
-                horizontalArrangement = Arrangement.Start, // Căn trái theo chiều ngang
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(color = Color.White)
-                    .height(50.dp)
-            ) {
-                Spacer(modifier = Modifier.width(24.dp))
-                Text(
-                    text = "Tiền chi:",
-                    fontFamily = monsterrat,
-                    fontWeight = FontWeight.Medium,
-                    color = Color(0xFF444444),
-                    modifier = Modifier
-                        .width(64.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = "${currencyFormatter.format(transaction.amountExpense)}₫",
-                    fontFamily = monsterrat,
-                    fontWeight = FontWeight.Medium,
-                    color = Color(0xFF444444)
-                )
-            }
-
-            Divider(
-                color = highGray,
-                thickness = 0.7.dp
-            )
-
         }
     }
 }
+
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

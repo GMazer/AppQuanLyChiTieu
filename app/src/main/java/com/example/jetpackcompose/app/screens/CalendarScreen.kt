@@ -34,6 +34,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.jetpackcompose.app.features.apiService.TransactionAPI.GetTransactionViewModel
+import com.example.jetpackcompose.app.network.TransactionResponse
 import com.example.jetpackcompose.components.CustomCalendar
 import com.example.jetpackcompose.components.DayIndex
 import com.example.jetpackcompose.components.MonthPickerButton
@@ -81,8 +82,10 @@ fun CalendarScreen() {
 
     var selectedMonthYear by remember { mutableStateOf(currentMonthYear) }
     var transactionList by remember { mutableStateOf(listOf<DailyTransaction>()) }
+    var dateTransactionList by remember { mutableStateOf<Map<String, List<TransactionResponse.TransactionDetail>>>(emptyMap()) }
     var errorMessage by remember { mutableStateOf("") }
 
+    // Gọi API để lấy danh sách giao dịch
     // Gọi API để lấy danh sách giao dịch
     LaunchedEffect(selectedMonthYear) {
         // Tách tháng và năm từ selectedMonthYear
@@ -91,7 +94,7 @@ fun CalendarScreen() {
         viewModel.getTransactions(
             month = month,
             year = year,
-            onSuccess = { transactions ->
+            onSuccess1 = { transactions ->
                 // Chuyển đổi danh sách giao dịch từ API thành danh sách `DailyTransaction`
                 transactionList = transactions.map { transaction ->
                     DailyTransaction(
@@ -100,6 +103,28 @@ fun CalendarScreen() {
                         amountExpense = transaction.amountExpense
                     )
                 }
+            },
+            onSuccess2 = { transactions ->
+                // Lưu danh sách giao dịch theo ngày
+                // Tạo một danh sách các map chứa thông tin giao dịch nhóm theo ngày
+                val groupedTransactions = transactions.entries.map { (date, transactionDetails) ->
+                    // Chuyển đổi từng giao dịch trong danh sách `transactionDetails`
+                    val details = transactionDetails.map {
+                        TransactionResponse.TransactionDetail(
+                            categoryName = it.categoryName,
+                            amount = it.amount,
+                            transactionDate = it.transactionDate,
+                            note = it.note,
+                            type = it.type,
+                            transactionId = it.transactionId
+                        )
+                    }
+                    // Tạo Map cho mỗi ngày
+                    date to details
+                }
+
+                // Cập nhật lại `dateTransactionList` với giá trị mới
+                dateTransactionList = groupedTransactions.toMap()
             },
             onError = { error ->
                 errorMessage = error
@@ -274,7 +299,7 @@ fun CalendarScreen() {
 
                     LazyColumn {
                         item {
-                            DayIndex(transactionList)
+                            DayIndex(dateTransactionList)
                         }
                     }
                 }

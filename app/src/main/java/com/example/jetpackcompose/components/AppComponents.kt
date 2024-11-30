@@ -113,6 +113,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.buildAnnotatedString
+import com.example.jetpackcompose.app.screens.CalendarScreen
 import com.example.jetpackcompose.app.screens.DailyTransaction
 import com.example.jetpackcompose.app.screens.InputScreen
 import com.example.jetpackcompose.ui.theme.SaturDayColor
@@ -730,6 +731,7 @@ fun MonthPickerButton(onDateSelected: (String) -> Unit) {
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.outline_arrow_back_ios_24),
+                modifier = Modifier.size(16.dp),
                 contentDescription = "Previous Month",
                 tint = Color(0xFF444444))
         }
@@ -743,7 +745,7 @@ fun MonthPickerButton(onDateSelected: (String) -> Unit) {
                 dateText,
                 fontWeight = FontWeight.Bold,
                 fontFamily = monsterrat,
-                fontSize = 16.sp,
+                fontSize = 18.sp,
                 color = Color(0xFF444444)
             )
         }
@@ -759,6 +761,7 @@ fun MonthPickerButton(onDateSelected: (String) -> Unit) {
             Icon(
                 painter = painterResource(id = R.drawable.outline_arrow_forward_ios_24),
                 contentDescription = "Next Month",
+                modifier = Modifier.size(16.dp),
                 tint = Color(0xFF444444)
             )
         }
@@ -892,7 +895,7 @@ fun CustomCalendar(
                                 .height(35.dp) // Tùy chỉnh chiều cao
                                 .background(
                                     when {
-                                        day.isEmpty() -> Color.LightGray // Màu nền cho ngày của tháng trước và tháng sau
+                                        day.isEmpty() -> Color(0xfff1f1f1) // Màu nền cho ngày của tháng trước và tháng sau
                                         else -> Color.White // Nền trắng nếu là ngày của tháng hiện tại
                                     }
                                 )
@@ -975,7 +978,7 @@ fun CustomCalendar(
 @Preview
 @Composable
 fun PreviewInputScreen() {
-    InputScreen()
+    CalendarScreen()
 }
 
 

@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.jetpackcompose.app.network.ApiService
 import com.example.jetpackcompose.app.network.BaseURL
+import com.example.jetpackcompose.app.network.TransactionResponse
 import com.example.jetpackcompose.app.screens.DailyTransaction
 import com.google.gson.GsonBuilder
 import kotlinx.coroutines.launch
@@ -30,6 +31,8 @@ class GetTransactionViewModel(private val context: Context) : ViewModel() {
     var transactionList: List<DailyTransaction> = emptyList()
         private set
 
+    var dateTransactionList: Map<String, List<TransactionResponse.TransactionDetail>> = emptyMap()
+
     var transactionStatus: String = ""
         private set
 
@@ -42,7 +45,8 @@ class GetTransactionViewModel(private val context: Context) : ViewModel() {
     fun getTransactions(
         month: Int,
         year: Int,
-        onSuccess: (List<DailyTransaction>) -> Unit,
+        onSuccess1: (List<DailyTransaction>) -> Unit,
+        onSuccess2: (Map<String, List<TransactionResponse.TransactionDetail>>) -> Unit,
         onError: (String) -> Unit
     ) {
         val token = getToken()
@@ -73,9 +77,31 @@ class GetTransactionViewModel(private val context: Context) : ViewModel() {
                             )
                         }
 
+                        // Chuyển danh sách transactions thành Map nhóm theo ngày
+                        val dateTransactionDetailList: Map<String, List<TransactionResponse.TransactionDetail>> = transactionsResponse.transactions
+                            .groupBy { transaction -> transaction.transactionDate.joinToString("-") }
+                            .mapValues { (_, transactions) ->
+                                transactions.map {
+                                    TransactionResponse.TransactionDetail(
+                                        categoryName = it.categoryName,
+                                        amount = it.amount,
+                                        transactionDate = it.transactionDate,
+                                        note = it.note,
+                                        type = it.type,
+                                        transactionId = it.transactionId
+                                    )
+                                }
+                            }
+
+                        // Log to check the map content
+                        Log.d("TransactionViewModel", "TransactionDetails grouped by date: $dateTransactionDetailList")
+
+                        // Set the transactionList and status
                         transactionList = dailyTransactionList
+                        dateTransactionList = dateTransactionDetailList
                         transactionStatus = "Transactions fetched successfully"
-                        onSuccess(transactionList)
+                        onSuccess1(transactionList)
+                        onSuccess2(dateTransactionList)
                     } else {
                         transactionStatus = "Error: Empty response from server"
                         onError(transactionStatus)

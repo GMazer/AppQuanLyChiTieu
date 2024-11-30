@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.tooling.preview.Preview
 import com.example.jetpackcompose.R
 import com.example.jetpackcompose.components.monsterrat
 import com.example.jetpackcompose.ui.theme.colorPrimary
@@ -43,7 +44,7 @@ fun CustomBottomAppBar(pagerState: PagerState, coroutineScope: CoroutineScope) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(75.dp)
+            .height(70.dp)
             .border(1.dp, Color.LightGray, shape = RectangleShape)
     ) {
         Row(
@@ -96,7 +97,7 @@ fun CustomBottomAppBar(pagerState: PagerState, coroutineScope: CoroutineScope) {
                         tint = if (selectedPage == 1) colorPrimary else Color.Gray // Sử dụng tint thay vì contentColor
                     )
                 }
-                Text("Lịch", color = if (selectedPage == 1) colorPrimary else Color.Gray, fontSize = 12.sp)
+                Text("Lịch", color = if (selectedPage == 1) colorPrimary else Color.Gray,fontFamily = monsterrat, fontSize = 12.sp)
             }
 
             // Mục Báo cáo
@@ -116,10 +117,10 @@ fun CustomBottomAppBar(pagerState: PagerState, coroutineScope: CoroutineScope) {
                     Icon(
                         painter = painterResource(id = R.drawable.chart_donut),
                         contentDescription = "Báo cáo",
-                        tint = if (selectedPage == 2) colorPrimary else Color.Gray // Sử dụng tint thay vì contentColor
+                        tint = if (selectedPage == 2) colorPrimary else Color.Gray
                     )
                 }
-                Text("Báo cáo", color = if (selectedPage == 2) colorPrimary else Color.Gray, fontSize = 12.sp)
+                Text("Báo cáo", color = if (selectedPage == 2) colorPrimary else Color.Gray,fontFamily = monsterrat, fontSize = 12.sp)
             }
 
             // Mục Khác
@@ -142,8 +143,14 @@ fun CustomBottomAppBar(pagerState: PagerState, coroutineScope: CoroutineScope) {
                         tint = if (selectedPage == 3) colorPrimary else Color.Gray // Sử dụng tint thay vì contentColor
                     )
                 }
-                Text("Khác", color = if (selectedPage == 3) colorPrimary else Color.Gray, fontSize = 12.sp)
+                Text("Khác", color = if (selectedPage == 3) colorPrimary else Color.Gray,fontFamily = monsterrat, fontSize = 12.sp)
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun CustomBottomAppBarPreview() {
+
 }
