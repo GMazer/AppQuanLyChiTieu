@@ -121,11 +121,11 @@ fun FixedTabRow(
                     val isSelected = tabIndex == index
                     val tabColor by animateColorAsState(
                         if (isSelected) colorPrimary else inactiveColor,
-                        animationSpec = tween(500)
+                        animationSpec = tween(500), label = ""
                     )
                     val textColor by animateColorAsState(
                         targetValue = if (isSelected) Color.White else inactiveTextColor,
-                        animationSpec = tween(durationMillis = 500)
+                        animationSpec = tween(durationMillis = 500), label = ""
                     )
                     val shape = when (index) {
                         0 -> RoundedCornerShape(topStart = 8.dp, bottomStart = 8.dp)
@@ -323,79 +323,85 @@ fun CategoryIconWithName(
 
 
 @Composable
-fun DayIndex(dateTransactionList: Map<String, List<TransactionResponse.TransactionDetail>>) {
-
+fun DayIndex(
+    dateTransactionList: Map<String, List<TransactionResponse.TransactionDetail>>,
+    selectedDate: String = "" // Thêm tham số selectedDate mặc định là rỗng
+) {
     val dateFormat = remember { SimpleDateFormat("yyyy-MM-dd", Locale("vi", "VN")) }
     val displayDateFormat = remember { SimpleDateFormat("dd/MM/yyyy (E)", Locale("vi", "VN")) }
 
     // Duyệt qua dateTransactionList (map các ngày và giao dịch)
     dateTransactionList.forEach { (date, transactions) ->
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
-        ) {
-            // Hiển thị ngày
-            val formattedDate = try {
-                val dateParsed = dateFormat.parse(date)
-                displayDateFormat.format(dateParsed)
-            } catch (e: Exception) {
-                date // Nếu có lỗi thì hiển thị ngày gốc
-            }
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Start,
+        // Kiểm tra nếu selectedDate là rỗng hoặc trùng với ngày hiện tại
+        if (selectedDate.isEmpty() || date == selectedDate) {
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(color = Color(0xfff1f1f1))
-                    .height(35.dp)
+                    .padding(8.dp)
             ) {
-                Spacer(modifier = Modifier.width(12.dp))
-                Text(
-                    text = formattedDate,
-                    fontFamily = monsterrat,
-                    color = Color(0xFF444444),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 12.sp
-                )
-            }
+                // Hiển thị ngày
+                val formattedDate = try {
+                    val dateParsed = dateFormat.parse(date)
+                    displayDateFormat.format(dateParsed)
+                } catch (e: Exception) {
+                    date // Nếu có lỗi thì hiển thị ngày gốc
+                }
 
-            Divider(
-                color = highGray,
-                thickness = 0.7.dp
-            )
-
-            // Duyệt qua danh sách giao dịch của ngày
-            transactions.forEach { transaction ->
-                // Hiển thị mỗi giao dịch
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Start, // Căn trái
+                    horizontalArrangement = Arrangement.Start,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(color = Color.White)
-                        .height(50.dp)
-                        .padding(horizontal = 16.dp)
+                        .background(color = Color(0xfff1f1f1))
+                        .height(35.dp)
                 ) {
-                    transaction.note?.let {
-                        transaction.type?.let { it1 ->
-                            CategoryIconWithName(
-                                transaction.categoryName, it, transaction.amount,
-                                it1
-                            )
-                        }
-                    }
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Text(
+                        text = formattedDate,
+                        fontFamily = monsterrat,
+                        color = Color(0xFF444444),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 12.sp
+                    )
                 }
 
                 Divider(
                     color = highGray,
                     thickness = 0.7.dp
                 )
+
+                // Duyệt qua danh sách giao dịch của ngày
+                transactions.forEach { transaction ->
+                    // Hiển thị mỗi giao dịch
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Start, // Căn trái
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(color = Color.White)
+                            .height(50.dp)
+                            .padding(horizontal = 16.dp)
+                    ) {
+                        transaction.note?.let {
+                            transaction.type?.let { it1 ->
+                                CategoryIconWithName(
+                                    transaction.categoryName, it, transaction.amount,
+                                    it1
+                                )
+                            }
+                        }
+                    }
+
+                    Divider(
+                        color = highGray,
+                        thickness = 0.7.dp
+                    )
+                }
             }
         }
     }
 }
+
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -905,7 +911,7 @@ fun MessagePopup(
     if (showPopup) {
         // Tự động ẩn popup sau 1 giây
         LaunchedEffect(key1 = showPopup) {
-            delay(1500) // Đợi 1 giây
+            delay(1200) // Đợi 1 giây
             onDismiss() // Đóng popup sau 1 giây
         }
 

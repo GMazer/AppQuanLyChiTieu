@@ -81,6 +81,7 @@ fun CalendarScreen() {
     }
 
     var selectedMonthYear by remember { mutableStateOf(currentMonthYear) }
+    var selectedDate by remember { mutableStateOf("") }
     var transactionList by remember { mutableStateOf(listOf<DailyTransaction>()) }
     var dateTransactionList by remember { mutableStateOf<Map<String, List<TransactionResponse.TransactionDetail>>>(emptyMap()) }
     var errorMessage by remember { mutableStateOf("") }
@@ -90,6 +91,7 @@ fun CalendarScreen() {
     LaunchedEffect(selectedMonthYear) {
         // Tách tháng và năm từ selectedMonthYear
         val (month, year) = selectedMonthYear.split("/").map { it.toInt() }
+        selectedDate = ""
 
         viewModel.getTransactions(
             month = month,
@@ -202,7 +204,13 @@ fun CalendarScreen() {
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                CustomCalendar(selectedMonthYear = selectedMonthYear, transactionList)
+                CustomCalendar(
+                    selectedMonthYear = selectedMonthYear,
+                    transactionList,
+                    onDateSelected = { dateSelected ->
+                        selectedDate = dateSelected
+                    }
+                )
 
                 Row(modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.weight(1f)) {
@@ -293,7 +301,7 @@ fun CalendarScreen() {
                     Spacer(modifier = Modifier.height(8.dp))
                     LazyColumn {
                         item {
-                            DayIndex(dateTransactionList)
+                            DayIndex(dateTransactionList, selectedDate)
                         }
                     }
                 }

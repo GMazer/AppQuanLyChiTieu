@@ -766,7 +766,8 @@ fun MonthPickerButton(onDateSelected: (String) -> Unit) {
 @Composable
 fun CustomCalendar(
     selectedMonthYear: String,
-    transactionList: List<DailyTransaction> // Nhận transactionList từ bên ngoài
+    transactionList: List<DailyTransaction>, // Nhận transactionList từ bên ngoài
+    onDateSelected: (String) -> Unit // Callback để trả về ngày đã chọn
 ) {
     val calendar = Calendar.getInstance()
     val currencyFormatter = remember {
@@ -820,6 +821,9 @@ fun CustomCalendar(
     val rows = days.chunked(7) // Chia thành các hàng, mỗi hàng 7 ngày
     val calendarHeight = if (rows.size == 6) 230.dp else 200.dp // Nếu có 6 hàng, chiều cao là 230.dp
 
+    // Trạng thái cho ngày được chọn
+    val selectedDate = remember { mutableStateOf<String>("") }
+
     BoxWithConstraints(
         modifier = Modifier
             .fillMaxWidth()
@@ -867,10 +871,18 @@ fun CustomCalendar(
                                 .background(
                                     when {
                                         day.isEmpty() -> Color(0xfff1f1f1) // Màu nền cho ngày của tháng trước và tháng sau
+                                        day == selectedDate.value -> Color(0xFFF8E6D6) // Màu nền cho ngày được chọn
                                         else -> Color.White // Nền trắng nếu là ngày của tháng hiện tại
                                     }
                                 )
-                                .border(0.25.dp, Color(0xFFd4d4d4)),
+                                .border(0.25.dp, Color(0xFFd4d4d4))
+                                .clickable {
+                                    // Thực hiện hành động khi người dùng chọn ngày
+                                    val formattedDay = String.format("%02d", day.toInt())
+                                    val selectedDay = "$year-${month + 1}-$formattedDay"
+                                    selectedDate.value = selectedDay // Lưu trữ ngày đã chọn
+                                    onDateSelected(selectedDay) // Trả về ngày đã chọn qua callback
+                                },
                             contentAlignment = Alignment.TopStart
                         ) {
                             Column(
@@ -937,17 +949,6 @@ fun CustomCalendar(
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
 
 
 
