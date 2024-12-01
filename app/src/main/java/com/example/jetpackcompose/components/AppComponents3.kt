@@ -5,13 +5,13 @@ import android.app.DatePickerDialog
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -21,15 +21,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.AlertDialog
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
-import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -37,15 +33,13 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -60,20 +54,22 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Popup
 import androidx.navigation.NavHostController
 import com.example.jetpackcompose.R
 import com.example.jetpackcompose.app.features.inputFeatures.Category
 import com.example.jetpackcompose.app.network.TransactionResponse
-import com.example.jetpackcompose.app.screens.DailyTransaction
-import com.example.jetpackcompose.ui.theme.TextColor
 import com.example.jetpackcompose.ui.theme.colorPrimary
 import com.example.jetpackcompose.ui.theme.componentShapes
+import com.example.jetpackcompose.ui.theme.errorColor
 import com.example.jetpackcompose.ui.theme.highGray
+import com.example.jetpackcompose.ui.theme.successColor
+import com.example.jetpackcompose.ui.theme.textColor
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
-import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.ZoneId
@@ -104,7 +100,10 @@ fun FixedTabRow(
         ) {
             // Nút "Trở lại" ở ngoài cùng bên trái
             ClickableText("Trở lại") {
-                navController.popBackStack("inputfixedtab", inclusive = true) // Navigate to AnualScreen
+                navController.popBackStack(
+                    "inputfixedtab",
+                    inclusive = true
+                ) // Navigate to AnualScreen
                 navController.navigate("anual") // Navigate to AnualScreen
             }
 
@@ -175,7 +174,7 @@ fun FixedTabRow(
 
             // Nút "Lưu"
             ClickableText("  ") {
-            //
+                //
             }
 
         }
@@ -228,14 +227,44 @@ fun CategoryIconWithName(
     }
     // Danh sách các Category
     val categories = listOf(
-        Category(1, "Thiết yếu", { painterResource(R.drawable.essentials) }, Color(0xFFfb791d), 1.00f),
-        Category(2, "Giải trí", { painterResource(R.drawable.entertainment) }, Color(0xFF37c166), 1.00f),
+        Category(
+            1,
+            "Thiết yếu",
+            { painterResource(R.drawable.essentials) },
+            Color(0xFFfb791d),
+            1.00f
+        ),
+        Category(
+            2,
+            "Giải trí",
+            { painterResource(R.drawable.entertainment) },
+            Color(0xFF37c166),
+            1.00f
+        ),
         Category(3, "Đầu tư", { painterResource(R.drawable.invest) }, Color(0xFF283eaa), 1.00f),
-        Category(4, "Phát sinh", { painterResource(R.drawable.hedgefund) }, Color(0xFFf95aa9), 1.00f),
-        Category(5, "Thu nhập", { painterResource(R.drawable.salary) }, Color(0xFFfb791d), 1.00f),
-        Category(6, "Tiết kiệm", { painterResource(R.drawable.baseline_card_giftcard_24) }, Color(0xFF37c166), 1.00f),
+        Category(
+            4,
+            "Phát sinh",
+            { painterResource(R.drawable.hedgefund) },
+            Color(0xFFf95aa9),
+            1.00f
+        ),
+        Category(5, "Lương", { painterResource(R.drawable.salary) }, Color(0xFFfb791d), 1.00f),
+        Category(
+            6,
+            "Tiết kiệm",
+            { painterResource(R.drawable.baseline_card_giftcard_24) },
+            Color(0xFF37c166),
+            1.00f
+        ),
         Category(7, "Trợ cấp", { painterResource(R.drawable.secondary) }, Color(0xFFf95aa9), 1.00f),
-        Category(8, "Khác", { painterResource(R.drawable.baseline_more_horiz_24) }, Color(0xFFfba74a), 1.00f)
+        Category(
+            8,
+            "Khác",
+            { painterResource(R.drawable.baseline_more_horiz_24) },
+            Color(0xFFfba74a),
+            1.00f
+        )
     )
 
     // Tìm Category phù hợp với categoryName
@@ -268,7 +297,7 @@ fun CategoryIconWithName(
                 color = Color(0xFF444444)
             )
             Spacer(modifier = Modifier.width(8.dp))
-            if(transactionNote.isNotEmpty()) {
+            if (transactionNote.isNotEmpty()) {
                 Text(
                     text = "(${transactionNote})",
                     fontFamily = monsterrat,
@@ -277,15 +306,14 @@ fun CategoryIconWithName(
                     color = Color(0xFF444444),
                     modifier = Modifier.weight(1f)
                 )
-            }
-            else {
+            } else {
                 Spacer(modifier = Modifier.weight(1f))
             }
             Text(
                 text = "${currencyFormatter.format(transactionAmount)}₫",
                 fontFamily = monsterrat,
                 fontWeight = FontWeight.Bold,
-                color = if (transactionType == "expense") TextColor else Color(0xff37c8ec),
+                color = if (transactionType == "expense") textColor else Color(0xff37c8ec),
                 textAlign = TextAlign.End
             )
 
@@ -350,11 +378,14 @@ fun DayIndex(dateTransactionList: Map<String, List<TransactionResponse.Transacti
                         .height(50.dp)
                         .padding(horizontal = 16.dp)
                 ) {
-                    transaction.note?.let { transaction.type?.let { it1 ->
-                        CategoryIconWithName(transaction.categoryName, it, transaction.amount,
-                            it1
-                        )
-                    } }
+                    transaction.note?.let {
+                        transaction.type?.let { it1 ->
+                            CategoryIconWithName(
+                                transaction.categoryName, it, transaction.amount,
+                                it1
+                            )
+                        }
+                    }
                 }
 
                 Divider(
@@ -365,7 +396,6 @@ fun DayIndex(dateTransactionList: Map<String, List<TransactionResponse.Transacti
         }
     }
 }
-
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -412,7 +442,7 @@ fun RowTextField(
                 fontSize = 16.sp,
                 fontFamily = monsterrat,
                 fontWeight = FontWeight.Normal,
-                color = TextColor
+                color = textColor
             ),
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Text,
@@ -449,7 +479,7 @@ fun DropdownRow(
             text = label,
             fontWeight = FontWeight.Bold,
             fontFamily = monsterrat,
-            color = TextColor,
+            color = textColor,
             modifier = Modifier.weight(4f)
         )
 
@@ -535,7 +565,7 @@ fun <T : Enum<T>> DropdownRepeat(
             text = label,
             fontWeight = FontWeight.Bold,
             fontFamily = monsterrat,
-            color = TextColor,
+            color = textColor,
             modifier = Modifier.weight(4f)
         )
 
@@ -593,7 +623,6 @@ fun <T : Enum<T>> DropdownRepeat(
 }
 
 
-
 @SuppressLint("NewApi")
 @Composable
 fun DatePickerRow(
@@ -627,7 +656,7 @@ fun DatePickerRow(
         Text(
             text = label,
             fontWeight = FontWeight.Bold,
-            color = TextColor,
+            color = textColor,
             fontFamily = monsterrat,
             modifier = Modifier.weight(3f)
         )
@@ -659,7 +688,7 @@ fun DatePickerRow(
                 fontWeight = FontWeight.Normal,
                 fontFamily = monsterrat,
                 textAlign = TextAlign.Center,
-                color = TextColor
+                color = textColor
             )
         }
 
@@ -689,7 +718,7 @@ fun RowNumberField(
     ) {
         Text(
             text = label,
-            color = TextColor,
+            color = textColor,
             fontWeight = FontWeight.Bold,
             fontFamily = monsterrat,
             modifier = Modifier
@@ -733,7 +762,7 @@ fun RowNumberField(
                 fontSize = 16.sp,
                 fontFamily = monsterrat,
                 fontWeight = FontWeight.Normal,
-                color = TextColor
+                color = textColor
             ),
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Number, // Chỉ cho phép nhập số
@@ -774,7 +803,7 @@ fun EndDateRow(
             text = label,
             fontWeight = FontWeight.Bold,
             fontFamily = monsterrat,
-            color = TextColor,
+            color = textColor,
             modifier = Modifier.weight(4f)
         )
 
@@ -820,7 +849,8 @@ fun EndDateRow(
                                         selectedDate = "" // Reset ngày nếu chọn "Không"
                                         onDateSelected("Không")
                                     } else {
-                                        showDatePicker = true // Hiển thị DatePickerDialog nếu chọn "Ngày chỉ định"
+                                        showDatePicker =
+                                            true // Hiển thị DatePickerDialog nếu chọn "Ngày chỉ định"
                                     }
                                     showDialog = false
                                 }
@@ -849,7 +879,8 @@ fun EndDateRow(
                 val newDate = Calendar.getInstance().apply {
                     set(year, month, dayOfMonth)
                 }.time
-                selectedDate = SimpleDateFormat("yyyy-MM-dd", vietnamLocale).format(newDate) // Cập nhật ngày
+                selectedDate =
+                    SimpleDateFormat("yyyy-MM-dd", vietnamLocale).format(newDate) // Cập nhật ngày
                 onDateSelected(selectedDate) // Gửi ngày đã chọn qua callback
                 showDatePicker = false // Tắt trạng thái hiển thị DatePickerDialog
             },
@@ -857,10 +888,94 @@ fun EndDateRow(
             Calendar.getInstance().get(Calendar.MONTH),
             Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
         )
-        datePickerDialog.setOnDismissListener { showDatePicker = false } // Đảm bảo tắt DatePickerDialog khi đóng
+        datePickerDialog.setOnDismissListener {
+            showDatePicker = false
+        } // Đảm bảo tắt DatePickerDialog khi đóng
         datePickerDialog.show()
     }
 }
+
+@Composable
+fun MessagePopup(
+    showPopup: Boolean,
+    successMessage: String,
+    errorMessage: String,
+    onDismiss: () -> Unit
+) {
+    if (showPopup) {
+        // Tự động ẩn popup sau 1 giây
+        LaunchedEffect(key1 = showPopup) {
+            delay(1500) // Đợi 1 giây
+            onDismiss() // Đóng popup sau 1 giây
+        }
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize() // Lấp đầy màn hình
+                .background(Color.Black.copy(alpha = 0.5f)) // Lớp phủ tối phía sau
+        ) {
+            Popup(
+                alignment = Alignment.Center,
+                onDismissRequest = onDismiss // Đóng popup khi nhấn ngoài
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(0.8f)
+                        .padding(16.dp)
+                        .height(130.dp)
+                        .background(
+                            color = Color.White,
+                            shape = RoundedCornerShape(12.dp) // Bo góc popup
+                        )
+                        .padding(16.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        if (errorMessage.isNotEmpty()) {
+                            // Thêm icon lỗi
+                            Icon(
+                                painter = painterResource(id = R.drawable.error),
+                                contentDescription = "Error icon",
+                                tint = errorColor,
+                                modifier = Modifier.size(48.dp)
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text(
+                                text = errorMessage,
+                                color = errorColor,
+                                fontFamily = monsterrat,
+                                fontWeight = FontWeight.Bold
+                            )
+                        } else if (successMessage.isNotEmpty()) {
+                            // Thêm icon thành công
+                            Icon(
+                                painter = painterResource(id = R.drawable.success),
+                                contentDescription = "Success icon",
+                                tint = successColor,
+                                modifier = Modifier.size(48.dp)
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text(
+                                text = successMessage,
+                                color = successColor,
+                                fontFamily = monsterrat,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+
+
+
 
 
 

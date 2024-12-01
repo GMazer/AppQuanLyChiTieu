@@ -1,9 +1,6 @@
 package com.example.jetpackcompose.components
 
 import android.annotation.SuppressLint
-import android.app.DatePickerDialog
-import android.content.res.Resources
-import android.view.View
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -30,8 +27,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -44,21 +39,15 @@ import androidx.compose.material.OutlinedTextField
 import androidx.compose.material3.Text
 //noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.TextFieldDefaults
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -83,7 +72,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -92,11 +80,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.TextFieldValue
 import com.example.jetpackcompose.R
 import com.example.jetpackcompose.app.features.inputFeatures.Category
-import com.example.jetpackcompose.app.features.inputFeatures.CustomTabRow
-import com.example.jetpackcompose.app.features.inputFeatures.OutComeContent
-import com.example.jetpackcompose.app.features.inputFeatures.IncomeContent
-import com.example.jetpackcompose.app.features.inputFeatures.TabItem
-import com.example.jetpackcompose.ui.theme.TextColor
+import com.example.jetpackcompose.ui.theme.textColor
 import com.example.jetpackcompose.ui.theme.TextColorPrimary
 import com.example.jetpackcompose.ui.theme.bgColor
 import com.example.jetpackcompose.ui.theme.bgItemColor
@@ -106,22 +90,16 @@ import com.example.jetpackcompose.ui.theme.componentShapes
 import com.example.jetpackcompose.ui.theme.highGray
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.buildAnnotatedString
 import com.example.jetpackcompose.app.screens.CalendarScreen
 import com.example.jetpackcompose.app.screens.DailyTransaction
-import com.example.jetpackcompose.app.screens.InputScreen
 import com.example.jetpackcompose.ui.theme.SaturDayColor
 import com.example.jetpackcompose.ui.theme.SundayColor
 import java.lang.StrictMath.PI
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
-import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -148,7 +126,7 @@ fun NormalTextComponent(value: String) {
             fontWeight = FontWeight.Normal,
             fontStyle = FontStyle.Normal,
         ),
-        color = TextColor,
+        color = textColor,
         textAlign = TextAlign.Center,
     )
 }
@@ -212,7 +190,7 @@ fun MyTextFieldComponent(
             unfocusedLabelColor = Color.LightGray,
             unfocusedBorderColor = Color.Transparent,
             cursorColor = colorPrimary,
-            textColor = TextColor,
+            textColor = textColor,
             backgroundColor = bgColor
         ),
         keyboardOptions = KeyboardOptions.Default.copy(
@@ -287,7 +265,7 @@ fun PasswordTextFieldComponent(
             unfocusedLabelColor = Color.LightGray,
             unfocusedBorderColor = Color.Transparent,
             cursorColor = colorPrimary,
-            textColor = TextColor,
+            textColor = textColor,
             backgroundColor = bgColor
         ),
         keyboardOptions = KeyboardOptions.Default.copy(
@@ -792,16 +770,10 @@ fun CustomCalendar(
 ) {
     val calendar = Calendar.getInstance()
     val currencyFormatter = remember {
-        // Lấy DecimalFormatSymbols mặc định cho Việt Nam
         val symbols = DecimalFormatSymbols(Locale("vi", "VN"))
-
-        // Thay đổi dấu phân cách thập phân và phân cách hàng nghìn
         symbols.decimalSeparator = '.'
         symbols.groupingSeparator = ','
-
-        // Tạo một DecimalFormat mới sử dụng các biểu tượng đã thay đổi
         val format = DecimalFormat("#,###", symbols)
-
         format
     }
 
@@ -817,7 +789,7 @@ fun CustomCalendar(
 
     // Tính toán số ngày trong tháng và các ngày cần hiển thị
     val daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
-    val firstDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK) - 1 // Chủ nhật = 0
+    val firstDayOfWeek = (calendar.get(Calendar.DAY_OF_WEEK) + 5) % 7 // Điều chỉnh ngày đầu tuần để bắt đầu từ Thứ Hai
 
     // Tính toán số ngày trong tháng sau
     calendar.add(Calendar.MONTH, 1)
@@ -825,7 +797,6 @@ fun CustomCalendar(
     calendar.add(Calendar.MONTH, -1) // Quay lại tháng hiện tại
 
     val days = mutableListOf<String>()
-    // Thêm ngày trống trước khi bắt đầu tháng hiện tại (tháng trước)
     val leadingEmptyDays = firstDayOfWeek // Số ngày trống trước khi bắt đầu tháng
     for (i in 1..leadingEmptyDays) {
         days.add("") // Thêm ô trống cho các ngày của tháng trước
@@ -845,8 +816,9 @@ fun CustomCalendar(
     // Header cho lịch (Các ngày trong tuần)
     val daysOfWeek = listOf("T2", "T3", "T4", "T5", "T6", "T7", "CN")
 
-    // Kích thước lịch
-    val calendarHeight = 200.dp
+    // Tính số hàng của lịch (5 hoặc 6 hàng)
+    val rows = days.chunked(7) // Chia thành các hàng, mỗi hàng 7 ngày
+    val calendarHeight = if (rows.size == 6) 230.dp else 200.dp // Nếu có 6 hàng, chiều cao là 230.dp
 
     BoxWithConstraints(
         modifier = Modifier
@@ -864,7 +836,7 @@ fun CustomCalendar(
                     Box(
                         modifier = Modifier
                             .weight(1f) // Mỗi ngày trong tuần có cùng trọng số
-                            .height(10.dp) // Tùy chỉnh chiều cao
+                            .height(10.dp)
                             .background(Color(0xFFe1e1e1))
                             .border(0.25.dp, Color(0xFFd4d4d4)),
                         contentAlignment = Alignment.Center
@@ -874,7 +846,7 @@ fun CustomCalendar(
                             fontWeight = FontWeight.Normal,
                             fontSize = 8.sp,
                             fontFamily = monsterrat,
-                            color = if (day == "CN") SundayColor else if (day == "T7") SaturDayColor else TextColor,
+                            color = if (day == "CN") SundayColor else if (day == "T7") SaturDayColor else textColor,
                             textAlign = TextAlign.Center
                         )
                     }
@@ -882,7 +854,6 @@ fun CustomCalendar(
             }
 
             // Lưới ngày
-            val rows = days.chunked(7) // Chia thành các hàng, mỗi hàng 7 ngày
             rows.forEachIndexed { rowIndex, week ->
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -892,7 +863,7 @@ fun CustomCalendar(
                         Box(
                             modifier = Modifier
                                 .weight(1f) // Mỗi ô ngày có cùng trọng số
-                                .height(35.dp) // Tùy chỉnh chiều cao
+                                .height(35.dp)
                                 .background(
                                     when {
                                         day.isEmpty() -> Color(0xfff1f1f1) // Màu nền cho ngày của tháng trước và tháng sau
@@ -900,7 +871,7 @@ fun CustomCalendar(
                                     }
                                 )
                                 .border(0.25.dp, Color(0xFFd4d4d4)),
-                            contentAlignment = Alignment.TopStart // Đặt vị trí căn chỉnh góc trên trái
+                            contentAlignment = Alignment.TopStart
                         ) {
                             Column(
                                 modifier = Modifier.padding(4.dp)
@@ -919,8 +890,12 @@ fun CustomCalendar(
                                         textAlign = TextAlign.Start
                                     )
 
+                                    // Chuyển ngày thành định dạng yyyy-MM-dd để so sánh
+                                    val formattedDay = String.format("%02d", day.toInt())
+                                    val transactionDate = "$year-${month + 1}-$formattedDay"
+
                                     // Kiểm tra xem ngày có giao dịch không và hiển thị amountIncome và amountExpense
-                                    val transaction = transactionList.find { it.date == "$year-${month + 1}-$day" }
+                                    val transaction = transactionList.find { it.date == transactionDate }
                                     transaction?.let {
                                         // Hiển thị amountIncome nếu không bằng 0
                                         if (it.amountIncome > 0) {
@@ -962,6 +937,8 @@ fun CustomCalendar(
         }
     }
 }
+
+
 
 
 

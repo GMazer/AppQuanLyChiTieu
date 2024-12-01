@@ -40,12 +40,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -61,24 +57,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.example.jetpackcompose.R
-import com.example.jetpackcompose.ui.theme.TextColor
+import com.example.jetpackcompose.ui.theme.textColor
 import com.example.jetpackcompose.ui.theme.colorPrimary
 import java.util.Calendar
-import com.example.jetpackcompose.ui.theme.bgColor
-import com.example.jetpackcompose.ui.theme.topBarColor
-import androidx.compose.material3.TopAppBar
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.nativeCanvas
-import androidx.compose.ui.input.pointer.motionEventSpy
 import com.example.jetpackcompose.app.features.inputFeatures.LimitTransaction
-import com.example.jetpackcompose.components.YearPickerDialog
-import com.example.jetpackcompose.components.YearPickerButton
 import com.example.jetpackcompose.ui.theme.colorContrast
-import com.example.jetpackcompose.ui.theme.colorPrimary
-import androidx.compose.ui.graphics.Color as ComposeColor
 
 
 @Composable
@@ -249,7 +236,7 @@ fun MonthPickerDialog(
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
                             contentDescription = "Previous Year",
-                            tint = TextColor
+                            tint = textColor
                         )
                     }
                     Text(
@@ -257,7 +244,7 @@ fun MonthPickerDialog(
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
                         fontFamily = monsterrat,
-                        color = TextColor
+                        color = textColor
 
                     )
                     IconButton(onClick = { selectedYear.value++ }) {
@@ -291,7 +278,7 @@ fun MonthPickerDialog(
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold,
                                 fontFamily = monsterrat,
-                                color = if (isSelected) Color.White else TextColor,
+                                color = if (isSelected) Color.White else textColor,
                                 modifier = Modifier
                                     .background(
                                         color = if (isSelected) colorPrimary else Color.Transparent,
@@ -315,7 +302,7 @@ fun MonthPickerDialog(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     TextButton(onClick = { onDismiss() }) {
-                        Text(text = "Cancel", fontFamily = monsterrat, color = TextColor)
+                        Text(text = "Cancel", fontFamily = monsterrat, color = textColor)
                     }
                     TextButton(onClick = {
                         onMonthYearSelected(selectedMonth.value, selectedYear.value)
@@ -364,7 +351,7 @@ fun YearPickerDialog(
                     text = "Chọn năm",
                     fontSize = 20.sp,
                     fontFamily = monsterrat,
-                    color = TextColor,
+                    color = textColor,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
@@ -384,7 +371,7 @@ fun YearPickerDialog(
                                 fontSize = 18.sp,
                                 fontFamily = monsterrat,
                                 fontWeight = if (year == selectedYear) FontWeight.Bold else FontWeight.Normal,
-                                color = if (year == selectedYear) colorPrimary else TextColor,
+                                color = if (year == selectedYear) colorPrimary else textColor,
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(8.dp)
@@ -403,7 +390,7 @@ fun YearPickerDialog(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     TextButton(onClick = { onDismiss() }) {
-                        Text(text = "Cancel", fontFamily = monsterrat, color = TextColor)
+                        Text(text = "Cancel", fontFamily = monsterrat, color = textColor)
                     }
                     TextButton(onClick = {
                         onYearSelected(selectedYear)
@@ -607,7 +594,7 @@ fun PopUpSetValueDialog(
                     Text(
                         text = "Chi phí thiết yếu",
                         fontFamily = monsterrat,
-                        color = TextColor,
+                        color = textColor,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Normal,
                         modifier = Modifier.weight(2f)
@@ -624,7 +611,7 @@ fun PopUpSetValueDialog(
                     Text(
                         text = " %",
                         fontFamily = monsterrat,
-                        color = TextColor,
+                        color = textColor,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Normal,
                         modifier = Modifier.weight(0.5f),
@@ -642,7 +629,7 @@ fun PopUpSetValueDialog(
                     Text(
                         text = "Ngân sách giải trí",
                         fontFamily = monsterrat,
-                        color = TextColor,
+                        color = textColor,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Normal,
                         modifier = Modifier.weight(2f)
@@ -659,7 +646,7 @@ fun PopUpSetValueDialog(
                     Text(
                         text = " %",
                         fontFamily = monsterrat,
-                        color = TextColor,
+                        color = textColor,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Normal,
                         modifier = Modifier.weight(0.5f),
@@ -677,7 +664,7 @@ fun PopUpSetValueDialog(
                     Text(
                         text = "Ngân sách đầu tư",
                         fontFamily = monsterrat,
-                        color = TextColor,
+                        color = textColor,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Normal,
                         modifier = Modifier.weight(2f)
@@ -694,7 +681,7 @@ fun PopUpSetValueDialog(
                     Text(
                         text = " %",
                         fontFamily = monsterrat,
-                        color = TextColor,
+                        color = textColor,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Normal,
                         modifier = Modifier.weight(0.5f),
@@ -712,7 +699,7 @@ fun PopUpSetValueDialog(
                     Text(
                         text = "Quỹ dự phòng",
                         fontFamily = monsterrat,
-                        color = TextColor,
+                        color = textColor,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Normal,
                         modifier = Modifier.weight(2f)
@@ -737,7 +724,7 @@ fun PopUpSetValueDialog(
                     Text(
                         text = " %",
                         fontFamily = monsterrat,
-                        color = TextColor,
+                        color = textColor,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Normal,
                         modifier = Modifier.weight(0.5f),
@@ -755,7 +742,7 @@ fun PopUpSetValueDialog(
                     Text(
                         text = "Khoản tiết kiệm",
                         fontFamily = monsterrat,
-                        color = TextColor,
+                        color = textColor,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Normal,
                         modifier = Modifier.weight(2f)
@@ -773,7 +760,7 @@ fun PopUpSetValueDialog(
                     Text(
                         text = " %",
                         fontFamily = monsterrat,
-                        color = TextColor,
+                        color = textColor,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Normal,
                         modifier = Modifier.weight(0.5f),
@@ -786,7 +773,7 @@ fun PopUpSetValueDialog(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     TextButton(onClick = { onDismiss() }) {
-                        Text(text = "Huỷ bỏ", fontFamily = monsterrat, color = TextColor)
+                        Text(text = "Huỷ bỏ", fontFamily = monsterrat, color = textColor)
                     }
                     TextButton(onClick = {
                         // Lấy dữ liệu và gửi qua callback
@@ -878,7 +865,7 @@ fun PercentTextField(
                 if (amountState.isEmpty()) {
                     Text(
                         text = if (isFocused) "" else "0",
-                        color = TextColor,
+                        color = textColor,
                         fontWeight = FontWeight.Bold,
                         fontFamily = monsterrat,
                         fontSize = 20.sp,

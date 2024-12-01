@@ -39,7 +39,7 @@ import com.example.jetpackcompose.components.CustomCalendar
 import com.example.jetpackcompose.components.DayIndex
 import com.example.jetpackcompose.components.MonthPickerButton
 import com.example.jetpackcompose.components.monsterrat
-import com.example.jetpackcompose.ui.theme.TextColor
+import com.example.jetpackcompose.ui.theme.textColor
 import com.example.jetpackcompose.ui.theme.colorPrimary
 import com.example.jetpackcompose.ui.theme.topBarColor
 import java.text.DecimalFormat
@@ -212,7 +212,7 @@ fun CalendarScreen() {
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 12.sp,
                                 ),
-                                color = TextColor,
+                                color = textColor,
                                 textAlign = TextAlign.Center,
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -236,7 +236,7 @@ fun CalendarScreen() {
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 12.sp,
                                 ),
-                                color = TextColor,
+                                color = textColor,
                                 textAlign = TextAlign.Center,
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -260,7 +260,7 @@ fun CalendarScreen() {
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 12.sp,
                                 ),
-                                color = TextColor,
+                                color = textColor,
                                 textAlign = TextAlign.Center,
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -291,12 +291,6 @@ fun CalendarScreen() {
                 } else {
 
                     Spacer(modifier = Modifier.height(8.dp))
-
-                    Divider(
-                        color = Color.LightGray,
-                        thickness = 2.dp
-                    )
-
                     LazyColumn {
                         item {
                             DayIndex(dateTransactionList)

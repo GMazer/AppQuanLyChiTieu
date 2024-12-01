@@ -9,7 +9,6 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -65,7 +64,6 @@ import com.example.jetpackcompose.R
 import com.example.jetpackcompose.app.features.apiService.TransactionAPI.PostLimitTransactionViewModel
 import com.example.jetpackcompose.components.PopUpSetValueDialog
 import com.example.jetpackcompose.ui.theme.colorPrimary
-import com.example.jetpackcompose.ui.theme.colorSecondary
 import com.example.jetpackcompose.ui.theme.componentShapes
 import com.example.jetpackcompose.ui.theme.topBarColor
 import kotlinx.coroutines.CoroutineScope
@@ -369,7 +367,7 @@ fun InputTab(viewModel: PostLimitTransactionViewModel = PostLimitTransactionView
 
     val tabs = listOf(
         TabItem("Expense", icon =  Icons.Default.ArrowBack){
-            OutComeContent()
+            ExpenseContent()
         },
         TabItem("Income", icon =  Icons.Default.ArrowForward){
             IncomeContent()

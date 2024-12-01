@@ -13,7 +13,7 @@ import retrofit2.http.PUT
 import retrofit2.http.Query
 
 object BaseURL {
-    val baseUrl = "https://4a92-113-23-122-190.ngrok-free.app"
+    val baseUrl = "https://1d94-58-187-67-227.ngrok-free.app"
 }
 
 data class RegistrationData(
@@ -65,7 +65,6 @@ data class TransactionResponse(
         val totalDailyIncome: Long,
         val totalDailyExpense: Long
     )
-
 
     data class TransactionDetail(
         val categoryName: String,
