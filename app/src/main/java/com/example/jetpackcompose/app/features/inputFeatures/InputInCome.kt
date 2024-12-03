@@ -56,30 +56,30 @@ fun IncomeContent(postViewModel: PostTransactionViewModel = PostTransactionViewM
 
     val categories = listOf(
         Category(
-            6,
-            "Lương",
+            10,
+            "Tiền lương",
             { painterResource(R.drawable.salary) },
             Color(0xFFfb791d),
             percentage = 1.00f // 75%
         ),
         Category(
-            7,
-            "Thưởng",
+            11,
+            "Tiền thưởng",
             { painterResource(R.drawable.baseline_card_giftcard_24) },
             Color(0xFF37c166),
             percentage = 1.00f // 90%
         ),
         Category(
-            8,
+            12,
             "Thu nhập phụ",
             { painterResource(R.drawable.secondary) },
             Color(0xFFf95aa9),
             percentage = 1.00f // 30%
         ),
         Category(
-            9,
-            "Khác",
-            { painterResource(R.drawable.baseline_more_horiz_24) },
+            13,
+            "Trợ cấp",
+            { painterResource(R.drawable.subsidy) },
             Color(0xFFfba74a),
             percentage = 1.00f // 50%
         )
@@ -137,6 +137,7 @@ fun IncomeContent(postViewModel: PostTransactionViewModel = PostTransactionViewM
                         categories = categories,
                         buttonColor = buttonColor,
                         selectedCategory = selectedCategory,
+                        column = 2,
                         onCategorySelected = { category -> selectedCategory = category }
                     )
 

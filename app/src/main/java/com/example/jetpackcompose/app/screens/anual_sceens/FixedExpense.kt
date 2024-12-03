@@ -99,10 +99,14 @@ fun FixedExpense(viewModel: FixedTransactionViewModel = FixedTransactionViewMode
                     DropdownRow(
                         label = "Danh mục",
                         options = listOf(
-                            Pair(R.drawable.essentials, "Thiết yếu"),
-                            Pair(R.drawable.entertainment, "Giải trí"),
-                            Pair(R.drawable.invest, "Đầu tư"),
-                            Pair(R.drawable.hedgefund, "Dự phòng")
+                            Pair(R.drawable.outline_home_work_24, "Chi phí nhà ở"),
+                            Pair(R.drawable.outline_ramen_dining_24, "Ăn uống"),
+                            Pair(R.drawable.clothes, "Mua sắm quần áo"),
+                            Pair(R.drawable.outline_train_24, "Đi lại"),
+                            Pair(R.drawable.outline_cosmetic, "Chăm sóc sắc đẹp"),
+                            Pair(R.drawable.entertainment, "Giao lưu"),
+                            Pair(R.drawable.outline_health_and_safety_24, "Y tế"),
+                            Pair(R.drawable.outline_education, "Học tập"),
                         )
                     ) { category ->
                         selectedCategory = category
@@ -152,10 +156,14 @@ fun FixedExpense(viewModel: FixedTransactionViewModel = FixedTransactionViewMode
 
                     val fixedTransaction = FixedTransaction(
                         category_id = when (selectedCategory) {
-                            "Thiết yếu" -> 1
-                            "Giải trí" -> 2
-                            "Đầu tư" -> 3
-                            "Dự phòng" -> 4
+                            "Chi phí nhà ở" -> 1
+                            "Ăn uống" -> 2
+                            "Mua sắm quần áo" -> 3
+                            "Đi lại" -> 4
+                            "Chăm sóc sắc đẹp" -> 5
+                            "Giao lưu" -> 6
+                            "Y tế" -> 7
+                            "Học tập" -> 8
                             else -> 0
                         },
                         title = titleState.text,

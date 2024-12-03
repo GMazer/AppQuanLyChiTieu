@@ -68,7 +68,7 @@ fun AnualScreen(navController: NavHostController) {
         // Nội dung chính của màn hình
         Spacer(modifier = Modifier.height(16.dp)) // Khoảng cách dưới hàng nút
         Text(
-            text = "Anual Screen Content", // Nội dung mẫu
+            text = "", // Nội dung mẫu
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
     }

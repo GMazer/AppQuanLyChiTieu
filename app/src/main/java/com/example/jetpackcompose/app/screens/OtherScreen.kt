@@ -22,15 +22,14 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import com.example.jetpackcompose.components.OtherTab
-import android.R
+import com.example.jetpackcompose.R
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.example.jetpackcompose.ui.theme.highGray
 import com.example.jetpackcompose.app.features.apiService.LogAPI.SignInViewModel
 import com.example.jetpackcompose.app.features.apiService.LogAPI.SignInViewModelFactory
-import com.example.jetpackcompose.ui.theme.bgColor
+import com.example.jetpackcompose.components.montserrat
 import com.example.jetpackcompose.ui.theme.lightGray
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -70,6 +69,7 @@ fun OtherScreen(navController: NavHostController) {
                             ) {
                                 Text(
                                     text = "Khác",
+                                    fontFamily = montserrat,
                                     style = TextStyle(
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 16.sp,
@@ -102,7 +102,7 @@ fun OtherScreen(navController: NavHostController) {
             ) {
                 Spacer(modifier = Modifier.height(16.dp))
 
-                OtherTab(value = "Anual", painter = painterResource(id = R.drawable.ic_dialog_info), onClick = {
+                OtherTab(value = "Chi phí cố định và thu nhập định kỳ", painter = painterResource(id = R.drawable.preodic), onClick = {
                     navController.navigate("anual")
                 })
                 Divider(
@@ -112,7 +112,7 @@ fun OtherScreen(navController: NavHostController) {
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                OtherTab(value = "Log out", painter = painterResource(id = R.drawable.ic_lock_power_off), onClick = {
+                OtherTab(value = "Log out", painter = painterResource(id = R.drawable.logout), onClick = {
                     // Gọi clearToken từ SignInViewModel khi người dùng đăng xuất
                     Log.i("CheckToken", "${signInViewModel.getToken()}")
                     signInViewModel.clearToken()
