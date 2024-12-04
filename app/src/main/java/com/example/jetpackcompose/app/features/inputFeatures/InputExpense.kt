@@ -188,6 +188,14 @@ fun ExpenseContent(
                                         errorMessage = ""  // Reset error message
                                         successMessage = "Nhập khoản chi thành công!"
                                         showPopup = true  // Hiển thị popup thông báo thành công
+                                        // Cập nhật lại dữ liệu limit và categories
+                                        getRemainLimit.getLimitTransaction(
+                                            onError = {},
+                                            onSuccess = {
+                                                categoryLimits = it
+                                                updatePercentage(categoryLimits)
+                                            }
+                                        )
                                     },
                                     onError = {
                                         successMessage = ""  // Reset success message
@@ -196,14 +204,6 @@ fun ExpenseContent(
                                     }
                                 )
 
-                                // Cập nhật lại dữ liệu limit và categories
-                                getRemainLimit.getLimitTransaction(
-                                    onError = {},
-                                    onSuccess = {
-                                        categoryLimits = it
-                                        updatePercentage(categoryLimits)
-                                    }
-                                )
                                 // Reset các trường nhập
                                 amountValue = TextFieldValue("")
                                 textNote = TextFieldValue("")

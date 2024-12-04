@@ -40,8 +40,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -60,150 +64,101 @@ import com.example.jetpackcompose.R
 import com.example.jetpackcompose.ui.theme.textColor
 import com.example.jetpackcompose.ui.theme.colorPrimary
 import java.util.Calendar
+import com.example.jetpackcompose.ui.theme.bgColor
+import com.example.jetpackcompose.ui.theme.topBarColor
+import androidx.compose.material3.TopAppBar
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Fill
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.input.pointer.motionEventSpy
 import com.example.jetpackcompose.app.features.inputFeatures.LimitTransaction
+import com.example.jetpackcompose.components.YearPickerDialog
+import com.example.jetpackcompose.components.YearPickerButton
 import com.example.jetpackcompose.ui.theme.colorContrast
-
+import com.example.jetpackcompose.ui.theme.colorPrimary
+import kotlin.math.cos
+import kotlin.math.sin
+import androidx.compose.ui.graphics.Color as ComposeColor
 
 @Composable
-fun BarChartWithLine(values: List<Int>, index: List<Int>, months: List<String>) {
-    val canvasHeight = 500f
-    val barWidth = 35f
-    val spaceBetweenBars = 35f  // Khoảng cách giữa các cột
+fun DonutChart(values: List<Int>, colors: List<Color>, labels: List<String>) {
+    // Tính tổng giá trị
+    val totalValue = values.sum()
 
-    // Tính chiều rộng của canvas dựa trên số lượng cột và khoảng cách giữa các cột
-    val chartWidth = (barWidth + spaceBetweenBars) * values.size - spaceBetweenBars + 50f
+    // Tính phần trăm cho từng giá trị
+    val proportions = values.map { it.toFloat() / totalValue }
+
+    // Tính góc (degree) tương ứng với từng phần trăm
+    val angles = proportions.map { it * 360f }
 
     Box(
         modifier = Modifier
-            .fillMaxWidth()  // Lấp đầy chiều rộng màn hình
-            .height(240.dp)  // Chiều cao của biểu đồ
-            .wrapContentSize(Alignment.Center)  // Căn giữa canvas
+            .fillMaxWidth()
+            .height(240.dp),
+        contentAlignment = Alignment.Center
     ) {
-        Canvas(modifier = Modifier
-            .width(chartWidth.dp)  // Thiết lập chiều rộng biểu đồ theo chiều rộng tính toán
-            .height(240.dp) // Chiều cao của canvas
-            .padding(start = 48.dp) // Padding vào trục Y, không ảnh hưởng đến các đường ngang
-        ) {
-            val maxValue = (values.maxOrNull() ?: 0 ) * 1.2f
-            val scaleFactor = canvasHeight / maxValue
+        Canvas(modifier = Modifier.size(200.dp)) {
+            val strokeWidth = 150f
+            val radius = size.minDimension / 2
 
-            // Vẽ nền
-            drawRect(
-                color = Color.White,
-                size = size,
-                topLeft = Offset(0f, 0f)
-            )
-
-            // Vẽ các đường ngang song song với trục X
-            val stepSize = maxValue / 5f
-            for (i in 0..5) {
-                val yPos = canvasHeight - (i * stepSize * scaleFactor)
-
-                // Vẽ đường ngang từ trục Y tới hết chiều rộng
-                drawLine(
-                    color = Color.LightGray,
-                    start = Offset(0f, yPos),
-                    end = Offset(chartWidth, yPos),  // Đảm bảo đường ngang kéo dài đến hết biểu đồ
-                    strokeWidth = 1f
-                )
-
-                // Vẽ giá trị trục Y bên trái
-                drawContext.canvas.nativeCanvas.drawText(
-                    "${(i * stepSize).toInt()}",
-                    -10f,  // Vị trí căn trái cho giá trị
-                    yPos,
-                    android.graphics.Paint().apply {
-                        textSize = 36f
-                        color = android.graphics.Color.LTGRAY
-                        textAlign = android.graphics.Paint.Align.RIGHT
-                    }
-                )
-            }
-
-            // Vẽ các cột màu cam
-            values.forEachIndexed { index, value ->
-                val left = (barWidth + spaceBetweenBars) * index.toFloat() + 48f  // Thêm padding vào trục Y
-                val top = canvasHeight - value * scaleFactor
-                val right = left + barWidth
-                val bottom = canvasHeight // Đảm bảo đáy cột nằm ở trục X
-
-                drawRoundRect(
-                    color = colorPrimary, // Màu cam
-                    topLeft = Offset(left, top),
-                    size = androidx.compose.ui.geometry.Size(barWidth, bottom - top),
-                    cornerRadius = androidx.compose.ui.geometry.CornerRadius.Zero
-                )
-            }
-
-            // Vẽ đường trục X
-            drawLine(
+            // Vẽ nền lightGray
+            drawArc(
                 color = Color.LightGray,
-                start = Offset(0f, canvasHeight),
-                end = Offset(chartWidth, canvasHeight),
-                strokeWidth = 4f
+                startAngle = 0f,
+                sweepAngle = 360f,
+                useCenter = false,
+                style = Stroke(width = strokeWidth + 20f, cap = StrokeCap.Butt)
             )
 
-            // Tạo các điểm để vẽ đường uốn lượn
-            val points = mutableListOf<Offset>()
-            index.forEachIndexed { index, value ->
-                val x = (barWidth + spaceBetweenBars) * index.toFloat() + barWidth / 2 + 48f  // Thêm padding vào trục Y
-                val y = canvasHeight - value * scaleFactor
-                points.add(Offset(x, y))
+            var startAngle = -90f // Bắt đầu từ đỉnh trên (góc -90)
+
+            // Vẽ các phần của donut chart
+            angles.forEachIndexed { index, sweepAngle ->
+                drawArc(
+                    color = colors[index],
+                    startAngle = startAngle,
+                    sweepAngle = sweepAngle,
+                    useCenter = false,
+                    style = Stroke(width = strokeWidth, cap = StrokeCap.Butt)
+                )
+
+                startAngle += sweepAngle
             }
 
-            // Vẽ đường uốn lượn (parabol) giữa các điểm
-            drawPath(
-                path = androidx.compose.ui.graphics.Path().apply {
-                    moveTo(points.first().x, points.first().y)  // Bắt đầu từ điểm đầu tiên
+            // Reset lại startAngle để vẽ đường ngăn
+            startAngle = -90f
 
-                    for (i in 1 until points.size) {
-                        val p0 = points[i - 1]
-                        val p1 = points[i]
-                        val middleX = (p0.x + p1.x) / 2f
-                        val middleY = (p0.y + p1.y) / 2f
-
-                        // Vẽ Bezier curve (parabol) giữa các điểm
-                        cubicTo(
-                            p0.x + (p1.x - p0.x) / 3f, p0.y,  // Điểm kiểm soát 1
-                            p1.x - (p1.x - p0.x) / 3f, p1.y,  // Điểm kiểm soát 2
-                            p1.x, p1.y                        // Điểm kết thúc
-                        )
-                    }
-                },
-                color = colorContrast, // Màu xanh dương cho đường nối
-                style = androidx.compose.ui.graphics.drawscope.Stroke(width = 2f)
-            )
-
-            // Vẽ các điểm tròn tại các điểm trên đường nối
-            points.forEach { point ->
-                drawCircle(
-                    color = colorContrast, // Màu xanh dương
-                    radius = 8f, // Kích thước của điểm tròn
-                    center = point
+            // Vẽ các đường ngăn cách màu trắng
+            angles.forEach { sweepAngle ->
+                val angleInRadians = Math.toRadians(startAngle.toDouble())
+                val lineStart = Offset(
+                    x = center.x + (radius - strokeWidth / 2) * cos(angleInRadians).toFloat(),
+                    y = center.y + (radius - strokeWidth / 2) * sin(angleInRadians).toFloat()
                 )
-            }
-
-            // Vẽ tên các tháng trên trục X
-            months.forEachIndexed { index, month ->
-                val xPos = (barWidth + spaceBetweenBars) * index.toFloat() + barWidth / 2 + 48f  // Thêm padding vào trục Y
-                drawContext.canvas.nativeCanvas.drawText(
-                    month,
-                    xPos,
-                    canvasHeight + 30f,
-                    android.graphics.Paint().apply {
-                        textSize = 30f
-                        color = android.graphics.Color.LTGRAY
-                        textAlign = android.graphics.Paint.Align.CENTER
-                    }
+                val lineEnd = Offset(
+                    x = center.x + (radius + strokeWidth / 2) * cos(angleInRadians).toFloat(),
+                    y = center.y + (radius + strokeWidth / 2) * sin(angleInRadians).toFloat()
                 )
+                drawLine(
+                    color = Color.White,
+                    start = lineStart,
+                    end = lineEnd,
+                    strokeWidth = 5f // Độ rộng của đường ngăn
+                )
+
+                startAngle += sweepAngle
             }
         }
     }
 }
+
+
 
 @Composable
 fun MonthPickerDialog(
@@ -760,7 +715,7 @@ fun PopUpSetValueDialog(
                     Text(
                         text = " %",
                         fontFamily = monsterrat,
-                        color = textColor,
+                        color =textColor,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Normal,
                         modifier = Modifier.weight(0.5f),
