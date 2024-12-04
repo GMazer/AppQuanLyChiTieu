@@ -106,7 +106,7 @@ import java.util.Locale
 import kotlin.math.sin
 
 
-val monsterrat = FontFamily(
+val montserrat = FontFamily(
     Font(R.font.montserrat_regular, FontWeight.Normal),
     Font(R.font.montserrat_bold, FontWeight.Bold),
     Font(R.font.montserrat_light, FontWeight.Light),
@@ -122,7 +122,7 @@ fun NormalTextComponent(value: String) {
             .fillMaxWidth(),
         style = TextStyle(
             fontSize = 18.sp,
-            fontFamily = monsterrat,
+            fontFamily = montserrat,
             fontWeight = FontWeight.Normal,
             fontStyle = FontStyle.Normal,
         ),
@@ -140,7 +140,7 @@ fun HeadingTextComponent(value: String) {
             .fillMaxWidth(),
         style = TextStyle(
             fontSize = 28.sp,
-            fontFamily = monsterrat,
+            fontFamily = montserrat,
             fontWeight = FontWeight.Bold,
             fontStyle = FontStyle.Normal,
         ),
@@ -175,7 +175,7 @@ fun MyTextFieldComponent(
         label = {
             Text(
                 text = labelValue,
-                fontFamily = monsterrat,
+                fontFamily = montserrat,
                 fontWeight = FontWeight.Normal,
                 fontSize = 12.sp,
                 color = if (isFocused.value) colorPrimary else Color.LightGray
@@ -250,7 +250,7 @@ fun PasswordTextFieldComponent(
         label = {
             Text(
                 text = labelValue,
-                fontFamily = monsterrat,
+                fontFamily = montserrat,
                 fontWeight = FontWeight.Normal,
                 fontSize = 12.sp,
                 color = if (isFocused.value) colorPrimary else Color.LightGray
@@ -332,7 +332,7 @@ fun CheckboxComponent(
         Spacer(modifier = Modifier.width(8.dp)) // Tạo khoảng cách giữa checkbox và text
         Text(
             text = text,
-            fontFamily = monsterrat, // Đảm bảo khai báo `monsterrat`
+            fontFamily = montserrat, // Đảm bảo khai báo `monsterrat`
             fontWeight = FontWeight.Normal,
             fontSize = 14.sp,
             color = Color(0xFF777777),
@@ -387,10 +387,11 @@ fun CategoriesGrid(
     categories: List<Category>,
     buttonColor: Color,
     selectedCategory: Category?,
+    column: Int,
     onCategorySelected: (Category) -> Unit
 ) {
     LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
+        columns = GridCells.Fixed(column),
         contentPadding = PaddingValues(4.dp)
     ) {
         items(categories) { category ->
@@ -400,6 +401,7 @@ fun CategoriesGrid(
                 buttonColor = buttonColor,
                 isSelected = (category == selectedCategory),
                 onClick = { onCategorySelected(category) },
+                column = column,
                 percentage = category.percentage
             )
         }
@@ -408,6 +410,7 @@ fun CategoriesGrid(
 
 @Composable
 fun CategoryItem(
+    column: Int,
     id: Int,
     category: Category,
     buttonColor: Color,
@@ -443,10 +446,11 @@ fun CategoryItem(
         animationSpec = tween(durationMillis = 500, easing = LinearEasing)
     )
 
+    val height = if (column == 2) 120.dp else 90.dp
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
-            .height(120.dp)
+            .height(height)
             .fillMaxWidth()
             .padding(8.dp)
             .border(
@@ -516,7 +520,8 @@ fun CategoryItem(
                 fontWeight = FontWeight.W500,
                 fontSize = 12.sp,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.padding(4.dp)
             )
         }
     }
@@ -537,7 +542,7 @@ fun MyButtonComponent(value: String, onClick: () -> Unit)
         Text(
             value,
             color = Color.White,
-            fontFamily = monsterrat,
+            fontFamily = montserrat,
             fontWeight = FontWeight.Bold,
             fontSize = 16.sp)
     }
@@ -548,7 +553,7 @@ fun ClickableTextComponent(value: String, onClick: () -> Unit) {
     Text(
         value,
         color = colorSecondary,
-        fontFamily = com.example.jetpackcompose.components.monsterrat,
+        fontFamily = com.example.jetpackcompose.components.montserrat,
         fontWeight = FontWeight.Light,
         fontSize = 8.sp,
         modifier = Modifier
@@ -601,7 +606,7 @@ fun NumberTextField(amountState: String, onValueChange: (String) -> Unit) {
         textStyle = TextStyle(
             textAlign = TextAlign.Start,
             fontSize = 20.sp,
-            fontFamily = monsterrat,
+            fontFamily = montserrat,
             fontWeight = FontWeight.Bold,
             color = Color.Black
         ),
@@ -626,7 +631,7 @@ fun NumberTextField(amountState: String, onValueChange: (String) -> Unit) {
                         if (isFocused) "" else "0",
                         color = Color.Black,
                         fontWeight = FontWeight.Bold,
-                        fontFamily = monsterrat,
+                        fontFamily = montserrat,
                         fontSize = 20.sp,
                         style = LocalTextStyle.current
                     )
@@ -657,11 +662,11 @@ fun NoteTextField(textState: TextFieldValue, onValueChange: (TextFieldValue) -> 
         placeholder = { Text(
             "Chưa nhập vào",
             color = Color.LightGray,
-            fontFamily = monsterrat,
+            fontFamily = montserrat,
         ) },
         textStyle = TextStyle(
             fontSize = 16.sp,
-            fontFamily = monsterrat,
+            fontFamily = montserrat,
             fontWeight = FontWeight.Normal,
             color = Color.Black
         ),
@@ -722,7 +727,7 @@ fun MonthPickerButton(onDateSelected: (String) -> Unit) {
             Text(
                 dateText,
                 fontWeight = FontWeight.Bold,
-                fontFamily = monsterrat,
+                fontFamily = montserrat,
                 fontSize = 18.sp,
                 color = Color(0xFF444444)
             )
@@ -849,7 +854,7 @@ fun CustomCalendar(
                             text = day,
                             fontWeight = FontWeight.Normal,
                             fontSize = 8.sp,
-                            fontFamily = monsterrat,
+                            fontFamily = montserrat,
                             color = if (day == "CN") SundayColor else if (day == "T7") SaturDayColor else textColor,
                             textAlign = TextAlign.Center
                         )
@@ -897,7 +902,7 @@ fun CustomCalendar(
                                             columnIndex == 5 -> SaturDayColor // Thứ 7
                                             else -> Color.Black // Các ngày trong tuần
                                         },
-                                        fontFamily = monsterrat,
+                                        fontFamily = montserrat,
                                         fontSize = 8.sp,
                                         textAlign = TextAlign.Start
                                     )
@@ -920,7 +925,7 @@ fun CustomCalendar(
                                                     color = Color(0xff37c8ec),
                                                     fontSize = 7.sp,
                                                     textAlign = TextAlign.End,
-                                                    fontFamily = monsterrat
+                                                    fontFamily = montserrat
                                                 )
                                             }
                                         }
@@ -935,7 +940,7 @@ fun CustomCalendar(
                                                     color = colorPrimary,
                                                     fontSize = 7.sp,
                                                     textAlign = TextAlign.End,
-                                                    fontFamily = monsterrat
+                                                    fontFamily = montserrat
                                                 )
                                             }
                                         }

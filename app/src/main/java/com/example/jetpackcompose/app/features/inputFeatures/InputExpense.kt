@@ -79,10 +79,14 @@ fun ExpenseContent(
     // Cập nhật lại danh sách categories
     var categories by remember { mutableStateOf(
         listOf(
-            Category(1, "Thiết yếu", { painterResource(R.drawable.essentials) }, Color(0xFFfb791d), 1.00f),
-            Category(2, "Giải trí", { painterResource(R.drawable.entertainment) }, Color(0xFF37c166), 1.00f),
-            Category(3, "Đầu tư", { painterResource(R.drawable.invest) }, Color(0xFF283eaa), 1.00f),
-            Category(4, "Phát sinh", { painterResource(R.drawable.hedgefund) }, Color(0xFFf95aa9), 1.00f)
+            Category(1, "Chi phí nhà ở", { painterResource(R.drawable.outline_home_work_24) }, Color(0xFFfb791d), 1.00f),
+            Category(2, "Ăn uống", { painterResource(R.drawable.outline_ramen_dining_24) }, Color(0xFF37c166), 1.00f),
+            Category(3, "Mua sắm quần áo", { painterResource(R.drawable.clothes) }, Color(0xFF283eaa), 1.00f),
+            Category(4, "Đi lại", { painterResource(R.drawable.outline_train_24) }, Color(0xFFa06749), 1.00f),
+            Category(5, "Chăm sóc sắc đẹp", { painterResource(R.drawable.outline_cosmetic) }, Color(0xFFf95aa9), 1.00f),
+            Category(6, "Giao lưu", { painterResource(R.drawable.entertainment) }, Color(0xFF6a1b9a), 1.00f),
+            Category(7, "Y tế", { painterResource(R.drawable.outline_health_and_safety_24) }, Color(0xFFfc3d39), 1.00f),
+            Category(8, "Học tập", { painterResource(R.drawable.outline_education) }, Color(0xFFfc7c1f), 1.00f)
         )
     ) }
 
@@ -163,6 +167,7 @@ fun ExpenseContent(
                         categories = categories,
                         buttonColor = buttonColor,
                         selectedCategory = selectedCategory,
+                        column = 3,
                         onCategorySelected = { category -> selectedCategory = category }
                     )
 
@@ -237,5 +242,5 @@ fun ExpenseContent(
 @Preview
 @Composable
 fun PreviewOutComeContent() {
-//    OutComeContent()
+    ExpenseContent()
 }

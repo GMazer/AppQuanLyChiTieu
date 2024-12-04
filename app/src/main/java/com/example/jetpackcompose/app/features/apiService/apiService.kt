@@ -13,7 +13,11 @@ import retrofit2.http.PUT
 import retrofit2.http.Query
 
 object BaseURL {
+<<<<<<< HEAD
     val baseUrl = "https://0181-113-185-51-37.ngrok-free.app"
+=======
+    val baseUrl = "https://bfca-113-23-51-237.ngrok-free.app"
+>>>>>>> 0798f74f246b42947c961cb115dc29627c135534
 }
 
 data class RegistrationData(

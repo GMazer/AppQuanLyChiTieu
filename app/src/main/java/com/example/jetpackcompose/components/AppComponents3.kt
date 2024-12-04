@@ -193,7 +193,7 @@ fun ClickableText(
 ) {
     Text(
         text = text,
-        fontFamily = monsterrat,
+        fontFamily = montserrat,
         color = colorPrimary,
         fontSize = 12.sp,
         textAlign = TextAlign.Start,
@@ -227,41 +227,27 @@ fun CategoryIconWithName(
     }
     // Danh sách các Category
     val categories = listOf(
+        Category(1, "Chi phí nhà ở", { painterResource(R.drawable.outline_home_work_24) }, Color(0xFFfb791d), 1.00f),
+        Category(2, "Ăn uống", { painterResource(R.drawable.outline_ramen_dining_24) }, Color(0xFF37c166), 1.00f),
+        Category(3, "Mua sắm quần áo", { painterResource(R.drawable.clothes) }, Color(0xFF283eaa), 1.00f),
+        Category(4, "Đi lại", { painterResource(R.drawable.outline_train_24) }, Color(0xFFa06749), 1.00f),
+        Category(5, "Chăm sóc sắc đẹp", { painterResource(R.drawable.outline_cosmetic) }, Color(0xFFf95aa9), 1.00f),
+        Category(6, "Giao lưu", { painterResource(R.drawable.entertainment) }, Color(0xFF6a1b9a), 1.00f),
+        Category(7, "Y tế", { painterResource(R.drawable.outline_health_and_safety_24) }, Color(0xFFfc3d39), 1.00f),
+        Category(8, "Học tập", { painterResource(R.drawable.outline_education) }, Color(0xFFfc7c1f), 1.00f),
+        Category(10, "Tiền lương", { painterResource(R.drawable.salary) }, Color(0xFFfb791d), 1.00f),
         Category(
-            1,
-            "Thiết yếu",
-            { painterResource(R.drawable.essentials) },
-            Color(0xFFfb791d),
-            1.00f
-        ),
-        Category(
-            2,
-            "Giải trí",
-            { painterResource(R.drawable.entertainment) },
-            Color(0xFF37c166),
-            1.00f
-        ),
-        Category(3, "Đầu tư", { painterResource(R.drawable.invest) }, Color(0xFF283eaa), 1.00f),
-        Category(
-            4,
-            "Phát sinh",
-            { painterResource(R.drawable.hedgefund) },
-            Color(0xFFf95aa9),
-            1.00f
-        ),
-        Category(5, "Lương", { painterResource(R.drawable.salary) }, Color(0xFFfb791d), 1.00f),
-        Category(
-            6,
-            "Tiết kiệm",
+            11,
+            "Tiền thưởng",
             { painterResource(R.drawable.baseline_card_giftcard_24) },
             Color(0xFF37c166),
             1.00f
         ),
-        Category(7, "Trợ cấp", { painterResource(R.drawable.secondary) }, Color(0xFFf95aa9), 1.00f),
+        Category(12, "Thu nhập phụ", { painterResource(R.drawable.secondary) }, Color(0xFFf95aa9), 1.00f),
         Category(
-            8,
-            "Khác",
-            { painterResource(R.drawable.baseline_more_horiz_24) },
+            11,
+            "Trợ cấp",
+            { painterResource(R.drawable.subsidy) },
             Color(0xFFfba74a),
             1.00f
         )
@@ -291,7 +277,7 @@ fun CategoryIconWithName(
             // Hiển thị tên danh mục
             Text(
                 text = it.name,
-                fontFamily = monsterrat,
+                fontFamily = montserrat,
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color(0xFF444444)
@@ -300,7 +286,7 @@ fun CategoryIconWithName(
             if (transactionNote.isNotEmpty()) {
                 Text(
                     text = "(${transactionNote})",
-                    fontFamily = monsterrat,
+                    fontFamily = montserrat,
                     fontWeight = FontWeight.Light,
                     fontSize = 12.sp,
                     color = Color(0xFF444444),
@@ -311,7 +297,7 @@ fun CategoryIconWithName(
             }
             Text(
                 text = "${currencyFormatter.format(transactionAmount)}₫",
-                fontFamily = monsterrat,
+                fontFamily = montserrat,
                 fontWeight = FontWeight.Bold,
                 color = if (transactionType == "expense") textColor else Color(0xff37c8ec),
                 textAlign = TextAlign.End
@@ -358,7 +344,7 @@ fun DayIndex(
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(
                         text = formattedDate,
-                        fontFamily = monsterrat,
+                        fontFamily = montserrat,
                         color = Color(0xFF444444),
                         fontWeight = FontWeight.Bold,
                         fontSize = 12.sp
@@ -419,7 +405,7 @@ fun RowTextField(
             text = label,
             color = Color.DarkGray,
             fontWeight = FontWeight.Bold,
-            fontFamily = monsterrat,
+            fontFamily = montserrat,
             modifier = Modifier
                 .weight(1.5f)
                 .padding(start = 16.dp)
@@ -441,12 +427,12 @@ fun RowTextField(
                 Text(
                     "Chưa nhập",
                     color = Color.LightGray,
-                    fontFamily = monsterrat,
+                    fontFamily = montserrat,
                 )
             },
             textStyle = TextStyle(
                 fontSize = 16.sp,
-                fontFamily = monsterrat,
+                fontFamily = montserrat,
                 fontWeight = FontWeight.Normal,
                 color = textColor
             ),
@@ -484,7 +470,7 @@ fun DropdownRow(
         Text(
             text = label,
             fontWeight = FontWeight.Bold,
-            fontFamily = monsterrat,
+            fontFamily = montserrat,
             color = textColor,
             modifier = Modifier.weight(4f)
         )
@@ -499,7 +485,7 @@ fun DropdownRow(
             Text(
                 text = selectedOption,
                 fontWeight = FontWeight.Normal,
-                fontFamily = monsterrat
+                fontFamily = montserrat
             )
         }
 
@@ -517,7 +503,7 @@ fun DropdownRow(
     if (showDialog) {
         AlertDialog(
             onDismissRequest = { showDialog = false },
-            title = { Text(text = "Chọn $label") },
+            title = { Text(text = "Chọn $label", fontFamily = montserrat, fontWeight = FontWeight.Bold) },
             text = {
                 LazyColumn {
                     items(options) { option ->
@@ -541,7 +527,7 @@ fun DropdownRow(
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
                             }
-                            Text(text = option.second)
+                            Text(text = option.second, fontWeight = FontWeight.Normal, fontFamily = montserrat)
                         }
                     }
                 }
@@ -570,7 +556,7 @@ fun <T : Enum<T>> DropdownRepeat(
         Text(
             text = label,
             fontWeight = FontWeight.Bold,
-            fontFamily = monsterrat,
+            fontFamily = montserrat,
             color = textColor,
             modifier = Modifier.weight(4f)
         )
@@ -583,9 +569,15 @@ fun <T : Enum<T>> DropdownRepeat(
                 .clickable { showDialog = true }
         ) {
             Text(
-                text = selectedOption.toString(), // Hiển thị tên enum dưới dạng chuỗi
+                text = when (selectedOption.toString()) {
+                    "daily" -> "Hàng ngày"
+                    "weekly" -> "Hàng tuần"
+                    "monthly" -> "Hàng tháng"
+                    "yearly" -> "Hàng năm"
+                    else -> ""
+                }, // Hiển thị tên enum dưới dạng chuỗi
                 fontWeight = FontWeight.Normal,
-                fontFamily = monsterrat
+                fontFamily = montserrat
             )
         }
 
@@ -603,7 +595,7 @@ fun <T : Enum<T>> DropdownRepeat(
     if (showDialog) {
         AlertDialog(
             onDismissRequest = { showDialog = false },
-            title = { Text(text = "Chọn $label") },
+            title = { Text(text = "Chọn ${label.toLowerCase()}", fontFamily = montserrat, fontWeight = FontWeight.Bold)},
             text = {
                 LazyColumn {
                     items(options) { option ->
@@ -615,10 +607,20 @@ fun <T : Enum<T>> DropdownRepeat(
                                     onChangeValue(option.second) // Trả về enum thay vì String
                                     showDialog = false
                                 }
-                                .padding(16.dp),
+                                .padding(8.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text(text = option.first) // Hiển thị tên chuỗi (displayName) từ enum
+                            Text(
+                                text = when (option.second.toString()){
+                                    "daily" -> "Hàng ngày"
+                                    "weekly" -> "Hàng tuần"
+                                    "monthly" -> "Hàng tháng"
+                                    "yearly" -> "Hàng năm"
+                                    else -> ""
+                                },
+                                fontFamily = montserrat,
+                                fontWeight = FontWeight.Normal
+                            ) // Hiển thị tên chuỗi (displayName) từ enum
                         }
                     }
                 }
@@ -663,7 +665,7 @@ fun DatePickerRow(
             text = label,
             fontWeight = FontWeight.Bold,
             color = textColor,
-            fontFamily = monsterrat,
+            fontFamily = montserrat,
             modifier = Modifier.weight(3f)
         )
 
@@ -692,7 +694,7 @@ fun DatePickerRow(
             Text(
                 text = formattedDate,
                 fontWeight = FontWeight.Normal,
-                fontFamily = monsterrat,
+                fontFamily = montserrat,
                 textAlign = TextAlign.Center,
                 color = textColor
             )
@@ -726,7 +728,7 @@ fun RowNumberField(
             text = label,
             color = textColor,
             fontWeight = FontWeight.Bold,
-            fontFamily = monsterrat,
+            fontFamily = montserrat,
             modifier = Modifier
                 .weight(1.5f)
                 .padding(start = 16.dp)
@@ -761,12 +763,12 @@ fun RowNumberField(
                 Text(
                     "Nhập số tiền",
                     color = Color.LightGray,
-                    fontFamily = monsterrat,
+                    fontFamily = montserrat,
                 )
             },
             textStyle = TextStyle(
                 fontSize = 16.sp,
-                fontFamily = monsterrat,
+                fontFamily = montserrat,
                 fontWeight = FontWeight.Normal,
                 color = textColor
             ),
@@ -808,7 +810,7 @@ fun EndDateRow(
         Text(
             text = label,
             fontWeight = FontWeight.Bold,
-            fontFamily = monsterrat,
+            fontFamily = montserrat,
             color = textColor,
             modifier = Modifier.weight(4f)
         )
@@ -823,7 +825,7 @@ fun EndDateRow(
             Text(
                 text = if (selectedOption == "Ngày chỉ định" && selectedDate.isNotEmpty()) selectedDate else selectedOption,
                 fontWeight = FontWeight.Normal,
-                fontFamily = monsterrat
+                fontFamily = montserrat
             )
         }
 
@@ -842,7 +844,7 @@ fun EndDateRow(
     if (showDialog) {
         AlertDialog(
             onDismissRequest = { showDialog = false },
-            title = { Text(text = "Chọn $label") },
+            title = { Text(text = "Chọn ${label.toLowerCase()}", fontFamily = montserrat, fontWeight = FontWeight.Bold) },
             text = {
                 LazyColumn {
                     items(options) { option ->
@@ -852,7 +854,7 @@ fun EndDateRow(
                                 .clickable {
                                     selectedOption = option
                                     if (option == "Không") {
-                                        selectedDate = "" // Reset ngày nếu chọn "Không"
+                                        selectedDate = null.toString() // Reset ngày nếu chọn "Không"
                                         onDateSelected("Không")
                                     } else {
                                         showDatePicker =
@@ -866,7 +868,7 @@ fun EndDateRow(
                             Text(
                                 text = option,
                                 fontWeight = FontWeight.Normal,
-                                fontFamily = monsterrat
+                                fontFamily = montserrat
                             )
                         }
                     }
@@ -952,7 +954,7 @@ fun MessagePopup(
                             Text(
                                 text = errorMessage,
                                 color = errorColor,
-                                fontFamily = monsterrat,
+                                fontFamily = montserrat,
                                 fontWeight = FontWeight.Bold
                             )
                         } else if (successMessage.isNotEmpty()) {
@@ -967,7 +969,7 @@ fun MessagePopup(
                             Text(
                                 text = successMessage,
                                 color = successColor,
-                                fontFamily = monsterrat,
+                                fontFamily = montserrat,
                                 fontWeight = FontWeight.Bold
                             )
                         }

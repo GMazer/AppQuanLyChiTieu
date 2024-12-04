@@ -100,10 +100,10 @@ fun FixedIncome(viewModel: FixedTransactionViewModel = FixedTransactionViewModel
                     DropdownRow(
                         label = "Danh mục",
                         options = listOf(
-                            Pair(R.drawable.salary, "Lương"),
-                            Pair(R.drawable.baseline_card_giftcard_24, "Thưởng"),
+                            Pair(R.drawable.salary, "Tiền lương"),
+                            Pair(R.drawable.baseline_card_giftcard_24, "Tiền thưởng"),
                             Pair(R.drawable.secondary, "Thu nhập phụ"),
-                            Pair(R.drawable.baseline_more_horiz_24, "Khác")
+                            Pair(R.drawable.subsidy, "Trợ cấp")
                         )
                     ) { category ->
                         selectedCategory = category
@@ -123,7 +123,9 @@ fun FixedIncome(viewModel: FixedTransactionViewModel = FixedTransactionViewModel
                 Column {
                     DropdownRepeat(
                         label = "Lặp lại",
-                        options = RepeatFrequency.values().map { it.displayName to it } // Lấy tất cả giá trị enum
+                        options = RepeatFrequency.values().map {
+                            it.displayName to it
+                        } // Lấy tất cả giá trị enum
                     ) { repeat ->
                         selectedRepeat = repeat // Lưu enum thay vì chuỗi
                     }
@@ -153,10 +155,10 @@ fun FixedIncome(viewModel: FixedTransactionViewModel = FixedTransactionViewModel
 
                     val fixedTransaction = FixedTransaction(
                         category_id = when (selectedCategory) {
-                            "Lương" -> 6
-                            "Thưởng" -> 7
-                            "Thu nhập phụ" -> 8
-                            "Khác" -> 9
+                            "Tiền lương" -> 10
+                            "Tiền thưởng" -> 11
+                            "Thu nhập phụ" -> 12
+                            "Trợ cấp" -> 13
                             else -> 0
                         },
                         title = titleState.text,
