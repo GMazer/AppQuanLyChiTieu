@@ -78,6 +78,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.input.pointer.motionEventSpy
 import com.example.jetpackcompose.app.features.inputFeatures.LimitTransaction
+import com.example.jetpackcompose.app.features.inputFeatures.monsterrat
 import com.example.jetpackcompose.components.YearPickerDialog
 import com.example.jetpackcompose.components.YearPickerButton
 import com.example.jetpackcompose.ui.theme.colorContrast
@@ -714,13 +715,8 @@ fun PopUpSetValueDialog(
 
                     Text(
                         text = " %",
-<<<<<<< HEAD
-                        fontFamily = monsterrat,
-                        color =textColor,
-=======
-                        fontFamily = montserrat,
                         color = textColor,
->>>>>>> 0798f74f246b42947c961cb115dc29627c135534
+                        fontFamily = montserrat,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Normal,
                         modifier = Modifier.weight(0.5f),

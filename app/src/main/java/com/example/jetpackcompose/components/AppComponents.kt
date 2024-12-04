@@ -392,7 +392,7 @@ fun CategoriesGrid(
 ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(column),
-        contentPadding = PaddingValues(4.dp)
+        contentPadding = PaddingValues(4.dp), // Loại bỏ padding xung quanh lưới
     ) {
         items(categories) { category ->
             CategoryItem(
@@ -452,7 +452,7 @@ fun CategoryItem(
         modifier = Modifier
             .height(height)
             .fillMaxWidth()
-            .padding(8.dp)
+            .padding(4.dp)
             .border(
                 BorderStroke(2.dp, borderColor),
                 RoundedCornerShape(8.dp)
