@@ -49,10 +49,10 @@ fun FixedIncome(viewModel: FixedTransactionViewModel = FixedTransactionViewModel
 
     // Dữ liệu cần thiết cho form
     val vietnamLocale = Locale("vi", "VN")
-    val currentDate = remember { SimpleDateFormat("dd/MM/yyyy", vietnamLocale).format(Date()) }
+    val currentDate = remember { SimpleDateFormat("yyyy-MM-dd", vietnamLocale).format(Date()) }
 
     var titleState by remember { mutableStateOf(TextFieldValue("")) }
-    var selectedCategory by remember { mutableStateOf("Lương") }
+    var selectedCategory by remember { mutableStateOf("Tiền lương") }
     var selectedRepeat by remember { mutableStateOf(RepeatFrequency.daily) } // Thay đổi thành enum
     var selectedDate by remember { mutableStateOf(currentDate) }
     var selectedEndDate by remember { mutableStateOf("") }
@@ -183,7 +183,7 @@ fun FixedIncome(viewModel: FixedTransactionViewModel = FixedTransactionViewModel
                         onError = { message ->
                             // Cập nhật thông báo lỗi và hiển thị popup
                             successMessage = ""
-                            errorMessage = "Gửi dữ liệu thất bại"
+                            errorMessage = selectedDate
                             statusMessage = message
                             statusColor = Color.Red
                             showPopup = true // Hiển thị popup lỗi

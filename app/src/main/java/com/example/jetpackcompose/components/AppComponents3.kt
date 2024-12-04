@@ -2,6 +2,8 @@ package com.example.jetpackcompose.components
 
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -73,6 +75,7 @@ import java.text.DecimalFormatSymbols
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -636,21 +639,18 @@ fun <T : Enum<T>> DropdownRepeat(
 fun DatePickerRow(
     label: String, // Label của hàng
     initialDate: LocalDate = LocalDate.now(), // Ngày ban đầu, mặc định là ngày hiện tại
-    onDateSelected: (LocalDate) -> Unit // Callback để trả ngày được chọn
+    onDateSelected: (String) -> Unit // Callback để trả ngày được chọn dưới dạng chuỗi yyyy-MM-dd
 ) {
     // State để lưu trữ ngày được chọn
     var selectedDate by remember { mutableStateOf(initialDate) }
     val context = LocalContext.current
 
-    // Sử dụng SimpleDateFormat với Locale Việt Nam
-    val vietnamLocale = Locale("vi", "VN")
-    val dateFormat = SimpleDateFormat("yyyy-MM-dd", vietnamLocale)
+    // Sử dụng DateTimeFormatter để định dạng ngày theo yyyy-MM-dd
+    val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
     // Chuyển đổi ngày thành chuỗi hiển thị
     val formattedDate = remember(selectedDate) {
-        dateFormat.format(
-            Date.from(selectedDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
-        )
+        selectedDate.format(dateFormatter)
     }
 
     // Row hiển thị
@@ -682,7 +682,7 @@ fun DatePickerRow(
                             // Cập nhật ngày khi người dùng chọn
                             val newDate = LocalDate.of(year, month + 1, dayOfMonth)
                             selectedDate = newDate
-                            onDateSelected(newDate) // Trả ngày được chọn qua callback
+                            onDateSelected(newDate.format(dateFormatter)) // Trả về định dạng yyyy-MM-dd
                         },
                         selectedDate.year,
                         selectedDate.monthValue - 1,
@@ -712,6 +712,8 @@ fun DatePickerRow(
         )
     }
 }
+
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -786,6 +788,7 @@ fun RowNumberField(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EndDateRow(
@@ -799,6 +802,7 @@ fun EndDateRow(
     var showDatePicker by remember { mutableStateOf(false) } // Điều khiển hiển thị DatePickerDialog
 
     val vietnamLocale = Locale("vi", "VN") // Locale Việt Nam
+    val displayFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
 
     Row(
         modifier = Modifier

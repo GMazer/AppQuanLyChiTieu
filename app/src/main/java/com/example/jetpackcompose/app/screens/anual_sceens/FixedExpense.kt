@@ -48,10 +48,10 @@ fun FixedExpense(viewModel: FixedTransactionViewModel = FixedTransactionViewMode
 
     // Dữ liệu cần thiết cho form
     val vietnamLocale = Locale("vi", "VN")
-    val currentDate = remember { SimpleDateFormat("dd/MM/yyyy", vietnamLocale).format(Date()) }
+    val currentDate = remember { SimpleDateFormat("yyyy-MM-dd", vietnamLocale).format(Date()) }
 
     var titleState by remember { mutableStateOf(TextFieldValue("")) }
-    var selectedCategory by remember { mutableStateOf("Thiết yếu") }
+    var selectedCategory by remember { mutableStateOf("Chi phí nhà ở") }
     var selectedRepeat by remember { mutableStateOf(RepeatFrequency.daily) } // Thay đổi thành enum
     var selectedDate by remember { mutableStateOf(currentDate) }
     var selectedEndDate by remember { mutableStateOf("") }
@@ -179,7 +179,7 @@ fun FixedExpense(viewModel: FixedTransactionViewModel = FixedTransactionViewMode
                     viewModel.addFixedTransaction(fixedTransaction,
                         onSuccess = { message ->
                             // Cập nhật thông báo thành công và hiển thị popup
-                            successMessage = "Gửi dữ liệu thành công"
+                            successMessage = "Gửi dữ liệu thành công!"
                             errorMessage = ""
                             statusMessage = message
                             statusColor = Color.Green
@@ -188,7 +188,7 @@ fun FixedExpense(viewModel: FixedTransactionViewModel = FixedTransactionViewMode
                         onError = { message ->
                             // Cập nhật thông báo lỗi và hiển thị popup
                             successMessage = ""
-                            errorMessage = "Gửi dữ liệu thất bại"
+                            errorMessage = selectedDate
                             statusMessage = message
                             statusColor = Color.Red
                             showPopup = true // Hiển thị popup lỗi
