@@ -478,7 +478,7 @@ fun CategoryItem(
                     val y = waveY + waveHeight * sin(2.0f * PI.toFloat() * (x.toFloat() + offset) / waveLength)
                     lineTo(x.toFloat(), y)
                 }
-                lineTo(size.width, size.height)
+                lineTo(size.width + 50f, size.height)
                 lineTo(0f, size.height)
                 close()
             }
