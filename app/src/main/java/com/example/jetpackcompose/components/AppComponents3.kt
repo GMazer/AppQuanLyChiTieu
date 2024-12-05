@@ -319,10 +319,24 @@ fun DayIndex(
     val dateFormat = remember { SimpleDateFormat("yyyy-MM-dd", Locale("vi", "VN")) }
     val displayDateFormat = remember { SimpleDateFormat("dd/MM/yyyy (E)", Locale("vi", "VN")) }
 
+    // Kiểm tra và xử lý selectedDate nếu ngày có 1 chữ số
+    val processedSelectedDate = if (selectedDate.isNotEmpty()) {
+        val dateParts = selectedDate.split("-")
+        if (dateParts.size == 3 && dateParts[2].startsWith("0")) {
+            // Xóa chữ số 0 ở đầu ngày nếu có
+            "${dateParts[0]}-${dateParts[1]}-${dateParts[2].drop(1)}"
+        } else {
+            selectedDate
+        }
+    } else {
+        selectedDate
+    }
+
     // Duyệt qua dateTransactionList (map các ngày và giao dịch)
     dateTransactionList.forEach { (date, transactions) ->
+
         // Kiểm tra nếu selectedDate là rỗng hoặc trùng với ngày hiện tại
-        if (selectedDate.isEmpty() || date == selectedDate) {
+        if (processedSelectedDate.isEmpty() || date == processedSelectedDate) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -361,6 +375,7 @@ fun DayIndex(
 
                 // Duyệt qua danh sách giao dịch của ngày
                 transactions.forEach { transaction ->
+
                     // Hiển thị mỗi giao dịch
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -390,6 +405,7 @@ fun DayIndex(
         }
     }
 }
+
 
 
 
