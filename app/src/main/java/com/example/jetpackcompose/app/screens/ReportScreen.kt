@@ -34,7 +34,7 @@ import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.input.pointer.motionEventSpy
 import com.example.jetpackcompose.components.YearPickerDialog
 import com.example.jetpackcompose.components.YearPickerButton
-import com.example.jetpackcompose.components.DonutChart
+import com.example.jetpackcompose.components.DonutChartWithProgress
 import com.example.jetpackcompose.components.ReportMonth
 import com.example.jetpackcompose.ui.theme.colorPrimary
 import com.example.jetpackcompose.ui.theme.highGray
@@ -135,6 +135,7 @@ fun ReportScreen() {
                         Spacer(modifier = Modifier.height(24.dp))
 
                         val values = listOf(40, 30, 20, 10)
+                        val percents = listOf<Float>(0.8f, 0.3f, 0.2f, 0.7f)
                         val colors = listOf(
                             Color.Red,
                             Color.Blue,
@@ -143,7 +144,7 @@ fun ReportScreen() {
                         )
                         val labels = listOf("Red", "Blue", "Green", "Yellow")
 
-                        DonutChart(values, colors, labels)
+                        DonutChartWithProgress(values, colors, labels, percents)
 
                     }
                 }

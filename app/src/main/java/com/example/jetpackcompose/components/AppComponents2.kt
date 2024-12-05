@@ -72,6 +72,8 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -88,14 +90,14 @@ import kotlin.math.sin
 import androidx.compose.ui.graphics.Color as ComposeColor
 
 @Composable
-fun DonutChart(values: List<Int>, colors: List<Color>, labels: List<String>) {
-    // Tính tổng giá trị
+fun DonutChartWithProgress(
+    values: List<Int>,
+    colors: List<Color>,
+    labels: List<String>,
+    progresses: List<Float> // Tỉ lệ hoàn thành (0.0 đến 1.0) cho từng phần
+) {
     val totalValue = values.sum()
-
-    // Tính phần trăm cho từng giá trị
     val proportions = values.map { it.toFloat() / totalValue }
-
-    // Tính góc (degree) tương ứng với từng phần trăm
     val angles = proportions.map { it * 360f }
 
     Box(
@@ -105,7 +107,7 @@ fun DonutChart(values: List<Int>, colors: List<Color>, labels: List<String>) {
         contentAlignment = Alignment.Center
     ) {
         Canvas(modifier = Modifier.size(200.dp)) {
-            val strokeWidth = 150f
+            val maxStrokeWidth = 150f  // Chiều rộng tối đa của vòng tròn donut
             val radius = size.minDimension / 2
 
             // Vẽ nền lightGray
@@ -114,37 +116,56 @@ fun DonutChart(values: List<Int>, colors: List<Color>, labels: List<String>) {
                 startAngle = 0f,
                 sweepAngle = 360f,
                 useCenter = false,
-                style = Stroke(width = strokeWidth + 20f, cap = StrokeCap.Butt)
+                style = Stroke(width = maxStrokeWidth + 20f, cap = StrokeCap.Butt)
             )
 
-            var startAngle = -90f // Bắt đầu từ đỉnh trên (góc -90)
+            var startAngle = -90f
 
             // Vẽ các phần của donut chart
             angles.forEachIndexed { index, sweepAngle ->
+                // Vẽ phần chính của donut chart
                 drawArc(
-                    color = colors[index],
+                    color = colors[index].copy(alpha = 0.1f),
                     startAngle = startAngle,
                     sweepAngle = sweepAngle,
                     useCenter = false,
-                    style = Stroke(width = strokeWidth, cap = StrokeCap.Butt)
+                    style = Stroke(width = maxStrokeWidth, cap = StrokeCap.Butt)
+                )
+
+                // Tính toán chiều rộng stroke cho phần "mực nước" dựa vào tỷ lệ hoàn thành
+                val progressWidth = maxStrokeWidth * progresses[index] // Tỷ lệ chiều rộng mực nước
+
+                // Tính toán bán kính cho phần "mực nước" để áp vào lề trong
+                val progressRadius = radius - (maxStrokeWidth - progressWidth) / 2
+
+                // Vẽ "mực nước" (progress) với chiều rộng theo tỷ lệ hoàn thành và bán kính được điều chỉnh
+                drawArc(
+                    color = colors[index].copy(alpha = 0.5f), // Làm nhạt màu
+                    startAngle = startAngle,
+                    sweepAngle = sweepAngle, // Giữ nguyên góc
+                    useCenter = false,
+                    style = Stroke(
+                        width = progressWidth, // Chiều rộng mực nước theo tỷ lệ
+                        cap = StrokeCap.Butt
+                    ),
+                    topLeft = Offset(center.x - progressRadius, center.y - progressRadius),
+                    size = Size(progressRadius * 2, progressRadius * 2) // Sử dụng bán kính trong để vẽ mực nước
                 )
 
                 startAngle += sweepAngle
             }
 
-            // Reset lại startAngle để vẽ đường ngăn
-            startAngle = -90f
-
             // Vẽ các đường ngăn cách màu trắng
+            startAngle = -90f
             angles.forEach { sweepAngle ->
                 val angleInRadians = Math.toRadians(startAngle.toDouble())
                 val lineStart = Offset(
-                    x = center.x + (radius - strokeWidth / 2) * cos(angleInRadians).toFloat(),
-                    y = center.y + (radius - strokeWidth / 2) * sin(angleInRadians).toFloat()
+                    x = center.x + (radius - maxStrokeWidth / 2) * cos(angleInRadians).toFloat(),
+                    y = center.y + (radius - maxStrokeWidth / 2) * sin(angleInRadians).toFloat()
                 )
                 val lineEnd = Offset(
-                    x = center.x + (radius + strokeWidth / 2) * cos(angleInRadians).toFloat(),
-                    y = center.y + (radius + strokeWidth / 2) * sin(angleInRadians).toFloat()
+                    x = center.x + (radius + maxStrokeWidth / 2) * cos(angleInRadians).toFloat(),
+                    y = center.y + (radius + maxStrokeWidth / 2) * sin(angleInRadians).toFloat()
                 )
                 drawLine(
                     color = Color.White,
@@ -158,6 +179,8 @@ fun DonutChart(values: List<Int>, colors: List<Color>, labels: List<String>) {
         }
     }
 }
+
+
 
 
 
