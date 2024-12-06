@@ -10,6 +10,7 @@ import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.PUT
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 object BaseURL {
@@ -122,10 +123,13 @@ interface ApiService {
         @Header("Authorization") token: String
     ): Response<List<RemainLimit.CategoryLimit>>
 
-    @PUT("/api/transactions/12")
+    @PUT("/api/transactions/{transactionId}")
     suspend fun putTransaction(
         @Header("Authorization") token: String,
-        transactionId: Int,
+        @Path("transactionId") transactionId: Int,  // Tham số này sẽ thay thế {transactionId} trong URL
         @Body transaction: Transaction
     ): Response<TransactionResponse>
+
+
+
 }

@@ -30,17 +30,17 @@ class PutTransactionViewModel(private val context: Context) : ViewModel() {
         return sharedPreferences.getString("auth_token", null)
     }
 
-    // Hàm put transaction
+    // Hàm PUT để cập nhật giao dịch
     fun putTransaction(
-        transactionId: Int,  // ID của giao dịch cần cập nhật
-        data: Transaction,      // Dữ liệu giao dịch mới
+        transactionId: Int,
+        data: Transaction,
         onSuccess: (String) -> Unit,
         onError: (String) -> Unit
     ) {
         val token = getToken()
 
         if (token.isNullOrEmpty()) {
-            transactionStatus = "Error: Token not found. Please log in again."
+            transactionStatus = "Lỗi: Không tìm thấy token. Vui lòng đăng nhập lại."
             onError(transactionStatus)
             return
         }
@@ -57,22 +57,23 @@ class PutTransactionViewModel(private val context: Context) : ViewModel() {
                 if (response.isSuccessful) {
                     val responseBody = response.body()
                     if (responseBody != null) {
-                        transactionStatus = "Transaction updated successfully"
+                        transactionStatus = "Giao dịch đã được cập nhật thành công"
                         onSuccess(transactionStatus)
                     } else {
-                        transactionStatus = "Error: Empty response from server"
+                        transactionStatus = "Lỗi: Phản hồi từ server trống"
                         onError(transactionStatus)
                     }
                 } else {
                     val errorBodyString = response.errorBody()?.string()
-                    transactionStatus = "Error updating transaction: $errorBodyString"
+                    transactionStatus = "Lỗi cập nhật giao dịch: $errorBodyString"
                     onError(transactionStatus)
                 }
             } catch (e: Exception) {
-                transactionStatus = "Error: ${e.localizedMessage}"
+                transactionStatus = "Lỗi: ${e.localizedMessage}"
                 Log.e("PutTransactionViewModel", "Error updating transaction: ${e.localizedMessage}", e)
                 onError(transactionStatus)
             }
         }
     }
 }
+

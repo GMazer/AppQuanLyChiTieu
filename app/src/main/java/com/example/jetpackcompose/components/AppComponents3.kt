@@ -3,6 +3,7 @@ package com.example.jetpackcompose.components
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
@@ -214,31 +215,82 @@ fun CategoryIconWithName(
     transactionNote: String,
     transactionAmount: Long,
     transactionType: String,
-    navController: NavController // Truyền navController vào đây
+    transactionId: Int
 ) {
     val currencyFormatter = remember {
-        // Lấy DecimalFormatSymbols mặc định cho Việt Nam
         val symbols = DecimalFormatSymbols(Locale("vi", "VN"))
-        // Thay đổi dấu phân cách thập phân và phân cách hàng nghìn
         symbols.decimalSeparator = '.'
         symbols.groupingSeparator = ','
 
-        // Tạo một DecimalFormat mới sử dụng các biểu tượng đã thay đổi
         val format = DecimalFormat("#,###", symbols)
         format
     }
 
     // Danh sách các Category
     val categories = listOf(
-        Category(1, "Chi phí nhà ở", { painterResource(R.drawable.outline_home_work_24) }, Color(0xFFfb791d), 1.00f),
-        Category(2, "Ăn uống", { painterResource(R.drawable.outline_ramen_dining_24) }, Color(0xFF37c166), 1.00f),
-        Category(3, "Mua sắm quần áo", { painterResource(R.drawable.clothes) }, Color(0xFF283eaa), 1.00f),
-        Category(4, "Đi lại", { painterResource(R.drawable.outline_train_24) }, Color(0xFFa06749), 1.00f),
-        Category(5, "Chăm sóc sắc đẹp", { painterResource(R.drawable.outline_cosmetic) }, Color(0xFFf95aa9), 1.00f),
-        Category(6, "Giao lưu", { painterResource(R.drawable.entertainment) }, Color(0xFF6a1b9a), 1.00f),
-        Category(7, "Y tế", { painterResource(R.drawable.outline_health_and_safety_24) }, Color(0xFFfc3d39), 1.00f),
-        Category(8, "Học tập", { painterResource(R.drawable.outline_education) }, Color(0xFFfc7c1f), 1.00f),
-        Category(10, "Tiền lương", { painterResource(R.drawable.salary) }, Color(0xFFfb791d), 1.00f),
+        Category(
+            1,
+            "Chi phí nhà ở",
+            { painterResource(R.drawable.outline_home_work_24) },
+            Color(0xFFfb791d),
+            1.00f
+        ),
+        Category(
+            2,
+            "Ăn uống",
+            { painterResource(R.drawable.outline_ramen_dining_24) },
+            Color(0xFF37c166),
+            1.00f
+        ),
+        Category(
+            3,
+            "Mua sắm quần áo",
+            { painterResource(R.drawable.clothes) },
+            Color(0xFF283eaa),
+            1.00f
+        ),
+        Category(
+            4,
+            "Đi lại",
+            { painterResource(R.drawable.outline_train_24) },
+            Color(0xFFa06749),
+            1.00f
+        ),
+        Category(
+            5,
+            "Chăm sóc sắc đẹp",
+            { painterResource(R.drawable.outline_cosmetic) },
+            Color(0xFFf95aa9),
+            1.00f
+        ),
+        Category(
+            6,
+            "Giao lưu",
+            { painterResource(R.drawable.entertainment) },
+            Color(0xFF6a1b9a),
+            1.00f
+        ),
+        Category(
+            7,
+            "Y tế",
+            { painterResource(R.drawable.outline_health_and_safety_24) },
+            Color(0xFFfc3d39),
+            1.00f
+        ),
+        Category(
+            8,
+            "Học tập",
+            { painterResource(R.drawable.outline_education) },
+            Color(0xFFfc7c1f),
+            1.00f
+        ),
+        Category(
+            10,
+            "Tiền lương",
+            { painterResource(R.drawable.salary) },
+            Color(0xFFfb791d),
+            1.00f
+        ),
         Category(
             11,
             "Tiền thưởng",
@@ -246,14 +298,14 @@ fun CategoryIconWithName(
             Color(0xFF37c166),
             1.00f
         ),
-        Category(12, "Thu nhập phụ", { painterResource(R.drawable.secondary) }, Color(0xFFf95aa9), 1.00f),
         Category(
-            11,
-            "Trợ cấp",
-            { painterResource(R.drawable.subsidy) },
-            Color(0xFFfba74a),
+            12,
+            "Thu nhập phụ",
+            { painterResource(R.drawable.secondary) },
+            Color(0xFFf95aa9),
             1.00f
-        )
+        ),
+        Category(11, "Trợ cấp", { painterResource(R.drawable.subsidy) }, Color(0xFFfba74a), 1.00f)
     )
 
     // Tìm Category phù hợp với categoryName
@@ -266,16 +318,6 @@ fun CategoryIconWithName(
             horizontalArrangement = Arrangement.Start,
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable(onClick = {
-                    when (transactionType) {
-                        "expense" -> {
-                            navController.navigate("editExpense")  // Điều hướng tới editExpense
-                        }
-                        "income" -> {
-                            navController.navigate("editIncome")  // Điều hướng tới editIncome
-                        }
-                    }
-                })
         ) {
             // Hiển thị icon
             Icon(
@@ -330,12 +372,11 @@ fun CategoryIconWithName(
 }
 
 
-
 @Composable
 fun DayIndex(
     dateTransactionList: Map<String, List<TransactionResponse.TransactionDetail>>,
     selectedDate: String = "",
-    navController: NavController // Thêm navController vào tham số
+    navController: NavController
 ) {
     val dateFormat = remember { SimpleDateFormat("yyyy-MM-dd", Locale("vi", "VN")) }
     val displayDateFormat = remember { SimpleDateFormat("dd/MM/yyyy (E)", Locale("vi", "VN")) }
@@ -397,13 +438,25 @@ fun DayIndex(
                             .background(color = Color.White)
                             .height(50.dp)
                             .padding(horizontal = 16.dp)
+                            .clickable {
+                                val id = transaction.transactionId
+                                Log.d("DayIndex", "Navigating to editExpense with id: $id")
+//                                    // Điều hướng đến màn hình chỉnh sửa với transactionId cụ thể
+//                                    navController.navigate("editExpense/$id")
+//                                }
+                            }
                     ) {
-                        transaction.note?.let {
-                            transaction.type?.let { it1 ->
-                                CategoryIconWithName(
-                                    transaction.categoryName, it, transaction.amount,
-                                    it1, navController
-                                )
+                        transaction.transactionId?.let {id ->
+                            transaction.note?.let {
+                                transaction.type?.let { it1 ->
+                                    CategoryIconWithName(
+                                        categoryName = transaction.categoryName,
+                                        transactionNote = it,
+                                        transactionAmount = transaction.amount,
+                                        transactionType = it1,
+                                        transactionId = id
+                                    )
+                                }
                             }
                         }
                     }
@@ -417,8 +470,6 @@ fun DayIndex(
         }
     }
 }
-
-
 
 
 
@@ -536,7 +587,13 @@ fun DropdownRow(
     if (showDialog) {
         AlertDialog(
             onDismissRequest = { showDialog = false },
-            title = { Text(text = "Chọn $label", fontFamily = montserrat, fontWeight = FontWeight.Bold) },
+            title = {
+                Text(
+                    text = "Chọn $label",
+                    fontFamily = montserrat,
+                    fontWeight = FontWeight.Bold
+                )
+            },
             text = {
                 LazyColumn {
                     items(options) { option ->
@@ -560,7 +617,11 @@ fun DropdownRow(
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
                             }
-                            Text(text = option.second, fontWeight = FontWeight.Normal, fontFamily = montserrat)
+                            Text(
+                                text = option.second,
+                                fontWeight = FontWeight.Normal,
+                                fontFamily = montserrat
+                            )
                         }
                     }
                 }
@@ -628,7 +689,13 @@ fun <T : Enum<T>> DropdownRepeat(
     if (showDialog) {
         AlertDialog(
             onDismissRequest = { showDialog = false },
-            title = { Text(text = "Chọn ${label.toLowerCase()}", fontFamily = montserrat, fontWeight = FontWeight.Bold)},
+            title = {
+                Text(
+                    text = "Chọn ${label.toLowerCase()}",
+                    fontFamily = montserrat,
+                    fontWeight = FontWeight.Bold
+                )
+            },
             text = {
                 LazyColumn {
                     items(options) { option ->
@@ -644,7 +711,7 @@ fun <T : Enum<T>> DropdownRepeat(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = when (option.second.toString()){
+                                text = when (option.second.toString()) {
                                     "daily" -> "Hàng ngày"
                                     "weekly" -> "Hàng tuần"
                                     "monthly" -> "Hàng tháng"
@@ -742,7 +809,6 @@ fun DatePickerRow(
         )
     }
 }
-
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -878,7 +944,13 @@ fun EndDateRow(
     if (showDialog) {
         AlertDialog(
             onDismissRequest = { showDialog = false },
-            title = { Text(text = "Chọn ${label.toLowerCase()}", fontFamily = montserrat, fontWeight = FontWeight.Bold) },
+            title = {
+                Text(
+                    text = "Chọn ${label.toLowerCase()}",
+                    fontFamily = montserrat,
+                    fontWeight = FontWeight.Bold
+                )
+            },
             text = {
                 LazyColumn {
                     items(options) { option ->
@@ -888,7 +960,8 @@ fun EndDateRow(
                                 .clickable {
                                     selectedOption = option
                                     if (option == "Không") {
-                                        selectedDate = null.toString() // Reset ngày nếu chọn "Không"
+                                        selectedDate =
+                                            null.toString() // Reset ngày nếu chọn "Không"
                                         onDateSelected("Không")
                                     } else {
                                         showDatePicker =
