@@ -12,6 +12,8 @@ import com.example.jetpackcompose.app.screens.login_signup.SignInScreen
 import com.example.jetpackcompose.app.features.MainScreen
 import com.example.jetpackcompose.app.features.apiService.LogAPI.SignInViewModel
 import com.example.jetpackcompose.app.features.apiService.LogAPI.SignInViewModelFactory
+import com.example.jetpackcompose.app.features.editFeatures.EditExpenseTransaction
+import com.example.jetpackcompose.app.features.editFeatures.EditIncomeTransaction
 import com.example.jetpackcompose.app.screens.anual_sceens.InputFixedTab
 import com.example.jetpackcompose.app.screens.OtherScreen
 import com.example.jetpackcompose.app.screens.anual_sceens.AnualScreen
@@ -21,29 +23,35 @@ fun AppQuanLyChiTieu() {
     val navController = rememberNavController()
     val context = LocalContext.current
     val signInViewModel: SignInViewModel = viewModel(
-        factory = SignInViewModelFactory(context) // Cung cấp Context cho ViewModel
+        factory = SignInViewModelFactory(context)
     )
 
+    // Kiểm tra nếu Token đã được xác nhận hay không
     if (signInViewModel.isTokenCleared()) {
         NavHost(navController = navController, startDestination = "signup") {
             composable("signup") { SignUpScreen(navController) }
             composable("signin") { SignInScreen(navController) }
-            composable("mainscreen") { MainScreen(navController)}
+            composable("mainscreen") { MainScreen(navController) }
             composable("anual") { AnualScreen(navController) }
-            composable("other") { OtherScreen(navController)}
+            composable("other") { OtherScreen(navController) }
             composable("inputfixedtab") { InputFixedTab(navController) }
+            composable("editExpense") { EditExpenseTransaction(navController) }
+            composable("editIncome") { EditIncomeTransaction(navController) } // Đảm bảo bạn khai báo đúng màn hình này
         }
     } else {
         NavHost(navController = navController, startDestination = "mainscreen") {
             composable("signup") { SignUpScreen(navController) }
             composable("signin") { SignInScreen(navController) }
-            composable("mainscreen") { MainScreen(navController)}
+            composable("mainscreen") { MainScreen(navController) }
             composable("anual") { AnualScreen(navController) }
-            composable("other") { OtherScreen(navController)}
+            composable("other") { OtherScreen(navController) }
             composable("inputfixedtab") { InputFixedTab(navController) }
+            composable("editExpense") { EditExpenseTransaction(navController) }
+            composable("editIncome") { EditIncomeTransaction(navController) } // Đảm bảo bạn khai báo đúng màn hình này
         }
     }
 }
+
 
 
 

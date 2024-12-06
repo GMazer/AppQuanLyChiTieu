@@ -45,7 +45,7 @@ fun MainScreen(navController: NavHostController) {
         ) { page ->
             when (page) {
                 0 -> InputScreen()
-                1 -> CalendarScreen()
+                1 -> CalendarScreen(navController)
                 2 -> ReportScreen()
                 3 -> OtherScreen(navController)
             }

@@ -1,6 +1,7 @@
-package com.example.jetpackcompose.app.features.inputFeatures
+package com.example.jetpackcompose.app.features.editFeatures
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,13 +12,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.Divider
+import androidx.compose.material.Icon
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,37 +26,27 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.example.jetpackcompose.R
-import com.example.jetpackcompose.app.features.apiService.TransactionAPI.GetLimitTransactionViewModel
-import com.example.jetpackcompose.app.features.apiService.TransactionAPI.PostTransactionViewModel
+import com.example.jetpackcompose.app.features.inputFeatures.Category
+import com.example.jetpackcompose.app.features.inputFeatures.DatePickerButton
+import com.example.jetpackcompose.app.features.inputFeatures.Transaction
+import com.example.jetpackcompose.app.features.inputFeatures.montserrat
 import com.example.jetpackcompose.components.CategoriesGrid
 import com.example.jetpackcompose.components.DrawBottomLine
 import com.example.jetpackcompose.components.MessagePopup
 import com.example.jetpackcompose.components.NoteTextField
 import com.example.jetpackcompose.components.NumberTextField
+import com.example.jetpackcompose.ui.theme.textColor
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ExpenseContent(
-    postViewModel: PostTransactionViewModel = PostTransactionViewModel(LocalContext.current),
-    getRemainLimit: GetLimitTransactionViewModel = GetLimitTransactionViewModel(LocalContext.current)
-) {
-    // State cho các dữ liệu nhập vào và thông báo
-    var categoryLimits by remember {
-        mutableStateOf(listOf(
-            RemainLimit.CategoryLimit(categoryId = 1, percentLimit = 0, remainingPercent = 1.00),
-            RemainLimit.CategoryLimit(categoryId = 2, percentLimit = 0, remainingPercent = 1.00),
-            RemainLimit.CategoryLimit(categoryId = 3, percentLimit = 0, remainingPercent = 1.00),
-            RemainLimit.CategoryLimit(categoryId = 4, percentLimit = 0, remainingPercent = 1.00),
-            RemainLimit.CategoryLimit(categoryId = 5, percentLimit = 0, remainingPercent = 1.00)
-        ))
-    }
+fun EditExpenseTransaction(navController: NavHostController) {
 
     var textNote by remember { mutableStateOf(TextFieldValue()) }
     var amountValue by remember { mutableStateOf(TextFieldValue()) }
@@ -68,7 +59,7 @@ fun ExpenseContent(
     var showPopup by remember { mutableStateOf(false) }  // Trạng thái popup
     var buttonColor = Color(0xFFF35E17)
 
-    // Cập nhật lại danh sách categories
+
     var categories by remember { mutableStateOf(
         listOf(
             Category(1, "Chi phí nhà ở", { painterResource(R.drawable.outline_home_work_24) }, Color(0xFFfb791d), 1.00f),
@@ -81,40 +72,61 @@ fun ExpenseContent(
             Category(8, "Học tập", { painterResource(R.drawable.outline_education) }, Color(0xFFfc7c1f), 0.50f)
         )
     ) }
+    // Nội dung trang chính
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+    ) {
 
-    // Hàm cập nhật lại tỷ lệ phần trăm cho các danh mục chi tiêu
-    fun updatePercentage(categoryLimits: List<RemainLimit.CategoryLimit>) {
-        val updatedCategories = categories.map { category ->
-            val updatedLimit = categoryLimits.find { it.categoryId == category.id }
-            if (updatedLimit != null) {
-                val updatedPercentage = (updatedLimit.remainingPercent / 100.0).toFloat()
-                category.copy(percentage = updatedPercentage)
-            } else {
-                category
+        // Tiêu đề với Row bên trong Box
+        Box(modifier = Modifier.fillMaxWidth()) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp), // Khoảng cách dọc
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween // Căn 2 nút ra 2 bên
+            ) {
+                // Nút trở về (mũi tên trái)
+                IconButton(onClick = { navController.popBackStack() }) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.outline_arrow_back_ios_24),
+                        contentDescription = "Back",
+                        tint = textColor // Màu mũi tên
+                    )
+                }
+
+                // Tiêu đề "Chỉnh sửa"
+                Text(
+                    text = "Chỉnh sửa",
+                    fontSize = 18.sp,
+                    fontFamily = montserrat,
+                    fontWeight = FontWeight.Bold,
+                    color = textColor,
+                    modifier = Modifier.weight(1f),
+                    textAlign = TextAlign.Center
+                )
+
+                // Nút Xoá (Clickable Text)
+                Text(
+                    text = "Xoá",
+                    fontSize = 16.sp,
+                    color = Color.Red,
+                    modifier = Modifier.clickable {
+                        // Xử lý logic xóa ở đây
+                        // Ví dụ: navController.navigate("deleteScreen")
+                    }
+                )
             }
         }
-        categories = updatedCategories
-    }
+        Divider(modifier = Modifier.padding(vertical = 8.dp))
 
-    // Lần đầu tiên gọi API để lấy thông tin limit
-    LaunchedEffect(key1 = true) {
-        getRemainLimit.getLimitTransaction(
-            onError = {},
-            onSuccess = {
-                categoryLimits = it
-                updatePercentage(categoryLimits)  // Cập nhật lại tỷ lệ phần trăm sau khi nhận dữ liệu
-            }
-        )
-    }
-
-    Scaffold(
-        containerColor = Color.White,
-        content = { innerPadding ->
+        Column {
             Box(Modifier.fillMaxSize()) {
                 // Nội dung của ExpenseContent
                 Column(
                     modifier = Modifier
-                        .padding(innerPadding)
                         .padding(16.dp)
                         .background(Color.White)
                 ) {
@@ -178,38 +190,15 @@ fun ExpenseContent(
                                     category_id = selectedCategory?.id ?: 0
                                 )
 
-                                // Gửi dữ liệu giao dịch
-                                postViewModel.postTransaction(
-                                    transaction,
-                                    onSuccess = {
-                                        errorMessage = ""  // Reset error message
-                                        successMessage = "Nhập khoản chi thành công!"
-                                        showPopup = true  // Hiển thị popup thông báo thành công
-                                        // Cập nhật lại dữ liệu limit và categories
-                                        getRemainLimit.getLimitTransaction(
-                                            onError = {},
-                                            onSuccess = {
-                                                categoryLimits = it
-                                                updatePercentage(categoryLimits)
-                                            }
-                                        )
-                                    },
-                                    onError = {
-                                        successMessage = ""  // Reset success message
-                                        errorMessage = "Có lỗi xảy ra vui lòng thử lại!"
-                                        showPopup = true  // Hiển thị popup thông báo lỗi
-                                    }
-                                )
+                                // Sửa dữ liệu giao dịch
 
-                                // Reset các trường nhập
-                                amountValue = TextFieldValue("")
-                                textNote = TextFieldValue("")
-                                selectedCategory = null
+
+
                             },
                             modifier = Modifier.width(248.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = buttonColor)
                         ) {
-                            Text("Nhập khoản chi", color = Color.White, fontWeight = FontWeight.Bold)
+                            Text("Sửa khoản chi", color = Color.White, fontWeight = FontWeight.Bold)
                         }
                     }
                 }
@@ -223,16 +212,5 @@ fun ExpenseContent(
                 )
             }
         }
-    )
-}
-
-
-
-
-
-
-@Preview
-@Composable
-fun PreviewOutComeContent() {
-    ExpenseContent()
+    }
 }

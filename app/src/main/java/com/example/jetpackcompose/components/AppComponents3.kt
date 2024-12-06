@@ -57,6 +57,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.jetpackcompose.R
 import com.example.jetpackcompose.app.features.inputFeatures.Category
@@ -74,10 +75,8 @@ import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.text.SimpleDateFormat
 import java.time.LocalDate
-import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
-import java.util.Date
 import java.util.Locale
 
 @Composable
@@ -214,9 +213,9 @@ fun CategoryIconWithName(
     categoryName: String,
     transactionNote: String,
     transactionAmount: Long,
-    transactionType: String
+    transactionType: String,
+    navController: NavController // Truyền navController vào đây
 ) {
-
     val currencyFormatter = remember {
         // Lấy DecimalFormatSymbols mặc định cho Việt Nam
         val symbols = DecimalFormatSymbols(Locale("vi", "VN"))
@@ -228,6 +227,7 @@ fun CategoryIconWithName(
         val format = DecimalFormat("#,###", symbols)
         format
     }
+
     // Danh sách các Category
     val categories = listOf(
         Category(1, "Chi phí nhà ở", { painterResource(R.drawable.outline_home_work_24) }, Color(0xFFfb791d), 1.00f),
@@ -266,6 +266,16 @@ fun CategoryIconWithName(
             horizontalArrangement = Arrangement.Start,
             modifier = Modifier
                 .fillMaxWidth()
+                .clickable(onClick = {
+                    when (transactionType) {
+                        "expense" -> {
+                            navController.navigate("editExpense")  // Điều hướng tới editExpense
+                        }
+                        "income" -> {
+                            navController.navigate("editIncome")  // Điều hướng tới editIncome
+                        }
+                    }
+                })
         ) {
             // Hiển thị icon
             Icon(
@@ -306,24 +316,33 @@ fun CategoryIconWithName(
                 textAlign = TextAlign.End
             )
 
+            // Mũi tên ở cuối Row
+            Icon(
+                painter = painterResource(id = R.drawable.outline_arrow_forward_ios_24),
+                contentDescription = "Arrow Right",
+                modifier = Modifier
+                    .size(16.dp)
+                    .padding(start = 8.dp),
+                tint = Color(0xFF444444)
+            )
         }
     }
 }
 
 
+
 @Composable
 fun DayIndex(
     dateTransactionList: Map<String, List<TransactionResponse.TransactionDetail>>,
-    selectedDate: String = "" // Thêm tham số selectedDate mặc định là rỗng
+    selectedDate: String = "",
+    navController: NavController // Thêm navController vào tham số
 ) {
     val dateFormat = remember { SimpleDateFormat("yyyy-MM-dd", Locale("vi", "VN")) }
     val displayDateFormat = remember { SimpleDateFormat("dd/MM/yyyy (E)", Locale("vi", "VN")) }
 
-    // Kiểm tra và xử lý selectedDate nếu ngày có 1 chữ số
     val processedSelectedDate = if (selectedDate.isNotEmpty()) {
         val dateParts = selectedDate.split("-")
         if (dateParts.size == 3 && dateParts[2].startsWith("0")) {
-            // Xóa chữ số 0 ở đầu ngày nếu có
             "${dateParts[0]}-${dateParts[1]}-${dateParts[2].drop(1)}"
         } else {
             selectedDate
@@ -332,17 +351,13 @@ fun DayIndex(
         selectedDate
     }
 
-    // Duyệt qua dateTransactionList (map các ngày và giao dịch)
     dateTransactionList.forEach { (date, transactions) ->
-
-        // Kiểm tra nếu selectedDate là rỗng hoặc trùng với ngày hiện tại
         if (processedSelectedDate.isEmpty() || date == processedSelectedDate) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp)
             ) {
-                // Hiển thị ngày
                 val formattedDate = try {
                     val dateParsed = dateFormat.parse(date)
                     displayDateFormat.format(dateParsed)
@@ -373,13 +388,10 @@ fun DayIndex(
                     thickness = 0.7.dp
                 )
 
-                // Duyệt qua danh sách giao dịch của ngày
                 transactions.forEach { transaction ->
-
-                    // Hiển thị mỗi giao dịch
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Start, // Căn trái
+                        horizontalArrangement = Arrangement.Start,
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(color = Color.White)
@@ -390,7 +402,7 @@ fun DayIndex(
                             transaction.type?.let { it1 ->
                                 CategoryIconWithName(
                                     transaction.categoryName, it, transaction.amount,
-                                    it1
+                                    it1, navController
                                 )
                             }
                         }
@@ -405,6 +417,8 @@ fun DayIndex(
         }
     }
 }
+
+
 
 
 

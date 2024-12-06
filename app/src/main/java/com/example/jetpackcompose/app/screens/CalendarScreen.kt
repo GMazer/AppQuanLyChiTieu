@@ -33,6 +33,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.jetpackcompose.app.features.apiService.TransactionAPI.GetTransactionViewModel
 import com.example.jetpackcompose.app.network.TransactionResponse
 import com.example.jetpackcompose.components.CustomCalendar
@@ -55,9 +57,8 @@ data class DailyTransaction(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CalendarScreen() {
+fun CalendarScreen(navController: NavController) {
     val viewModel: GetTransactionViewModel = GetTransactionViewModel(LocalContext.current)
-
     // Lấy tháng và năm hiện tại làm giá trị mặc định
     val currentMonthYear = remember {
         val calendar = Calendar.getInstance()
@@ -67,16 +68,10 @@ fun CalendarScreen() {
     }
 
     val currencyFormatter = remember {
-        // Lấy DecimalFormatSymbols mặc định cho Việt Nam
         val symbols = DecimalFormatSymbols(Locale("vi", "VN"))
-
-        // Thay đổi dấu phân cách thập phân và phân cách hàng nghìn
         symbols.decimalSeparator = '.'
         symbols.groupingSeparator = ','
-
-        // Tạo một DecimalFormat mới sử dụng các biểu tượng đã thay đổi
         val format = DecimalFormat("#,###", symbols)
-
         format
     }
 
@@ -86,10 +81,8 @@ fun CalendarScreen() {
     var dateTransactionList by remember { mutableStateOf<Map<String, List<TransactionResponse.TransactionDetail>>>(emptyMap()) }
     var errorMessage by remember { mutableStateOf("") }
 
-    // Gọi API để lấy danh sách giao dịch
-    // Gọi API để lấy danh sách giao dịch
+    // Khởi tạo NavHostController
     LaunchedEffect(selectedMonthYear) {
-        // Tách tháng và năm từ selectedMonthYear
         val (month, year) = selectedMonthYear.split("/").map { it.toInt() }
         selectedDate = ""
 
@@ -97,7 +90,6 @@ fun CalendarScreen() {
             month = month,
             year = year,
             onSuccess1 = { transactions ->
-                // Chuyển đổi danh sách giao dịch từ API thành danh sách `DailyTransaction`
                 transactionList = transactions.map { transaction ->
                     DailyTransaction(
                         date = transaction.date,
@@ -107,10 +99,7 @@ fun CalendarScreen() {
                 }
             },
             onSuccess2 = { transactions ->
-                // Lưu danh sách giao dịch theo ngày
-                // Tạo một danh sách các map chứa thông tin giao dịch nhóm theo ngày
                 val groupedTransactions = transactions.entries.map { (date, transactionDetails) ->
-                    // Chuyển đổi từng giao dịch trong danh sách `transactionDetails`
                     val details = transactionDetails.map {
                         TransactionResponse.TransactionDetail(
                             categoryName = it.categoryName,
@@ -121,16 +110,12 @@ fun CalendarScreen() {
                             transactionId = it.transactionId
                         )
                     }
-                    // Tạo Map cho mỗi ngày
                     date to details
                 }
 
-                // Cập nhật lại `dateTransactionList` với giá trị mới
                 dateTransactionList = groupedTransactions.toMap()
             },
-            onError = { error ->
-                errorMessage = error
-            }
+            onError = { error -> errorMessage = error }
         )
     }
 
@@ -193,7 +178,6 @@ fun CalendarScreen() {
                     .fillMaxSize()
                     .padding(paddingValues)
             ) {
-
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -214,78 +198,79 @@ fun CalendarScreen() {
 
                 Row(modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = "Thu nhập",
-                                style = TextStyle(
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 12.sp,
-                                ),
-                                color = textColor,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                            )
-                            Text(
-                                text = "${currencyFormatter.format(totalIncome)}₫",
-                                style = TextStyle(
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 16.sp,
-                                ),
-                                color = Color(0xff37c8ec),
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                            )
+                        Text(
+                            text = "Thu nhập",
+                            style = TextStyle(
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 12.sp,
+                            ),
+                            color = textColor,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                        )
+                        Text(
+                            text = "${currencyFormatter.format(totalIncome)}₫",
+                            style = TextStyle(
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 16.sp,
+                            ),
+                            color = Color(0xff37c8ec),
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                        )
                     }
                     Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = "Chi tiêu",
-                                style = TextStyle(
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 12.sp,
-                                ),
-                                color = textColor,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                            )
-                            Text(
-                                text = "${currencyFormatter.format(totalExpense)}₫",
-                                style = TextStyle(
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 16.sp,
-                                ),
-                                color = colorPrimary,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                            )
+                        Text(
+                            text = "Chi tiêu",
+                            style = TextStyle(
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 12.sp,
+                            ),
+                            color = textColor,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                        )
+                        Text(
+                            text = "${currencyFormatter.format(totalExpense)}₫",
+                            style = TextStyle(
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 16.sp,
+                            ),
+                            color = colorPrimary,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                        )
                     }
                     Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = "Tổng",
-                                style = TextStyle(
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 12.sp,
-                                ),
-                                color = textColor,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                            )
-                            Text(
-                                text = formattedBalance,
-                                style = TextStyle(
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 16.sp,
-                                ),
-                                color = if (totalBalance >= 0) Color(0xff37c8ec) else colorPrimary,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                            )
+                        Text(
+                            text = "Tổng",
+                            style = TextStyle(
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 12.sp,
+                            ),
+                            color = textColor,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                        )
+                        Text(
+                            text = formattedBalance,
+                            style = TextStyle(
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 16.sp,
+                            ),
+                            color = if (totalBalance >= 0) Color(0xff37c8ec) else colorPrimary,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                        )
                     }
                 }
+
                 if (errorMessage.isNotEmpty()) {
                     Text(
                         text = errorMessage,
@@ -297,11 +282,15 @@ fun CalendarScreen() {
                             .padding(16.dp)
                     )
                 } else {
-
                     Spacer(modifier = Modifier.height(8.dp))
                     LazyColumn {
                         item {
-                            DayIndex(dateTransactionList, selectedDate)
+                            // Truyền navController vào DayIndex
+                            DayIndex(
+                                dateTransactionList = dateTransactionList,
+                                selectedDate = selectedDate,    // Truyền navController vào đây
+                                navController = navController
+                            )
                         }
                     }
                 }
@@ -311,8 +300,3 @@ fun CalendarScreen() {
 }
 
 
-@Preview
-@Composable
-fun PreviewCalendarScreen() {
-    CalendarScreen()
-}

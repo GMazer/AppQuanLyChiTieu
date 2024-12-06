@@ -13,7 +13,7 @@ import retrofit2.http.PUT
 import retrofit2.http.Query
 
 object BaseURL {
-    val baseUrl = "https://c74a-1-55-167-131.ngrok-free.app"
+    val baseUrl = "https://3e91-1-52-40-245.ngrok-free.app"
 }
 
 data class RegistrationData(
@@ -121,4 +121,11 @@ interface ApiService {
     suspend fun getLimitTransaction(
         @Header("Authorization") token: String
     ): Response<List<RemainLimit.CategoryLimit>>
+
+    @PUT("/api/transactions/12")
+    suspend fun putTransaction(
+        @Header("Authorization") token: String,
+        transactionId: Int,
+        @Body transaction: Transaction
+    ): Response<TransactionResponse>
 }

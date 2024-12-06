@@ -44,7 +44,7 @@ fun AnualScreen(navController: NavHostController) {
         ) {
             // Nút trở về (mũi tên trái)
             IconButton(onClick = {
-                navController.popBackStack("mainscreen", inclusive = false) // Quay lại màn hình chính") // Quay lại màn hình trước
+                navController.popBackStack("mainscreen", inclusive = false)  // Quay lại màn hình trước
             }) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack, // Mũi tên trái

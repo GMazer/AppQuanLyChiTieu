@@ -1,6 +1,5 @@
 package com.example.jetpackcompose.app.features.inputFeatures
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -102,7 +101,7 @@ fun IncomeContent(postViewModel: PostTransactionViewModel = PostTransactionViewM
                             "Ngày ",
                             color = Color.DarkGray,
                             fontWeight = FontWeight.Bold,
-                            fontFamily = monsterrat
+                            fontFamily = montserrat
                         )
                         DatePickerButton(onDateSelected = { date -> selectedDate = date })
                     }

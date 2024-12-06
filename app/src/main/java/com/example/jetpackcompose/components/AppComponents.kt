@@ -958,13 +958,6 @@ fun CustomCalendar(
 
 
 
-@Preview
-@Composable
-fun PreviewInputScreen() {
-    CalendarScreen()
-}
-
-
 
 
 
