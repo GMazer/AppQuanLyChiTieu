@@ -61,6 +61,9 @@ import com.example.jetpackcompose.ui.theme.textColor
 import com.example.jetpackcompose.ui.theme.colorPrimary
 import java.util.Calendar
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.material.Divider
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.StrokeCap
@@ -84,7 +87,7 @@ fun DonutChartWithProgress(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(240.dp),
+            .height(300.dp),
         contentAlignment = Alignment.Center
     ) {
         Canvas(modifier = Modifier.size(200.dp)) {
@@ -92,13 +95,13 @@ fun DonutChartWithProgress(
             val radius = size.minDimension / 2
 
             // Vẽ nền lightGray
-            drawArc(
-                color = Color.LightGray,
-                startAngle = 0f,
-                sweepAngle = 360f,
-                useCenter = false,
-                style = Stroke(width = maxStrokeWidth + 20f, cap = StrokeCap.Butt)
-            )
+//            drawArc(
+//                color = Color.LightGray,
+//                startAngle = 0f,
+//                sweepAngle = 360f,
+//                useCenter = false,
+//                style = Stroke(width = maxStrokeWidth + 20f, cap = StrokeCap.Butt)
+//            )
 
             var startAngle = -90f
 
@@ -106,7 +109,7 @@ fun DonutChartWithProgress(
             angles.forEachIndexed { index, sweepAngle ->
                 // Vẽ phần chính của donut chart
                 drawArc(
-                    color = colors[index].copy(alpha = 0.1f),
+                    color = colors[index].copy(alpha = 0.2f),
                     startAngle = startAngle,
                     sweepAngle = sweepAngle,
                     useCenter = false,
@@ -119,9 +122,15 @@ fun DonutChartWithProgress(
                 // Tính toán bán kính cho phần "mực nước" để áp vào lề trong
                 val progressRadius = radius - (maxStrokeWidth - progressWidth) / 2
 
+                // Chiều rộng vòng trong
+                val innerWidth = maxStrokeWidth * 0.2f // Tỷ lệ chiều rộng mực nước
+
+                // Bán kính vòng trong
+                val innerRadius = radius - (maxStrokeWidth - innerWidth) / 2 - innerWidth
+
                 // Vẽ "mực nước" (progress) với chiều rộng theo tỷ lệ hoàn thành và bán kính được điều chỉnh
                 drawArc(
-                    color = colors[index].copy(alpha = 0.5f), // Làm nhạt màu
+                    color = colors[index], // Làm nhạt màu
                     startAngle = startAngle,
                     sweepAngle = sweepAngle, // Giữ nguyên góc
                     useCenter = false,
@@ -133,26 +142,44 @@ fun DonutChartWithProgress(
                     size = Size(progressRadius * 2, progressRadius * 2) // Sử dụng bán kính trong để vẽ mực nước
                 )
 
+                // Vòng trong
+                drawArc(
+                    color = colors[index].copy(alpha = 0.8f), // Làm nhạt màu
+                    startAngle = startAngle,
+                    sweepAngle = sweepAngle, // Giữ nguyên góc
+                    useCenter = false,
+                    style = Stroke(
+                        width = innerWidth, // Chiều rộng mực nước theo tỷ lệ
+                        cap = StrokeCap.Butt
+                    ),
+                    topLeft = Offset(center.x - innerRadius, center.y - innerRadius),
+                    size = Size(innerRadius * 2, innerRadius * 2) // Sử dụng bán kính trong để vẽ mực nước
+                )
+
                 startAngle += sweepAngle
             }
 
-            // Vẽ các đường ngăn cách màu trắng
             startAngle = -90f
             angles.forEach { sweepAngle ->
                 val angleInRadians = Math.toRadians(startAngle.toDouble())
+                val extendedOffset = maxStrokeWidth * 0.2f  // Tăng chiều dài đường ngăn thêm giá trị này
+
+                // Điều chỉnh bán kính để tăng chiều dài đường ngăn
                 val lineStart = Offset(
-                    x = center.x + (radius - maxStrokeWidth / 2) * cos(angleInRadians).toFloat(),
-                    y = center.y + (radius - maxStrokeWidth / 2) * sin(angleInRadians).toFloat()
+                    x = center.x + (radius - maxStrokeWidth / 2 - extendedOffset) * cos(angleInRadians).toFloat(),
+                    y = center.y + (radius - maxStrokeWidth / 2 - extendedOffset) * sin(angleInRadians).toFloat()
                 )
                 val lineEnd = Offset(
-                    x = center.x + (radius + maxStrokeWidth / 2) * cos(angleInRadians).toFloat(),
-                    y = center.y + (radius + maxStrokeWidth / 2) * sin(angleInRadians).toFloat()
+                    x = center.x + (radius + maxStrokeWidth / 2 + extendedOffset) * cos(angleInRadians).toFloat(),
+                    y = center.y + (radius + maxStrokeWidth / 2 + extendedOffset) * sin(angleInRadians).toFloat()
                 )
+
+                // Vẽ đường ngăn
                 drawLine(
                     color = Color.White,
                     start = lineStart,
                     end = lineEnd,
-                    strokeWidth = 5f // Độ rộng của đường ngăn
+                    strokeWidth = 15f // Độ rộng của đường ngăn
                 )
 
                 startAngle += sweepAngle
@@ -876,7 +903,116 @@ fun OtherTab(value: String, onClick: () -> Unit, painter: Painter) {
 }
 
 @Composable
-fun ReportMonth(tag: String, value: Int) {
+fun ReportTable(income: Long, expense: Long, net: Long) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .height(120.dp)
+            .background(Color.White),
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween, // Căn giữa, phân bổ đều không gian
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                // Tổng thu nhập
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(60.dp), // Chia đều chiều rộng giữa các cột
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "Total Income",
+                        fontFamily = montserrat,
+                        color = Color(0xFF444444),
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 16.sp,
+                    )
+                    Text(
+                        text = "$income ₫",
+                        fontFamily = montserrat,
+                        color = Color(0xFF444444),
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 16.sp
+                    )
+                }
+
+                // Divider dọc giữa các cột thu nhập và chi tiêu
+                Box(
+                    modifier = Modifier
+                        .height(40.dp)
+                        .width(1.dp) // Chiều rộng của divider
+                        .background(Color.LightGray) // Màu của divider
+                )
+
+                // Tổng chi tiêu
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(60.dp), // Chia đều chiều rộng giữa các cột
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "Total Expense",
+                        fontFamily = montserrat,
+                        color = Color(0xFF444444),
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 16.sp
+                    )
+                    Text(
+                        text = "$expense ₫",
+                        fontFamily = montserrat,
+                        color = Color(0xFF444444),
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 16.sp
+                    )
+                }
+            }
+
+            Divider(Modifier.fillMaxWidth(0.8f))
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,  // Căn giữa theo chiều dọc
+                horizontalArrangement = Arrangement.SpaceAround,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(60.dp)
+            ) {
+                Text(
+                    text = "Balance",
+                    fontFamily = montserrat,
+                    color = Color(0xFF444444),
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 16.sp,
+                )
+                Text(
+                    text = "$net ₫",
+                    fontFamily = montserrat,
+                    color = Color(0xFF444444),
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 16.sp,
+                )
+            }
+
+        }
+    }
+}
+
+
+
+@Composable
+fun ReportCategory(tag: String, value: Int) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -890,16 +1026,15 @@ fun ReportMonth(tag: String, value: Int) {
             modifier = Modifier.fillMaxWidth() // Chiếm toàn bộ chiều rộng của Box
         ) {
             Spacer(modifier = Modifier.width(24.dp))
-            Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = tag,
                 fontFamily = montserrat,
                 color = Color(0xFF444444),
                 fontWeight = FontWeight.Normal,
                 fontSize = 16.sp,
-                modifier = Modifier.width(48.dp)
+                modifier = Modifier.width(120.dp)
             )
-            Spacer(modifier = Modifier.width(170.dp))
+            Spacer(modifier = Modifier.width(100.dp))
             Text(
                 text = "$value",
                 fontFamily = montserrat,

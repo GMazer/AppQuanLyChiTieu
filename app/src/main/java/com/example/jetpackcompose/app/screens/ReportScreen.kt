@@ -1,5 +1,6 @@
 package com.example.jetpackcompose.app.screens
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Divider
 import androidx.compose.material3.MaterialTheme
@@ -26,27 +27,86 @@ import com.example.jetpackcompose.ui.theme.topBarColor
 import androidx.compose.foundation.background
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.input.pointer.motionEventSpy
+import androidx.compose.ui.platform.LocalContext
+import com.example.jetpackcompose.app.features.apiService.ReportAPI.GetReportViewModel
 import com.example.jetpackcompose.components.YearPickerButton
 import com.example.jetpackcompose.components.DonutChartWithProgress
-import com.example.jetpackcompose.components.ReportMonth
+import com.example.jetpackcompose.components.MonthPickerButton
+import com.example.jetpackcompose.components.ReportCategory
+import com.example.jetpackcompose.components.ReportTable
 import com.example.jetpackcompose.ui.theme.highGray
 import com.example.jetpackcompose.ui.theme.lightGray
 import java.util.Calendar
 
+data class ReportData(
+    var name: String,
+    var amount: Long
+)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ReportScreen() {
+fun ReportScreen(viewModel: GetReportViewModel = GetReportViewModel(LocalContext.current)) {
     val values = listOf(10, 20, 30, 25, 40, 35, 45, 50, 60, 55, 70, 65) // Dữ liệu cho các tháng
     val indexs = listOf(12, 22, 33, 24, 45, 36, 47, 58, 69, 50, 71, 62) // Mốc cho mỗi tháng
     val months = listOf("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
 
-    val currentYear = remember {
+    var percentSpent by remember { mutableStateOf(listOf<Float>()) }
+    var percentLimit by remember { mutableStateOf(listOf<Int>()) }
+    var labels by remember { mutableStateOf(listOf<String>()) }
+    var colors by remember { mutableStateOf(listOf<Color>()) }
+    var totalIncome by remember { mutableStateOf<Long>(0) }
+    var totalExpense by remember { mutableStateOf<Long>(0) }
+    var netAmount by remember { mutableStateOf<Long>(0) }
+    var listReport by remember { mutableStateOf<List<ReportData>>(emptyList()) }
+
+    val currentMonthYear = remember {
         val calendar = Calendar.getInstance()
+        val month = String.format("%02d", calendar.get(Calendar.MONTH) + 1)
         val year = calendar.get(Calendar.YEAR)
-        "$year"
+        "$month/$year"
     }
 
-    var selectedYear by remember { mutableStateOf(currentYear) }
+    var selectedMonthYear by remember { mutableStateOf(currentMonthYear) }
+
+    // Dùng LaunchedEffect để gọi lại API khi selectedMonthYear thay đổi
+    LaunchedEffect(selectedMonthYear) {
+        val (month, year) = selectedMonthYear.split("/").map { it.toInt() }.let { it[0] to it[1] }
+
+        viewModel.getReport(
+            month = month,
+            year = year,
+            onSuccess = { report ->
+                Log.d("MainActivity", "Report data: $selectedMonthYear")
+
+                // Lấy giá trị từ report và gán vào các danh sách
+                percentLimit = report.categoryReports.map { it.percentLimit.toInt() }
+                percentSpent = report.categoryReports.map { (it.percentSpent / 100).toFloat() }
+                labels = report.categoryReports.map { it.categoryName }
+                totalIncome = report.totalIncome
+                totalExpense = report.totalExpense
+                netAmount = report.netAmount
+                listReport = report.categoryReports.map { ReportData(it.categoryName, it.spentAmount) }
+
+                // Màu sắc cho biểu đồ (có thể mở rộng theo số lượng danh mục)
+                colors = listOf(
+                    Color(0xFFDED600),
+                    Color(0xFFedaf25),
+                    Color(0xFFdc5f26),
+                    Color(0xFFaf2e2b),
+                    Color(0xFF8a358d),
+                    Color(0xFF26476d),
+                    Color(0xFF4076b6),
+                    Color(0xFF60ace2),
+                    Color(0xFF60b141)
+                )
+            },
+            onError = { error ->
+                Log.e("MainActivity", "Error: $error")
+            }
+        )
+    }
 
     val customTypography = Typography(
         bodyLarge = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.montserrat),
@@ -119,24 +179,21 @@ fun ReportScreen() {
                         // Spacer giữa TopAppBar và biểu đồ
                         Spacer(modifier = Modifier.height(16.dp))
 
-                        YearPickerButton(onYearSelected = { year ->
-                            selectedYear = year
+                        MonthPickerButton(onDateSelected = { month ->
+                            selectedMonthYear = month
                         })
 
-                        Spacer(modifier = Modifier.height(24.dp))
-
-                        val values = listOf(40, 30, 20, 10)
-                        val percents = listOf<Float>(0.8f, 0.3f, 0.2f, 0.7f)
-                        val colors = listOf(
-                            Color.Red,
-                            Color.Blue,
-                            Color.Green,
-                            Color.Black
-                        )
-                        val labels = listOf("Red", "Blue", "Green", "Yellow")
-
-                        DonutChartWithProgress(values, colors, labels, percents)
-
+                        // Hiển thị biểu đồ nếu đã có dữ liệu
+                        if (percentLimit.isNotEmpty() && percentSpent.isNotEmpty() && labels.isNotEmpty()) {
+                            DonutChartWithProgress(percentLimit, colors, labels, percentSpent)
+                        } else {
+                            Text(
+                                text = "Loading data...",
+                                modifier = Modifier.align(Alignment.CenterHorizontally),
+                                color = Color.Gray,
+                                fontSize = 16.sp
+                            )
+                        }
                     }
                 }
 
@@ -144,28 +201,26 @@ fun ReportScreen() {
                     Spacer(modifier = Modifier.height(16.dp))
                 }
 
-                // Thêm các phần tử khác vào LazyColumn
-                item {
-                    ReportMonth("Total", 10000000)
+                item{
+                    ReportTable(totalIncome, totalExpense, netAmount)
+                }
+
+                item{
                     Spacer(modifier = Modifier.height(16.dp))
                 }
 
-
-                for(month in months) {
-                    item {
-                        ReportMonth(month, 100)
-                        Divider(
-                            color = highGray,
-                            thickness = 1.dp
-                        )
+                for (item in listReport) {
+                    if (item.name != "Tiết kiệm") {
+                        item {
+                            ReportCategory("${item.name}", item.amount.toInt())
+                            Divider(modifier = Modifier.fillMaxWidth().height(2.dp))
+                        }
                     }
                 }
-
             }
         }
     }
 }
-
 
 
 @Preview
