@@ -33,7 +33,7 @@ data class GetFixedTransactionResponse(
 data class FixedTransactionResponse(
     val title: String?,
     val categoryName: String,
-    val amount: Double,
+    val amount: Long,
     val startDate: List<Int>,
     val endDate: List<Int>?,
     val fixed_transaction_id: Int,

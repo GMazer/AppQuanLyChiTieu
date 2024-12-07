@@ -13,8 +13,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.AlertDialog
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
+import androidx.compose.material.TextButton
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.IconButton
@@ -37,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.jetpackcompose.R
+import com.example.jetpackcompose.app.features.apiService.TransactionAPI.DeleteTransactionViewModel
 import com.example.jetpackcompose.app.features.apiService.TransactionAPI.GetTransactionViewModel
 import com.example.jetpackcompose.app.features.apiService.TransactionAPI.PutTransactionViewModel
 import com.example.jetpackcompose.app.features.inputFeatures.Category
@@ -48,6 +53,8 @@ import com.example.jetpackcompose.components.DrawBottomLine
 import com.example.jetpackcompose.components.MessagePopup
 import com.example.jetpackcompose.components.NoteTextField
 import com.example.jetpackcompose.components.NumberTextField
+import com.example.jetpackcompose.ui.theme.colorPrimary
+import com.example.jetpackcompose.ui.theme.componentShapes
 import com.example.jetpackcompose.ui.theme.textColor
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
@@ -61,6 +68,8 @@ fun EditIncomeTransaction(
 ) {
     val getViewModel: GetTransactionViewModel = GetTransactionViewModel(LocalContext.current)
     val putViewModel: PutTransactionViewModel = PutTransactionViewModel(LocalContext.current)
+    val delViewModel: DeleteTransactionViewModel = DeleteTransactionViewModel(LocalContext.current)
+
     // Trạng thái nhập liệu
     var textNote by remember { mutableStateOf(TextFieldValue()) }
     var amountValue by remember { mutableStateOf(TextFieldValue()) }
@@ -71,8 +80,9 @@ fun EditIncomeTransaction(
     var errorMessage by remember { mutableStateOf("") }
     var successMessage by remember { mutableStateOf("") }
 
-    // Trạng thái hiển thị Popup
+
     var showPopup by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
 
     // Định dạng tiền tệ
     val currencyFormatter = remember {
@@ -202,7 +212,7 @@ fun EditIncomeTransaction(
                     fontSize = 16.sp,
                     color = Color.Red,
                     modifier = Modifier.clickable {
-                        // Xử lý logic xóa ở đây, ví dụ: navController.navigate("deleteScreen")
+                        showDeleteDialog = true
                     }
                 )
             }
@@ -324,12 +334,73 @@ fun EditIncomeTransaction(
             }
         }
 
-        // Popup thông báo
         MessagePopup(
             showPopup = showPopup,
             successMessage = successMessage,
             errorMessage = errorMessage,
             onDismiss = { showPopup = false }
         )
+
+        // Popup thông báo
+        if (showDeleteDialog) {
+            AlertDialog(
+                onDismissRequest = { showDeleteDialog = false },
+                shape = componentShapes.medium,
+                text = {
+                    Text(
+                        "Bạn có chắc chắn muốn xóa không?",
+                        fontFamily = montserrat,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center
+                    )
+                },
+                buttons = {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                            .height(48.dp)
+                            .width(150.dp), // Giới hạn chiều ngang tối đa của AlertDialog
+                        horizontalArrangement = Arrangement.SpaceBetween // Căn chỉnh 2 nút về 2 phía
+                    ) {
+                        // Nút Bỏ qua - nằm bên trái
+                        TextButton(onClick = { showDeleteDialog = false }) {
+                            Text(
+                                "Bỏ qua",
+                                color = Color(0xff3a84fc),
+                                fontFamily = montserrat,
+                                textAlign = TextAlign.Start
+                            )
+                        }
+
+                        // Nút Xoá - nằm bên phải
+                        TextButton(onClick = {
+                            // Gọi API xóa giao dịch
+                            delViewModel.deleteTransaction(
+                                transactionId = transactionId,
+                                onSuccess = { message ->
+                                    successMessage = "Xóa giao dịch thành công!"
+                                    showPopup = true
+                                    showDeleteDialog = false
+                                    navController.popBackStack() // Trở lại màn hình Calendar
+                                },
+                                onError = { error ->
+                                    errorMessage = error
+                                    showPopup = true
+                                    showDeleteDialog = false
+                                }
+                            )
+                        }) {
+                            Text(
+                                "Xoá",
+                                color = colorPrimary,
+                                fontFamily = montserrat,
+                            )
+                        }
+                    }
+                }
+            )
+        }
     }
 }

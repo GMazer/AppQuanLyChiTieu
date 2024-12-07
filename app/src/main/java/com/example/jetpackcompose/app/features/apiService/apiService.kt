@@ -7,6 +7,7 @@ import com.example.jetpackcompose.app.features.apiService.FixedTransactionAPI.Fi
 import com.example.jetpackcompose.app.features.apiService.FixedTransactionAPI.GetFixedTransactionResponse
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
@@ -132,6 +133,12 @@ interface ApiService {
         @Header("Authorization") token: String
     ): Response<GetFixedTransactionResponse>
 
+    @DELETE("/api/fixed-transactions/{fixedTransactionId}")
+    suspend fun deleteFixedTransaction(
+        @Header("Authorization") token: String,
+        @Path("fixedTransactionId") fixedTransactionId: Int
+    ): Response<GetFixedTransactionResponse>
+
     //API cho PutLimit
     @PUT("/api/category-limits/save")
     suspend fun addLimitTransaction(
@@ -149,6 +156,12 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Path("transactionId") transactionId: Int,  // Tham số này sẽ thay thế {transactionId} trong URL
         @Body transaction: Transaction
+    ): Response<TransactionResponse>
+
+    @DELETE("/api/transactions/{transactionId}")
+    suspend fun deleteTransaction(
+        @Header("Authorization") token: String,
+        @Path("transactionId") transactionId: Int,  // Tham số này sẽ thay thế {transactionId} trong URL
     ): Response<TransactionResponse>
 
     @GET("/api/report/monthly")

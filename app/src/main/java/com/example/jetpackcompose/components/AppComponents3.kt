@@ -14,12 +14,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.PagerState
@@ -29,6 +32,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
+import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -55,6 +59,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
@@ -1023,72 +1028,77 @@ fun MessagePopup(
     if (showPopup) {
         // Tự động ẩn popup sau 1 giây
         LaunchedEffect(key1 = showPopup) {
-            delay(1200) // Đợi 1 giây
+            delay(1000) // Đợi 1 giây
             onDismiss() // Đóng popup sau 1 giây
         }
 
-        Box(
-            modifier = Modifier
-                .fillMaxSize() // Lấp đầy màn hình
-                .background(Color.Black.copy(alpha = 0.5f)) // Lớp phủ tối phía sau
-        ) {
-            Popup(
-                alignment = Alignment.Center,
-                onDismissRequest = onDismiss // Đóng popup khi nhấn ngoài
-            ) {
-                Box(
+        AlertDialog(
+            onDismissRequest = onDismiss, // Đóng AlertDialog khi nhấn ngoài
+            title = null, // Không có tiêu đề
+            text = {
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth(0.8f)
-                        .padding(16.dp)
-                        .height(130.dp)
-                        .background(
-                            color = Color.White,
-                            shape = RoundedCornerShape(12.dp) // Bo góc popup
-                        )
-                        .padding(16.dp)
+                        .fillMaxWidth() // Chiếm đầy chiều rộng
+                        .wrapContentHeight(), // Chiều cao tự động theo nội dung
+                    horizontalAlignment = Alignment.CenterHorizontally, // Căn giữa theo chiều ngang
+                    verticalArrangement = Arrangement.Center // Căn giữa theo chiều dọc
                 ) {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        if (errorMessage.isNotEmpty()) {
-                            // Thêm icon lỗi
-                            Icon(
-                                painter = painterResource(id = R.drawable.error),
-                                contentDescription = "Error icon",
-                                tint = errorColor,
-                                modifier = Modifier.size(48.dp)
-                            )
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Text(
-                                text = errorMessage,
-                                color = errorColor,
-                                fontFamily = montserrat,
-                                fontWeight = FontWeight.Bold
-                            )
-                        } else if (successMessage.isNotEmpty()) {
-                            // Thêm icon thành công
-                            Icon(
-                                painter = painterResource(id = R.drawable.success),
-                                contentDescription = "Success icon",
-                                tint = successColor,
-                                modifier = Modifier.size(48.dp)
-                            )
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Text(
-                                text = successMessage,
-                                color = successColor,
-                                fontFamily = montserrat,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
+                    if (errorMessage.isNotEmpty()) {
+                        // Icon lỗi
+//                        Icon(
+//                            painter = painterResource(id = R.drawable.error), // Thay bằng icon lỗi của bạn
+//                            contentDescription = "Error icon",
+//                            tint = errorColor,
+//                            modifier = Modifier.size(48.dp)
+//                        )
+                        Spacer(modifier = Modifier.height(8.dp)) // Khoảng cách giữa icon và message
+                        Text(
+                            text = errorMessage,
+                            color = errorColor,
+                            fontFamily = montserrat,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center // Căn giữa nội dung text
+                        )
+                    } else if (successMessage.isNotEmpty()) {
+                        // Icon thành công
+//                        Icon(
+//                            painter = painterResource(id = R.drawable.success), // Thay bằng icon thành công của bạn
+//                            contentDescription = "Success icon",
+//                            tint = successColor,
+//                            modifier = Modifier.size(48.dp)
+//                        )
+                        Spacer(modifier = Modifier.height(8.dp)) // Khoảng cách giữa icon và message
+                        Text(
+                            text = successMessage,
+                            color = successColor,
+                            fontFamily = montserrat,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center // Căn giữa nội dung text
+                        )
                     }
                 }
-            }
-        }
+            },
+            buttons = {},
+            shape = RoundedCornerShape(12.dp), // Bo góc cho AlertDialog
+            modifier = Modifier
+                .heightIn(min = 70.dp)
+                .fillMaxWidth(0.8f)
+        )
     }
 }
+
+@Preview
+@Composable
+fun PreviewMessagePopup() {
+    MessagePopup(
+        showPopup = true,
+        successMessage = "Gửi giao dịch thành công!",
+        errorMessage = "",
+        onDismiss = {}
+    )
+}
+
+
 
 
 
