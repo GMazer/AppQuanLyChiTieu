@@ -1,4 +1,4 @@
-package com.example.jetpackcompose.app.screens.anual_sceens.ViewModel
+package com.example.jetpackcompose.app.features.apiService.FixedTransactionAPI
 
 import android.content.Context
 import android.util.Log
@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class FixedTransactionViewModel(private val context: Context) : ViewModel() {
+class GetFixedTransactionViewModel(private val context: Context) : ViewModel() {
 
     private val sharedPreferences = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
 
@@ -33,10 +33,9 @@ class FixedTransactionViewModel(private val context: Context) : ViewModel() {
         return sharedPreferences.getString("auth_token", null)
     }
 
-    // Hàm post fixed expense
-    fun addFixedTransaction (
-        fixedExpense: FixedTransaction,
-        onSuccess: (String) -> Unit,
+    // Hàm get fixed expense
+    fun getFixedTransactions(
+        onSuccess: (List<FixedTransactionResponse>) -> Unit,
         onError: (String) -> Unit
     ) {
         val token = getToken()
@@ -49,36 +48,31 @@ class FixedTransactionViewModel(private val context: Context) : ViewModel() {
 
         viewModelScope.launch {
             try {
-                Log.d("FixedExpenseViewModel", "Token: $token")
-                Log.d("FixedExpenseViewModel", "FixedExpense Data: $fixedExpense")
+                Log.d("GetFixedTransactionViewModel", "Token: $token")
 
-                // Gửi yêu cầu API để thêm FixedExpense
-                val response = api.addFixedTransaction("Bearer $token", fixedExpense)
-                Log.d("FixedExpenseViewModel", "Response Code: ${response.code()}")
+                // Gửi yêu cầu API để lấy FixedExpense
+                val response = api.getFixedTransactions("Bearer $token")
+                Log.d("GetFixedTransactionViewModel", "Response Code: ${response.code()}")
 
                 if (response.isSuccessful) {
                     val responseBody = response.body()
                     if (responseBody != null) {
-                        transactionStatus = "Fixed Expense added successfully"
-                        onSuccess(transactionStatus)
+                        transactionStatus = "Fixed Expenses fetched successfully"
+                        onSuccess(responseBody.fixedTransactionResponseList)
                     } else {
                         transactionStatus = "Error: Empty response from server"
                         onError(transactionStatus)
                     }
                 } else {
                     val errorBodyString = response.errorBody()?.string()
-                    transactionStatus = "Error adding Fixed Expense: $errorBodyString"
+                    transactionStatus = "Error fetching Fixed Expenses: $errorBodyString"
                     onError(transactionStatus)
                 }
             } catch (e: Exception) {
                 transactionStatus = "Error: ${e.localizedMessage}"
-                Log.e("FixedExpenseViewModel", "Error adding Fixed Expense: ${e.localizedMessage}", e)
+                Log.e("GetFixedTransactionViewModel", "Error fetching Fixed Expenses: ${e.localizedMessage}", e)
                 onError(transactionStatus)
             }
         }
     }
 }
-
-
-
-

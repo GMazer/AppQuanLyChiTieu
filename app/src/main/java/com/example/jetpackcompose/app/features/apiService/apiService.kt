@@ -3,7 +3,8 @@ package com.example.jetpackcompose.app.network
 import com.example.jetpackcompose.app.features.inputFeatures.LimitTransaction
 import com.example.jetpackcompose.app.features.inputFeatures.RemainLimit
 import com.example.jetpackcompose.app.features.inputFeatures.Transaction
-import com.example.jetpackcompose.app.screens.anual_sceens.ViewModel.FixedTransaction
+import com.example.jetpackcompose.app.features.apiService.FixedTransactionAPI.FixedTransaction
+import com.example.jetpackcompose.app.features.apiService.FixedTransactionAPI.GetFixedTransactionResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -14,7 +15,7 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 object BaseURL {
-    val baseUrl = "https://11e4-1-54-8-129.ngrok-free.app"
+    val baseUrl = "https://3e91-1-52-40-245.ngrok-free.app"
 }
 
 data class RegistrationData(
@@ -46,7 +47,7 @@ data class PostTransactionResponse(
     val transactionDate: List<Int>,
     val note: String,
     val type: String,
-    val transactionId: Int
+    val transactionId: Long
 )
 
 data class ApiResponse(
@@ -125,6 +126,11 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Body fixedTransaction: FixedTransaction // Dùng FixedTransaction mà không phân biệt loại giao dịch
     ): Response<ApiResponse>
+
+    @GET("/api/fixed-transactions")
+    suspend fun getFixedTransactions(
+        @Header("Authorization") token: String
+    ): Response<GetFixedTransactionResponse>
 
     //API cho PutLimit
     @PUT("/api/category-limits/save")

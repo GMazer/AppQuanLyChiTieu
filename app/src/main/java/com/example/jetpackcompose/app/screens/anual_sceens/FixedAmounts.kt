@@ -18,7 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
 import com.example.jetpackcompose.app.features.inputFeatures.TabItem
-import com.example.jetpackcompose.app.screens.anual_sceens.ViewModel.FixedTransaction
+import com.example.jetpackcompose.app.features.apiService.FixedTransactionAPI.FixedTransaction
 import com.example.jetpackcompose.components.FixedTabRow
 import kotlinx.coroutines.launch
 

@@ -3,18 +3,14 @@ package com.example.jetpackcompose.app.screens.anual_sceens
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -26,9 +22,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.example.jetpackcompose.R
-import com.example.jetpackcompose.app.screens.anual_sceens.ViewModel.FixedTransactionViewModel
-import com.example.jetpackcompose.app.screens.anual_sceens.ViewModel.FixedTransaction
-import com.example.jetpackcompose.app.screens.anual_sceens.ViewModel.RepeatFrequency
+import com.example.jetpackcompose.app.features.apiService.FixedTransactionAPI.PostFixedTransactionViewModel
+import com.example.jetpackcompose.app.features.apiService.FixedTransactionAPI.FixedTransaction
+import com.example.jetpackcompose.app.features.apiService.FixedTransactionAPI.RepeatFrequency
 import com.example.jetpackcompose.components.DatePickerRow
 import com.example.jetpackcompose.components.DropdownRepeat
 import com.example.jetpackcompose.components.DropdownRow
@@ -44,7 +40,7 @@ import java.util.Locale
 
 @SuppressLint("NewApi")
 @Composable
-fun FixedExpense(viewModel: FixedTransactionViewModel = FixedTransactionViewModel(LocalContext.current)) {
+fun FixedExpense(viewModel: PostFixedTransactionViewModel = PostFixedTransactionViewModel(LocalContext.current)) {
 
     // Dữ liệu cần thiết cho form
     val vietnamLocale = Locale("vi", "VN")

@@ -446,7 +446,10 @@ fun DayIndex(
 //                                }
                             }
                     ) {
-                        transaction.transactionId?.let {id ->
+                        Log.d("DayIndex", "Transaction Amount: ${transaction.amount}")
+                        Log.d("DayIndex", "Transaction Date: ${transaction.transactionDate}")
+                        Log.d("DayIndex", "Transaction ID: ${transaction.transactionId}")
+                        transaction.transactionId?.let { id ->
                             transaction.note?.let {
                                 transaction.type?.let { it1 ->
                                     CategoryIconWithName(
@@ -470,8 +473,6 @@ fun DayIndex(
         }
     }
 }
-
-
 
 
 @OptIn(ExperimentalMaterial3Api::class)

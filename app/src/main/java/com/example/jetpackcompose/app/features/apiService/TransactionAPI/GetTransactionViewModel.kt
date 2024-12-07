@@ -64,6 +64,7 @@ class GetTransactionViewModel(private val context: Context) : ViewModel() {
                 val response = api.getTransactions("Bearer $token", month, year)
                 Log.d("TransactionViewModel", "Response Code: ${response.code()}")
                 Log.d("TransactionViewModel", "Response Error Body: ${response.errorBody()?.string()}")
+                Log.d("GetFixedTransactionViewModel", "DEBUG RESPONSE: ${response.body()}")
 
                 if (response.isSuccessful) {
                     val transactionsResponse = response.body()

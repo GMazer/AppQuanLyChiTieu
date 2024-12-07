@@ -1,6 +1,5 @@
-package com.example.jetpackcompose.app.screens.anual_sceens.ViewModel
+package com.example.jetpackcompose.app.features.apiService.FixedTransactionAPI
 
-import com.example.jetpackcompose.app.features.inputFeatures.TransactionType
 //import kotlinx.serialization.Serializable
 
 //@Serializable
@@ -26,6 +25,20 @@ enum class RepeatFrequency(val displayName: String) {
         return displayName
     }
 }
+
+data class GetFixedTransactionResponse(
+    val fixedTransactionResponseList: List<FixedTransactionResponse>
+)
+
+data class FixedTransactionResponse(
+    val title: String?,
+    val categoryName: String,
+    val amount: Double,
+    val startDate: List<Int>,
+    val endDate: List<Int>?,
+    val fixed_transaction_id: Int,
+    val category_id: Int
+)
 
 
 
