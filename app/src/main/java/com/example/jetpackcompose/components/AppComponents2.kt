@@ -71,6 +71,7 @@ import androidx.compose.ui.platform.LocalContext
 import com.example.jetpackcompose.app.features.apiService.TransactionAPI.GetLimitTransactionViewModel
 import com.example.jetpackcompose.app.features.inputFeatures.LimitTransaction
 import com.example.jetpackcompose.app.features.inputFeatures.montserrat
+import com.example.jetpackcompose.ui.theme.highGray
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -507,7 +508,7 @@ fun PopUpSetValueDialog(
             exchangingValue = TextFieldValue(it[5].percentLimit.toString())
             medicalValue = TextFieldValue(it[6].percentLimit.toString())
             educatingValue = TextFieldValue(it[7].percentLimit.toString())
-//            saveValue = TextFieldValue(it[8].percentLimit.toString())
+            saveValue = TextFieldValue(it[8].percentLimit.toString())
             isLoading = true
         }
     )
@@ -556,8 +557,8 @@ fun PopUpSetValueDialog(
         ).count { it }
 
         // Nếu có 1 trường trống, tính toán giá trị còn lại
-        if (emptyFields == 1) {
-            val remainingValue = 100 - totalEntered
+        if (emptyFields != 0) {
+            val remainingValue = (100 - totalEntered) / emptyFields
             when {
                 foodValue.text.isBlank() -> {
                     foodValue = TextFieldValue(remainingValue.toString())
@@ -583,11 +584,12 @@ fun PopUpSetValueDialog(
                 educatingValue.text.isBlank() -> {
                     educatingValue = TextFieldValue(remainingValue.toString())
                 }
-                saveValue.text.isBlank() -> {
-                    saveValue = TextFieldValue(remainingValue.toString())
-                }
             }
+        } else {
+            val remainingValue = (100 - totalEntered)
+            saveValue = TextFieldValue(remainingValue.toString())
         }
+
     }
 
     if (isLoading) {
@@ -623,7 +625,7 @@ fun PopUpSetValueDialog(
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
-                            .padding(bottom = 16.dp)
+                            .padding(bottom = 8.dp)
                             .fillMaxWidth()
                     ) {
                         Text(
@@ -640,6 +642,17 @@ fun PopUpSetValueDialog(
                                 onValueChange = { newValue ->
                                     houseValue = TextFieldValue(newValue)
                                 },
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Number, // Chỉ hiển thị bàn phím số
+                                    imeAction = ImeAction.Next, // Hiển thị nút "Done" hoặc "Tiếp tục"
+                                ),
+                                keyboardActions = KeyboardActions(
+                                    onNext = {
+                                        calculateRemainingValue() // Gọi logic tính toán
+                                        defaultKeyboardAction(ImeAction.Next) // Gọi hành động Next mặc định
+                                    }
+                                ),
+                                colorPercent = Color.Black
                             )
                         }
 
@@ -658,7 +671,7 @@ fun PopUpSetValueDialog(
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
-                            .padding(bottom = 16.dp)
+                            .padding(bottom = 8.dp)
                             .fillMaxWidth()
                     ) {
                         Text(
@@ -675,6 +688,17 @@ fun PopUpSetValueDialog(
                                 onValueChange = { newValue ->
                                     foodValue = TextFieldValue(newValue)
                                 },
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Number, // Chỉ hiển thị bàn phím số
+                                    imeAction = ImeAction.Next, // Hiển thị nút "Done" hoặc "Tiếp tục"
+                                ),
+                                keyboardActions = KeyboardActions(
+                                    onNext = {
+                                        calculateRemainingValue() // Gọi logic tính toán
+                                        defaultKeyboardAction(ImeAction.Next) // Gọi hành động Next mặc định
+                                    }
+                                ),
+                                colorPercent = Color.Black
                             )
                         }
 
@@ -693,7 +717,7 @@ fun PopUpSetValueDialog(
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
-                            .padding(bottom = 16.dp)
+                            .padding(bottom = 8.dp)
                             .fillMaxWidth()
                     ) {
                         Text(
@@ -710,6 +734,17 @@ fun PopUpSetValueDialog(
                                 onValueChange = { newValue ->
                                     shoppingValue = TextFieldValue(newValue)
                                 },
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Number, // Chỉ hiển thị bàn phím số
+                                    imeAction = ImeAction.Next, // Hiển thị nút "Done" hoặc "Tiếp tục"
+                                ),
+                                keyboardActions = KeyboardActions(
+                                    onNext = {
+                                        calculateRemainingValue() // Gọi logic tính toán
+                                        defaultKeyboardAction(ImeAction.Next) // Gọi hành động Next mặc định
+                                    }
+                                ),
+                                colorPercent = Color.Black
                             )
                         }
 
@@ -728,7 +763,7 @@ fun PopUpSetValueDialog(
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
-                            .padding(bottom = 16.dp)
+                            .padding(bottom = 8.dp)
                             .fillMaxWidth()
                     ) {
                         Text(
@@ -745,6 +780,17 @@ fun PopUpSetValueDialog(
                                 onValueChange = { newValue ->
                                     movingValue = TextFieldValue(newValue)
                                 },
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Number, // Chỉ hiển thị bàn phím số
+                                    imeAction = ImeAction.Next, // Hiển thị nút "Done" hoặc "Tiếp tục"
+                                ),
+                                keyboardActions = KeyboardActions(
+                                    onNext = {
+                                        calculateRemainingValue() // Gọi logic tính toán
+                                        defaultKeyboardAction(ImeAction.Next) // Gọi hành động Next mặc định
+                                    }
+                                ),
+                                colorPercent = Color.Black
                             )
                         }
 
@@ -763,7 +809,7 @@ fun PopUpSetValueDialog(
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
-                            .padding(bottom = 16.dp)
+                            .padding(bottom = 8.dp)
                             .fillMaxWidth()
                     ) {
                         Text(
@@ -780,6 +826,17 @@ fun PopUpSetValueDialog(
                                 onValueChange = { newValue ->
                                     cosmeticValue = TextFieldValue(newValue)
                                 },
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Number, // Chỉ hiển thị bàn phím số
+                                    imeAction = ImeAction.Next, // Hiển thị nút "Done" hoặc "Tiếp tục"
+                                ),
+                                keyboardActions = KeyboardActions(
+                                    onNext = {
+                                        calculateRemainingValue() // Gọi logic tính toán
+                                        defaultKeyboardAction(ImeAction.Next) // Gọi hành động Next mặc định
+                                    }
+                                ),
+                                colorPercent = Color.Black
                             )
                         }
 
@@ -798,7 +855,7 @@ fun PopUpSetValueDialog(
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
-                            .padding(bottom = 16.dp)
+                            .padding(bottom = 8.dp)
                             .fillMaxWidth()
                     ) {
                         Text(
@@ -815,6 +872,17 @@ fun PopUpSetValueDialog(
                                 onValueChange = { newValue ->
                                     exchangingValue = TextFieldValue(newValue)
                                 },
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Number, // Chỉ hiển thị bàn phím số
+                                    imeAction = ImeAction.Next, // Hiển thị nút "Done" hoặc "Tiếp tục"
+                                ),
+                                keyboardActions = KeyboardActions(
+                                    onNext = {
+                                        calculateRemainingValue() // Gọi logic tính toán
+                                        defaultKeyboardAction(ImeAction.Next) // Gọi hành động Next mặc định
+                                    }
+                                ),
+                                colorPercent = Color.Black
                             )
                         }
 
@@ -833,7 +901,7 @@ fun PopUpSetValueDialog(
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
-                            .padding(bottom = 16.dp)
+                            .padding(bottom = 8.dp)
                             .fillMaxWidth()
                     ) {
                         Text(
@@ -850,6 +918,17 @@ fun PopUpSetValueDialog(
                                 onValueChange = { newValue ->
                                     medicalValue = TextFieldValue(newValue)
                                 },
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Number, // Chỉ hiển thị bàn phím số
+                                    imeAction = ImeAction.Next, // Hiển thị nút "Done" hoặc "Tiếp tục"
+                                ),
+                                keyboardActions = KeyboardActions(
+                                    onNext = {
+                                        calculateRemainingValue() // Gọi logic tính toán
+                                        defaultKeyboardAction(ImeAction.Next) // Gọi hành động Next mặc định
+                                    }
+                                ),
+                                colorPercent = Color.Black
                             )
                         }
 
@@ -868,7 +947,7 @@ fun PopUpSetValueDialog(
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
-                            .padding(bottom = 16.dp)
+                            .padding(bottom = 8.dp)
                             .fillMaxWidth()
                     ) {
                         Text(
@@ -886,13 +965,16 @@ fun PopUpSetValueDialog(
                                     educatingValue = TextFieldValue(newValue)
                                 },
                                 keyboardOptions = KeyboardOptions(
-                                    imeAction = ImeAction.Done
+                                    keyboardType = KeyboardType.Number, // Chỉ hiển thị bàn phím số
+                                    imeAction = ImeAction.Next, // Hiển thị nút "Done" hoặc "Tiếp tục"
                                 ),
                                 keyboardActions = KeyboardActions(
-                                    onDone = {
-                                        calculateRemainingValue()
+                                    onNext = {
+                                        calculateRemainingValue() // Gọi logic tính toán
+                                        defaultKeyboardAction(ImeAction.Next) // Gọi hành động Next mặc định
                                     }
-                                )
+                                ),
+                                colorPercent = Color.Black
                             )
                         }
 
@@ -919,16 +1001,23 @@ fun PopUpSetValueDialog(
                             fontFamily = montserrat,
                             color = textColor,
                             fontSize = 12.sp,
-                            fontWeight = FontWeight.Normal,
+                            fontWeight = FontWeight.Bold,
                             modifier = Modifier.weight(2f)
                         )
                         Box(modifier = Modifier.weight(5.5f)) {
                             PercentTextField(
+                                modifier = Modifier
+                                    .border(
+                                        width = 2.dp, // Độ dày của viền
+                                        color = highGray, // Màu sắc của viền
+                                        shape = RoundedCornerShape(8.dp) // Bo tròn các góc nếu cần
+                                    ),
                                 amountState = saveValue.text,
                                 onValueChange = { newValue ->
                                     saveValue = TextFieldValue(newValue)
                                 },
-                                enabled = false // Không cho phép người dùng nhập vào ô này
+                                enabled = false, // Không cho phép người dùng nhập vào ô này
+                                colorPercent = colorPrimary
                             )
                         }
 
@@ -990,7 +1079,8 @@ fun PercentTextField(
         keyboardType = KeyboardType.Number,
         imeAction = ImeAction.Next // Mặc định là "Next", có thể tùy chỉnh
     ),
-    keyboardActions: KeyboardActions = KeyboardActions.Default
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
+    colorPercent: Color
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
@@ -1034,7 +1124,7 @@ fun PercentTextField(
             fontSize = 20.sp,
             fontFamily = montserrat,
             fontWeight = FontWeight.Bold,
-            color = Color.Black
+            color = colorPercent,
         ),
         keyboardOptions = keyboardOptions,
         keyboardActions = keyboardActions,
