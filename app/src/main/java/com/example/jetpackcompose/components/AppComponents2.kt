@@ -61,15 +61,17 @@ import com.example.jetpackcompose.ui.theme.textColor
 import com.example.jetpackcompose.ui.theme.colorPrimary
 import java.util.Calendar
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.material.Divider
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalContext
+import com.example.jetpackcompose.app.features.apiService.TransactionAPI.GetLimitTransactionViewModel
 import com.example.jetpackcompose.app.features.inputFeatures.LimitTransaction
 import com.example.jetpackcompose.app.features.inputFeatures.montserrat
+import com.example.jetpackcompose.ui.theme.highGray
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -478,23 +480,53 @@ fun PopUpSetValueDialog(
     onDismiss: () -> Unit,
     onConfirm: (LimitTransaction) -> Unit // Hàm callback nhận LimitTransaction
 ) {
-    var basicValue by remember { mutableStateOf(TextFieldValue()) }
-    var entertainmentValue by remember { mutableStateOf(TextFieldValue()) }
-    var investValue by remember { mutableStateOf(TextFieldValue()) }
-    var incidentalValue by remember { mutableStateOf(TextFieldValue()) }
+
+    val viewModel: GetLimitTransactionViewModel = GetLimitTransactionViewModel(LocalContext.current)
+    var isLoading by remember { mutableStateOf(false) } // Trạng thái loading
+
+    var houseValue by remember { mutableStateOf(TextFieldValue()) }
+    var foodValue by remember { mutableStateOf(TextFieldValue()) }
+    var shoppingValue by remember { mutableStateOf(TextFieldValue()) }
+    var movingValue by remember { mutableStateOf(TextFieldValue()) }
+    var cosmeticValue by remember { mutableStateOf(TextFieldValue()) }
+    var exchangingValue by remember { mutableStateOf(TextFieldValue()) }
+    var medicalValue by remember { mutableStateOf(TextFieldValue()) }
+    var educatingValue by remember { mutableStateOf(TextFieldValue()) }
     var saveValue by remember { mutableStateOf(TextFieldValue()) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
+    viewModel.getLimitTransaction(
+        onError = {
+            isLoading = false
+        },
+        onSuccess = {
+            houseValue = TextFieldValue(it[0].percentLimit.toString())
+            foodValue = TextFieldValue(it[1].percentLimit.toString())
+            shoppingValue = TextFieldValue(it[2].percentLimit.toString())
+            movingValue = TextFieldValue(it[3].percentLimit.toString())
+            cosmeticValue = TextFieldValue(it[4].percentLimit.toString())
+            exchangingValue = TextFieldValue(it[5].percentLimit.toString())
+            medicalValue = TextFieldValue(it[6].percentLimit.toString())
+            educatingValue = TextFieldValue(it[7].percentLimit.toString())
+            saveValue = TextFieldValue(it[8].percentLimit.toString())
+            isLoading = true
+        }
+    )
+
     // Hàm để tính giá trị còn lại và kiểm tra giới hạn 100%
     fun calculateRemainingValue() {
-        val entertainment = entertainmentValue.text.toIntOrNull()
-        val invest = investValue.text.toIntOrNull()
-        val incidental = incidentalValue.text.toIntOrNull()
-        val basic = basicValue.text.toIntOrNull()
+        val food = foodValue.text.toIntOrNull()
+        val shopping = shoppingValue.text.toIntOrNull()
+        val moving = movingValue.text.toIntOrNull()
+        val house = houseValue.text.toIntOrNull()
+        val cosmetic = cosmeticValue.text.toIntOrNull()
+        val exchanging = exchangingValue.text.toIntOrNull()
+        val medical = medicalValue.text.toIntOrNull()
+        val educating = educatingValue.text.toIntOrNull()
         val save = saveValue.text.toIntOrNull()
 
         // Kiểm tra nếu giá trị nhập vào vượt quá 100%
-        if ((entertainment ?: 0) > 100 || (invest ?: 0) > 100 || (incidental ?: 0) > 100 || (basic ?: 0) > 100 || (save ?: 0) > 100) {
+        if ((food ?: 0) > 100 || (shopping ?: 0) > 100 || (moving ?: 0) > 100 || (house ?: 0) > 100 || (save ?: 0) > 100 || (cosmetic ?: 0) > 100 || (exchanging ?: 0) > 100 || (medical ?: 0) > 100 || (educating ?: 0) > 100) {
             errorMessage = "Giá trị không được vượt quá 100%"
             return
         } else {
@@ -502,7 +534,7 @@ fun PopUpSetValueDialog(
         }
 
         // Tính tổng giá trị đã nhập
-        val enteredValues = listOf(entertainment, invest, incidental, basic, save)
+        val enteredValues = listOf(food, shopping, moving, house, cosmetic, exchanging, medical, educating)
         val totalEntered = enteredValues.filterNotNull().sum()
 
         // Kiểm tra nếu tổng vượt quá 100%
@@ -513,273 +545,525 @@ fun PopUpSetValueDialog(
 
         // Đếm số trường nhập liệu trống
         val emptyFields = listOf(
-            entertainmentValue.text.isBlank(),
-            investValue.text.isBlank(),
-            incidentalValue.text.isBlank(),
-            basicValue.text.isBlank(),
+            foodValue.text.isBlank(),
+            shoppingValue.text.isBlank(),
+            movingValue.text.isBlank(),
+            houseValue.text.isBlank(),
+            cosmeticValue.text.isBlank(),
+            exchangingValue.text.isBlank(),
+            medicalValue.text.isBlank(),
+            educatingValue.text.isBlank(),
             saveValue.text.isBlank()
         ).count { it }
 
         // Nếu có 1 trường trống, tính toán giá trị còn lại
-        if (emptyFields == 1) {
-            val remainingValue = 100 - totalEntered
+        if (emptyFields != 0) {
+            val remainingValue = (100 - totalEntered) / emptyFields
             when {
-                entertainmentValue.text.isBlank() -> {
-                    entertainmentValue = TextFieldValue(remainingValue.toString())
+                foodValue.text.isBlank() -> {
+                    foodValue = TextFieldValue(remainingValue.toString())
                 }
-                investValue.text.isBlank() -> {
-                    investValue = TextFieldValue(remainingValue.toString())
+                shoppingValue.text.isBlank() -> {
+                    shoppingValue = TextFieldValue(remainingValue.toString())
                 }
-                incidentalValue.text.isBlank() -> {
-                    incidentalValue = TextFieldValue(remainingValue.toString())
+                movingValue.text.isBlank() -> {
+                    movingValue = TextFieldValue(remainingValue.toString())
                 }
-                basicValue.text.isBlank() -> {
-                    basicValue = TextFieldValue(remainingValue.toString())
+                houseValue.text.isBlank() -> {
+                    houseValue = TextFieldValue(remainingValue.toString())
                 }
-                saveValue.text.isBlank() -> {
-                    saveValue = TextFieldValue(remainingValue.toString())
+                cosmeticValue.text.isBlank() -> {
+                    cosmeticValue = TextFieldValue(remainingValue.toString())
+                }
+                exchangingValue.text.isBlank() -> {
+                    exchangingValue = TextFieldValue(remainingValue.toString())
+                }
+                medicalValue.text.isBlank() -> {
+                    medicalValue = TextFieldValue(remainingValue.toString())
+                }
+                educatingValue.text.isBlank() -> {
+                    educatingValue = TextFieldValue(remainingValue.toString())
                 }
             }
+        } else {
+            val remainingValue = (100 - totalEntered)
+            saveValue = TextFieldValue(remainingValue.toString())
         }
+
     }
 
-    Dialog(onDismissRequest = { onDismiss() }) {
-        Surface(
-            shape = RoundedCornerShape(16.dp),
-            color = Color.White
-        ) {
-            Column(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
+    if (isLoading) {
+        Dialog(onDismissRequest = { onDismiss() }) {
+            Surface(
+                shape = RoundedCornerShape(16.dp),
+                color = Color.White
             ) {
-                errorMessage?.let {
-                    Text(
-                        text = it,
-                        color = Color.Red,
-                        fontSize = 12.sp,
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-                }
-                Text(
-                    text = "Phân bổ ngân sách",
-                    fontFamily = montserrat,
-                    color = colorPrimary,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
-                // Ô thứ nhất
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
+                Column(
                     modifier = Modifier
-                        .padding(bottom = 16.dp)
-                        .fillMaxWidth()
+                        .padding(16.dp)
+                        .fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(
-                        text = "Chi phí thiết yếu",
-                        fontFamily = montserrat,
-                        color = textColor,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Normal,
-                        modifier = Modifier.weight(2f)
-                    )
-                    Box(modifier = Modifier.weight(5.5f)) {
-                        PercentTextField(
-                            amountState = basicValue.text,
-                            onValueChange = { newValue ->
-                                basicValue = TextFieldValue(newValue)
-                            },
+                    errorMessage?.let {
+                        Text(
+                            text = it,
+                            color = Color.Red,
+                            fontSize = 12.sp,
+                            modifier = Modifier.padding(bottom = 8.dp)
                         )
                     }
-
                     Text(
-                        text = " %",
+                        text = "Phân bổ ngân sách",
                         fontFamily = montserrat,
-                        color = textColor,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Normal,
-                        modifier = Modifier.weight(0.5f),
-                        textAlign = TextAlign.Start
+                        color = colorPrimary,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(bottom = 16.dp)
                     )
-                }
-
-                // Ô thứ hai
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .padding(bottom = 16.dp)
-                        .fillMaxWidth()
-                ) {
-                    Text(
-                        text = "Ngân sách giải trí",
-                        fontFamily = montserrat,
-                        color = textColor,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Normal,
-                        modifier = Modifier.weight(2f)
-                    )
-                    Box(modifier = Modifier.weight(5.5f)) {
-                        PercentTextField(
-                            amountState = entertainmentValue.text,
-                            onValueChange = { newValue ->
-                                entertainmentValue = TextFieldValue(newValue)
-                            },
+                    // Ô thứ nhất
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .padding(bottom = 8.dp)
+                            .fillMaxWidth()
+                    ) {
+                        Text(
+                            text = "Chi phí nhà ở",
+                            fontFamily = montserrat,
+                            color = textColor,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Normal,
+                            modifier = Modifier.weight(2f)
                         )
-                    }
-
-                    Text(
-                        text = " %",
-                        fontFamily = montserrat,
-                        color = textColor,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Normal,
-                        modifier = Modifier.weight(0.5f),
-                        textAlign = TextAlign.Start
-                    )
-                }
-
-                // Ô thứ ba
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .padding(bottom = 16.dp)
-                        .fillMaxWidth()
-                ) {
-                    Text(
-                        text = "Ngân sách đầu tư",
-                        fontFamily = montserrat,
-                        color = textColor,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Normal,
-                        modifier = Modifier.weight(2f)
-                    )
-                    Box(modifier = Modifier.weight(5.5f)) {
-                        PercentTextField(
-                            amountState = investValue.text,
-                            onValueChange = { newValue ->
-                                investValue = TextFieldValue(newValue)
-                            },
-                        )
-                    }
-
-                    Text(
-                        text = " %",
-                        fontFamily = montserrat,
-                        color = textColor,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Normal,
-                        modifier = Modifier.weight(0.5f),
-                        textAlign = TextAlign.Start
-                    )
-                }
-
-                // Ô thứ tư với KeyboardActions
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .padding(bottom = 16.dp)
-                        .fillMaxWidth()
-                ) {
-                    Text(
-                        text = "Quỹ dự phòng",
-                        fontFamily = montserrat,
-                        color = textColor,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Normal,
-                        modifier = Modifier.weight(2f)
-                    )
-                    Box(modifier = Modifier.weight(5.5f)) {
-                        PercentTextField(
-                            amountState = incidentalValue.text,
-                            onValueChange = { newValue ->
-                                incidentalValue = TextFieldValue(newValue)
-                            },
-                            keyboardOptions = KeyboardOptions(
-                                imeAction = ImeAction.Done
-                            ),
-                            keyboardActions = KeyboardActions(
-                                onDone = {
-                                    calculateRemainingValue()
-                                }
+                        Box(modifier = Modifier.weight(5.5f)) {
+                            PercentTextField(
+                                amountState = houseValue.text,
+                                onValueChange = { newValue ->
+                                    houseValue = TextFieldValue(newValue)
+                                },
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Number, // Chỉ hiển thị bàn phím số
+                                    imeAction = ImeAction.Next, // Hiển thị nút "Done" hoặc "Tiếp tục"
+                                ),
+                                keyboardActions = KeyboardActions(
+                                    onNext = {
+                                        calculateRemainingValue() // Gọi logic tính toán
+                                        defaultKeyboardAction(ImeAction.Next) // Gọi hành động Next mặc định
+                                    }
+                                ),
+                                colorPercent = Color.Black
                             )
+                        }
+
+                        Text(
+                            text = " %",
+                            fontFamily = montserrat,
+                            color = textColor,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Normal,
+                            modifier = Modifier.weight(0.5f),
+                            textAlign = TextAlign.Start
                         )
                     }
 
-                    Text(
-                        text = " %",
-                        fontFamily = montserrat,
-                        color = textColor,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Normal,
-                        modifier = Modifier.weight(0.5f),
-                        textAlign = TextAlign.Start
-                    )
-                }
+                    // Ô thứ hai
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .padding(bottom = 8.dp)
+                            .fillMaxWidth()
+                    ) {
+                        Text(
+                            text = "Chi phí ăn uống",
+                            fontFamily = montserrat,
+                            color = textColor,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Normal,
+                            modifier = Modifier.weight(2f)
+                        )
+                        Box(modifier = Modifier.weight(5.5f)) {
+                            PercentTextField(
+                                amountState = foodValue.text,
+                                onValueChange = { newValue ->
+                                    foodValue = TextFieldValue(newValue)
+                                },
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Number, // Chỉ hiển thị bàn phím số
+                                    imeAction = ImeAction.Next, // Hiển thị nút "Done" hoặc "Tiếp tục"
+                                ),
+                                keyboardActions = KeyboardActions(
+                                    onNext = {
+                                        calculateRemainingValue() // Gọi logic tính toán
+                                        defaultKeyboardAction(ImeAction.Next) // Gọi hành động Next mặc định
+                                    }
+                                ),
+                                colorPercent = Color.Black
+                            )
+                        }
 
-                // Ô thứ năm (sẽ được tự động điền)
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .padding(bottom = 16.dp)
-                        .fillMaxWidth()
-                ) {
-                    Text(
-                        text = "Khoản tiết kiệm",
-                        fontFamily = montserrat,
-                        color = textColor,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Normal,
-                        modifier = Modifier.weight(2f)
-                    )
-                    Box(modifier = Modifier.weight(5.5f)) {
-                        PercentTextField(
-                            amountState = saveValue.text,
-                            onValueChange = { newValue ->
-                                saveValue = TextFieldValue(newValue)
-                            },
-                            enabled = false // Không cho phép người dùng nhập vào ô này
+                        Text(
+                            text = " %",
+                            fontFamily = montserrat,
+                            color = textColor,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Normal,
+                            modifier = Modifier.weight(0.5f),
+                            textAlign = TextAlign.Start
                         )
                     }
 
-                    Text(
-                        text = " %",
-                        color = textColor,
-                        fontFamily = montserrat,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Normal,
-                        modifier = Modifier.weight(0.5f),
-                        textAlign = TextAlign.Start
-                    )
-                }
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    TextButton(onClick = { onDismiss() }) {
-                        Text(text = "Huỷ bỏ", fontFamily = montserrat, color = textColor)
-                    }
-                    TextButton(onClick = {
-                        // Lấy dữ liệu và gửi qua callback
-                        val categoryLimits = listOf(
-                            LimitTransaction.CategoryLimit(1, basicValue.text.toIntOrNull() ?: 0),
-                            LimitTransaction.CategoryLimit(2, entertainmentValue.text.toIntOrNull() ?: 0),
-                            LimitTransaction.CategoryLimit(3, investValue.text.toIntOrNull() ?: 0),
-                            LimitTransaction.CategoryLimit(4, incidentalValue.text.toIntOrNull() ?: 0),
-                            LimitTransaction.CategoryLimit(5, saveValue.text.toIntOrNull() ?: 0)
+                    // Ô thứ ba
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .padding(bottom = 8.dp)
+                            .fillMaxWidth()
+                    ) {
+                        Text(
+                            text = "Mua sắm quần áo",
+                            fontFamily = montserrat,
+                            color = textColor,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Normal,
+                            modifier = Modifier.weight(2f)
                         )
-                        onConfirm(LimitTransaction(categoryLimits))
-                        onDismiss()
-                    }) {
-                        Text(text = "OK", fontFamily = montserrat, color = colorPrimary)
+                        Box(modifier = Modifier.weight(5.5f)) {
+                            PercentTextField(
+                                amountState = shoppingValue.text,
+                                onValueChange = { newValue ->
+                                    shoppingValue = TextFieldValue(newValue)
+                                },
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Number, // Chỉ hiển thị bàn phím số
+                                    imeAction = ImeAction.Next, // Hiển thị nút "Done" hoặc "Tiếp tục"
+                                ),
+                                keyboardActions = KeyboardActions(
+                                    onNext = {
+                                        calculateRemainingValue() // Gọi logic tính toán
+                                        defaultKeyboardAction(ImeAction.Next) // Gọi hành động Next mặc định
+                                    }
+                                ),
+                                colorPercent = Color.Black
+                            )
+                        }
+
+                        Text(
+                            text = " %",
+                            fontFamily = montserrat,
+                            color = textColor,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Normal,
+                            modifier = Modifier.weight(0.5f),
+                            textAlign = TextAlign.Start
+                        )
+                    }
+
+                    // Ô thứ tư
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .padding(bottom = 8.dp)
+                            .fillMaxWidth()
+                    ) {
+                        Text(
+                            text = "Đi lại",
+                            fontFamily = montserrat,
+                            color = textColor,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Normal,
+                            modifier = Modifier.weight(2f)
+                        )
+                        Box(modifier = Modifier.weight(5.5f)) {
+                            PercentTextField(
+                                amountState = movingValue.text,
+                                onValueChange = { newValue ->
+                                    movingValue = TextFieldValue(newValue)
+                                },
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Number, // Chỉ hiển thị bàn phím số
+                                    imeAction = ImeAction.Next, // Hiển thị nút "Done" hoặc "Tiếp tục"
+                                ),
+                                keyboardActions = KeyboardActions(
+                                    onNext = {
+                                        calculateRemainingValue() // Gọi logic tính toán
+                                        defaultKeyboardAction(ImeAction.Next) // Gọi hành động Next mặc định
+                                    }
+                                ),
+                                colorPercent = Color.Black
+                            )
+                        }
+
+                        Text(
+                            text = " %",
+                            fontFamily = montserrat,
+                            color = textColor,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Normal,
+                            modifier = Modifier.weight(0.5f),
+                            textAlign = TextAlign.Start
+                        )
+                    }
+
+                    // Ô thứ năm
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .padding(bottom = 8.dp)
+                            .fillMaxWidth()
+                    ) {
+                        Text(
+                            text = "Chăm sóc sắc đẹp",
+                            fontFamily = montserrat,
+                            color = textColor,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Normal,
+                            modifier = Modifier.weight(2f)
+                        )
+                        Box(modifier = Modifier.weight(5.5f)) {
+                            PercentTextField(
+                                amountState = cosmeticValue.text,
+                                onValueChange = { newValue ->
+                                    cosmeticValue = TextFieldValue(newValue)
+                                },
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Number, // Chỉ hiển thị bàn phím số
+                                    imeAction = ImeAction.Next, // Hiển thị nút "Done" hoặc "Tiếp tục"
+                                ),
+                                keyboardActions = KeyboardActions(
+                                    onNext = {
+                                        calculateRemainingValue() // Gọi logic tính toán
+                                        defaultKeyboardAction(ImeAction.Next) // Gọi hành động Next mặc định
+                                    }
+                                ),
+                                colorPercent = Color.Black
+                            )
+                        }
+
+                        Text(
+                            text = " %",
+                            fontFamily = montserrat,
+                            color = textColor,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Normal,
+                            modifier = Modifier.weight(0.5f),
+                            textAlign = TextAlign.Start
+                        )
+                    }
+
+                    // Ô thứ sáu
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .padding(bottom = 8.dp)
+                            .fillMaxWidth()
+                    ) {
+                        Text(
+                            text = "Giao lưu",
+                            fontFamily = montserrat,
+                            color = textColor,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Normal,
+                            modifier = Modifier.weight(2f)
+                        )
+                        Box(modifier = Modifier.weight(5.5f)) {
+                            PercentTextField(
+                                amountState = exchangingValue.text,
+                                onValueChange = { newValue ->
+                                    exchangingValue = TextFieldValue(newValue)
+                                },
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Number, // Chỉ hiển thị bàn phím số
+                                    imeAction = ImeAction.Next, // Hiển thị nút "Done" hoặc "Tiếp tục"
+                                ),
+                                keyboardActions = KeyboardActions(
+                                    onNext = {
+                                        calculateRemainingValue() // Gọi logic tính toán
+                                        defaultKeyboardAction(ImeAction.Next) // Gọi hành động Next mặc định
+                                    }
+                                ),
+                                colorPercent = Color.Black
+                            )
+                        }
+
+                        Text(
+                            text = " %",
+                            fontFamily = montserrat,
+                            color = textColor,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Normal,
+                            modifier = Modifier.weight(0.5f),
+                            textAlign = TextAlign.Start
+                        )
+                    }
+
+                    // Ô thứ bảy
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .padding(bottom = 8.dp)
+                            .fillMaxWidth()
+                    ) {
+                        Text(
+                            text = "Y tế",
+                            fontFamily = montserrat,
+                            color = textColor,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Normal,
+                            modifier = Modifier.weight(2f)
+                        )
+                        Box(modifier = Modifier.weight(5.5f)) {
+                            PercentTextField(
+                                amountState = medicalValue.text,
+                                onValueChange = { newValue ->
+                                    medicalValue = TextFieldValue(newValue)
+                                },
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Number, // Chỉ hiển thị bàn phím số
+                                    imeAction = ImeAction.Next, // Hiển thị nút "Done" hoặc "Tiếp tục"
+                                ),
+                                keyboardActions = KeyboardActions(
+                                    onNext = {
+                                        calculateRemainingValue() // Gọi logic tính toán
+                                        defaultKeyboardAction(ImeAction.Next) // Gọi hành động Next mặc định
+                                    }
+                                ),
+                                colorPercent = Color.Black
+                            )
+                        }
+
+                        Text(
+                            text = " %",
+                            fontFamily = montserrat,
+                            color = textColor,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Normal,
+                            modifier = Modifier.weight(0.5f),
+                            textAlign = TextAlign.Start
+                        )
+                    }
+
+                    // Ô thứ tám với KeyboardActions
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .padding(bottom = 8.dp)
+                            .fillMaxWidth()
+                    ) {
+                        Text(
+                            text = "Học tập",
+                            fontFamily = montserrat,
+                            color = textColor,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Normal,
+                            modifier = Modifier.weight(2f)
+                        )
+                        Box(modifier = Modifier.weight(5.5f)) {
+                            PercentTextField(
+                                amountState = educatingValue.text,
+                                onValueChange = { newValue ->
+                                    educatingValue = TextFieldValue(newValue)
+                                },
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Number, // Chỉ hiển thị bàn phím số
+                                    imeAction = ImeAction.Next, // Hiển thị nút "Done" hoặc "Tiếp tục"
+                                ),
+                                keyboardActions = KeyboardActions(
+                                    onNext = {
+                                        calculateRemainingValue() // Gọi logic tính toán
+                                        defaultKeyboardAction(ImeAction.Next) // Gọi hành động Next mặc định
+                                    }
+                                ),
+                                colorPercent = Color.Black
+                            )
+                        }
+
+                        Text(
+                            text = " %",
+                            fontFamily = montserrat,
+                            color = textColor,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Normal,
+                            modifier = Modifier.weight(0.5f),
+                            textAlign = TextAlign.Start
+                        )
+                    }
+
+                    // Ô thứ chín (sẽ được tự động điền)
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .padding(bottom = 16.dp)
+                            .fillMaxWidth()
+                    ) {
+                        Text(
+                            text = "Khoản tiết kiệm",
+                            fontFamily = montserrat,
+                            color = textColor,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.weight(2f)
+                        )
+                        Box(modifier = Modifier.weight(5.5f)) {
+                            PercentTextField(
+                                modifier = Modifier
+                                    .border(
+                                        width = 2.dp, // Độ dày của viền
+                                        color = highGray, // Màu sắc của viền
+                                        shape = RoundedCornerShape(8.dp) // Bo tròn các góc nếu cần
+                                    ),
+                                amountState = saveValue.text,
+                                onValueChange = { newValue ->
+                                    saveValue = TextFieldValue(newValue)
+                                },
+                                enabled = false, // Không cho phép người dùng nhập vào ô này
+                                colorPercent = colorPrimary
+                            )
+                        }
+
+                        Text(
+                            text = " %",
+                            color = textColor,
+                            fontFamily = montserrat,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Normal,
+                            modifier = Modifier.weight(0.5f),
+                            textAlign = TextAlign.Start
+                        )
+                    }
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        TextButton(onClick = { onDismiss() }) {
+                            Text(text = "Huỷ bỏ", fontFamily = montserrat, color = textColor)
+                        }
+                        TextButton(onClick = {
+                            // Lấy dữ liệu và gửi qua callback
+                            val categoryLimits = listOf(
+                                LimitTransaction.CategoryLimit(1, houseValue.text.toIntOrNull() ?: 0),
+                                LimitTransaction.CategoryLimit(2, foodValue.text.toIntOrNull() ?: 0),
+                                LimitTransaction.CategoryLimit(3, shoppingValue.text.toIntOrNull() ?: 0),
+                                LimitTransaction.CategoryLimit(4, movingValue.text.toIntOrNull() ?: 0),
+                                LimitTransaction.CategoryLimit(5, cosmeticValue.text.toIntOrNull() ?: 0),
+                                LimitTransaction.CategoryLimit(6, exchangingValue.text.toIntOrNull() ?: 0),
+                                LimitTransaction.CategoryLimit(7, medicalValue.text.toIntOrNull() ?: 0),
+                                LimitTransaction.CategoryLimit(8, educatingValue.text.toIntOrNull() ?: 0),
+                                LimitTransaction.CategoryLimit(9, saveValue.text.toIntOrNull() ?: 0)
+                            )
+                            onConfirm(LimitTransaction(categoryLimits))
+                            onDismiss()
+                        }) {
+                            Text(text = "OK", fontFamily = montserrat, color = colorPrimary)
+                        }
                     }
                 }
             }
         }
     }
+
+
 }
 
 
@@ -795,7 +1079,8 @@ fun PercentTextField(
         keyboardType = KeyboardType.Number,
         imeAction = ImeAction.Next // Mặc định là "Next", có thể tùy chỉnh
     ),
-    keyboardActions: KeyboardActions = KeyboardActions.Default
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
+    colorPercent: Color
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
@@ -839,7 +1124,7 @@ fun PercentTextField(
             fontSize = 20.sp,
             fontFamily = montserrat,
             fontWeight = FontWeight.Bold,
-            color = Color.Black
+            color = colorPercent,
         ),
         keyboardOptions = keyboardOptions,
         keyboardActions = keyboardActions,
