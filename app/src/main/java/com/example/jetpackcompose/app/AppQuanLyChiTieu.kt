@@ -18,6 +18,7 @@ import com.example.jetpackcompose.app.features.apiService.LogAPI.SignInViewModel
 import com.example.jetpackcompose.app.features.apiService.LogAPI.SignInViewModelFactory
 import com.example.jetpackcompose.app.features.editFeatures.EditExpenseTransaction
 import com.example.jetpackcompose.app.features.editFeatures.EditFixedExpenseTransaction
+import com.example.jetpackcompose.app.features.editFeatures.EditIncomeExpenseTransaction
 import com.example.jetpackcompose.app.features.editFeatures.EditIncomeTransaction
 import com.example.jetpackcompose.app.screens.CalendarScreen
 import com.example.jetpackcompose.app.screens.anual_sceens.InputFixedTab
@@ -72,6 +73,15 @@ fun AppQuanLyChiTieu() {
                 EditFixedExpenseTransaction(navController = navController, fixedTransactionId = fixedTransactionId)
             }
 
+            composable(
+                "editFixedIncome/{fixedTransactionId}",
+                arguments = listOf(navArgument("fixedTransactionId") { type = NavType.IntType })
+            ) { backStackEntry ->
+                // Lấy transactionId từ NavArgument
+                val fixedTransactionId = backStackEntry.arguments?.getInt("fixedTransactionId") ?: 0
+                EditIncomeExpenseTransaction(navController = navController, fixedTransactionId = fixedTransactionId)
+            }
+
 
 
 
@@ -111,6 +121,14 @@ fun AppQuanLyChiTieu() {
                 val fixedTransactionId = backStackEntry.arguments?.getInt("fixedTransactionId") ?: 0
                 EditFixedExpenseTransaction(navController = navController, fixedTransactionId = fixedTransactionId)
             }
+
+            composable(
+                "editFixedIncome/{fixedTransactionId}",
+                arguments = listOf(navArgument("fixedTransactionId") { type = NavType.IntType })
+            ) { backStackEntry ->
+                val fixedTransactionId = backStackEntry.arguments?.getInt("fixedTransactionId") ?: 0
+                EditIncomeExpenseTransaction(navController = navController, fixedTransactionId = fixedTransactionId)
+            }
         }
     }
 }
@@ -118,9 +136,3 @@ fun AppQuanLyChiTieu() {
 
 
 
-
-@Preview
-@Composable
-fun PreviewAppQuanLyChiTieu() {
-    AppQuanLyChiTieu()
-}

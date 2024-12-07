@@ -58,7 +58,7 @@ import java.util.Locale
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun EditFixedExpenseTransaction(navController: NavHostController, fixedTransactionId: Int) {
+fun EditIncomeExpenseTransaction(navController: NavHostController, fixedTransactionId: Int) {
     val getFixedTransactionViewModel: GetFixedTransactionViewModel =
         GetFixedTransactionViewModel(LocalContext.current)
     val putFixedTransactionViewModel: PutFixedTransactionViewModel =
@@ -173,14 +173,10 @@ fun EditFixedExpenseTransaction(navController: NavHostController, fixedTransacti
                     DropdownRow(
                         label = "Danh mục",
                         options = listOf(
-                            Pair(R.drawable.outline_home_work_24, "Chi phí nhà ở"),
-                            Pair(R.drawable.outline_ramen_dining_24, "Ăn uống"),
-                            Pair(R.drawable.clothes, "Mua sắm quần áo"),
-                            Pair(R.drawable.outline_train_24, "Đi lại"),
-                            Pair(R.drawable.outline_cosmetic, "Chăm sóc sắc đẹp"),
-                            Pair(R.drawable.entertainment, "Giao lưu"),
-                            Pair(R.drawable.outline_health_and_safety_24, "Y tế"),
-                            Pair(R.drawable.outline_education, "Học tập"),
+                            Pair(R.drawable.salary, "Tiền lương"),
+                            Pair(R.drawable.baseline_card_giftcard_24, "Tiền thưởng"),
+                            Pair(R.drawable.secondary, "Thu nhập phụ"),
+                            Pair(R.drawable.subsidy, "Trợ cấp")
                         )
                     ) { category ->
                         selectedCategory = category
@@ -228,25 +224,21 @@ fun EditFixedExpenseTransaction(navController: NavHostController, fixedTransacti
                     .fillMaxWidth()
             ) {
                 MyButtonComponent(
-                    value = "Chỉnh sửa chi phí",
+                    value = "Chỉnh sửa thu nhập",
                     onClick = {
                         // Tạo đối tượng FixedTransactionUpdate
                         val updatedTransaction = FixedTransactionUpdate(
                             category_id = when (selectedCategory)
                             {
-                                "Chi phí nhà ở" -> 1
-                                "Ăn uống" -> 2
-                                "Mua sắm quần áo" -> 3
-                                "Đi lại" -> 4
-                                "Chăm sóc sắc đẹp" -> 5
-                                "Giao lưu" -> 6
-                                "Y tế" -> 7
-                                "Học tập" -> 8
+                                "Tiền lương" -> 10
+                                "Tiền thưởng" -> 11
+                                "Thu nhập phụ" -> 12
+                                "Trợ cấp" -> 13
                                 else -> 0
                             },  // Sử dụng hashCode để làm ví dụ
                             title = titleState.text,
                             amount = amountState.text.toLong(),
-                            type = "expense",
+                            type = "income",
                             repeat_frequency = selectedRepeat.name,
                             start_date = selectedDate,
                             end_date = selectedEndDate
@@ -274,4 +266,3 @@ fun EditFixedExpenseTransaction(navController: NavHostController, fixedTransacti
         }
     }
 }
-

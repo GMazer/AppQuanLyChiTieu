@@ -193,7 +193,7 @@ fun FixedTransactionRow(
             .padding(8.dp)
             .clickable {
                 if (transaction.category_id >= 10) {
-
+                    navController.navigate("editFixedIncome/${transaction.fixed_transaction_id}")
                 } else {
                     navController.navigate("editFixedExpense/${transaction.fixed_transaction_id}")
                 }
@@ -283,7 +283,6 @@ fun FixedTransactionRow(
                             onSuccess = {
                                 isLoading = false
                                 isDialogVisible = false
-                                // Sau khi xóa thành công, gọi lại hàm reloadTransactions trong AnualScreen
                                 onTransactionDeleted()
                             },
                             onError = {
