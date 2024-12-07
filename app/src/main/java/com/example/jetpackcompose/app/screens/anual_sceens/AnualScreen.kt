@@ -97,13 +97,13 @@ fun AnualScreen(navController: NavHostController) {
                 Icon(
                     imageVector = Icons.Default.Add, // Biểu tượng dấu +
                     contentDescription = "Add",
-                    tint = colorPrimary // Màu biểu tượng
+                    tint = colorPrimary
                 )
             }
         }
 
         // Nội dung chính của màn hình
-        Spacer(modifier = Modifier.height(16.dp)) // Khoảng cách dưới hàng nút
+        Spacer(modifier = Modifier.height(16.dp))
 
         // Hiển thị danh sách FixedTransaction
         LazyColumn(
@@ -124,26 +124,28 @@ fun FixedTransactionRow(transaction: FixedTransactionResponse) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp) // Khoảng cách dọc giữa các hàng
+            .padding(vertical = 8.dp)
             .clickable {
                 // Bạn có thể thêm hành động tại đây khi click vào một hàng
                 // VD: Điều hướng đến màn hình chi tiết của giao dịch
             },
-        horizontalArrangement = Arrangement.SpaceBetween, // Căn các phần tử ra 2 bên
-        verticalAlignment = Alignment.CenterVertically // Căn theo chiều dọc
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         // Cột bên trái: Note và Category Name
         Column(
-            modifier = Modifier.weight(1f) // Cột bên trái chiếm không gian còn lại
+            modifier = Modifier.weight(1f)
         ) {
             Text(
-                text = transaction.title ?: "No Title", // Note, nếu không có title thì hiển thị "No Title"
-                fontWeight = FontWeight.Bold, // Định dạng chữ đậm
+                text = transaction.title ?: "No Title",
+                fontWeight = FontWeight.Bold,
+                fontFamily = montserrat,
             )
-            Spacer(modifier = Modifier.height(4.dp)) // Khoảng cách giữa Note và Category Name
+            Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = transaction.categoryName, // Category Name
-                fontSize = 12.sp, // Font size nhỏ hơn
+                text = transaction.categoryName,
+                fontSize = 12.sp,
+                fontFamily = montserrat,
             )
         }
 
@@ -156,7 +158,7 @@ fun FixedTransactionRow(transaction: FixedTransactionResponse) {
             Text(
                 text = transaction.amount.toString(), // Hiển thị số tiền
                 fontWeight = FontWeight.Bold,
-                color = colorPrimary // Sử dụng màu chính cho số tiền
+                color = textColor
             )
 
             // Mũi tên sang phải

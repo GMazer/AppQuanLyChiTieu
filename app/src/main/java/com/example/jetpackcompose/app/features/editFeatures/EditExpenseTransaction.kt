@@ -1,5 +1,6 @@
 package com.example.jetpackcompose.app.features.editFeatures
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -34,7 +35,6 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.jetpackcompose.R
 import com.example.jetpackcompose.app.features.apiService.TransactionAPI.GetTransactionViewModel
@@ -51,6 +51,8 @@ import com.example.jetpackcompose.components.NumberTextField
 import com.example.jetpackcompose.ui.theme.textColor
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
+import java.text.ParseException
+import java.text.SimpleDateFormat
 import java.util.Locale
 
 @Composable
@@ -58,7 +60,6 @@ fun EditExpenseTransaction(
     navController: NavHostController,
     transactionId: Int,
 ) {
-
     val getViewModel: GetTransactionViewModel = GetTransactionViewModel(LocalContext.current)
     val putViewModel: PutTransactionViewModel = PutTransactionViewModel(LocalContext.current)
     // Trạng thái nhập liệu
@@ -82,23 +83,75 @@ fun EditExpenseTransaction(
         DecimalFormat("#,###", symbols)
     }
 
+    val dateFormatter = remember {
+        SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()) // Định dạng ngày "yyyy-MM-dd"
+    }
+
     // Danh sách các Category
     val categories = listOf(
-        Category(1, "Chi phí nhà ở", { painterResource(R.drawable.outline_home_work_24) }, Color(0xFFfb791d), 1.00f),
-        Category(2, "Ăn uống", { painterResource(R.drawable.outline_ramen_dining_24) }, Color(0xFF37c166), 1.00f),
-        Category(3, "Mua sắm quần áo", { painterResource(R.drawable.clothes) }, Color(0xFF283eaa), 1.00f),
-        Category(4, "Đi lại", { painterResource(R.drawable.outline_train_24) }, Color(0xFFa06749), 1.00f),
-        Category(5, "Chăm sóc sắc đẹp", { painterResource(R.drawable.outline_cosmetic) }, Color(0xFFf95aa9), 1.00f),
-        Category(6, "Giao lưu", { painterResource(R.drawable.entertainment) }, Color(0xFF6a1b9a), 1.00f),
-        Category(7, "Y tế", { painterResource(R.drawable.outline_health_and_safety_24) }, Color(0xFFfc3d39), 1.00f),
-        Category(8, "Học tập", { painterResource(R.drawable.outline_education) }, Color(0xFFfc7c1f), 0.50f)
+        Category(
+            1,
+            "Chi phí nhà ở",
+            { painterResource(R.drawable.outline_home_work_24) },
+            Color(0xFFfb791d),
+            1.00f
+        ),
+        Category(
+            2,
+            "Ăn uống",
+            { painterResource(R.drawable.outline_ramen_dining_24) },
+            Color(0xFF37c166),
+            1.00f
+        ),
+        Category(
+            3,
+            "Mua sắm quần áo",
+            { painterResource(R.drawable.clothes) },
+            Color(0xFF283eaa),
+            1.00f
+        ),
+        Category(
+            4,
+            "Đi lại",
+            { painterResource(R.drawable.outline_train_24) },
+            Color(0xFFa06749),
+            1.00f
+        ),
+        Category(
+            5,
+            "Chăm sóc sắc đẹp",
+            { painterResource(R.drawable.outline_cosmetic) },
+            Color(0xFFf95aa9),
+            1.00f
+        ),
+        Category(
+            6,
+            "Giao lưu",
+            { painterResource(R.drawable.entertainment) },
+            Color(0xFF6a1b9a),
+            1.00f
+        ),
+        Category(
+            7,
+            "Y tế",
+            { painterResource(R.drawable.outline_health_and_safety_24) },
+            Color(0xFFfc3d39),
+            1.00f
+        ),
+        Category(
+            8,
+            "Học tập",
+            { painterResource(R.drawable.outline_education) },
+            Color(0xFFfc7c1f),
+            0.50f
+        )
     )
 
     // Tải danh sách giao dịch và tìm giao dịch cần chỉnh sửa
     LaunchedEffect(transactionId) {
         getViewModel.getTransactions(
-            month = 12, // Bạn có thể thay đổi tháng này tùy theo yêu cầu
-            year = 2024, // Thay năm này nếu cần
+            month = 12,
+            year = 2024,
             onSuccess1 = { _ ->
                 // Sau khi lấy tất cả giao dịch, tìm giao dịch có ID tương ứng
                 val transaction = getViewModel.dateTransactionList.values.flatten()
@@ -107,8 +160,21 @@ fun EditExpenseTransaction(
                 if (transaction != null) {
                     // Cập nhật dữ liệu ban đầu vào các trường nhập liệu
                     textNote = transaction.note?.let { TextFieldValue(it) } ?: TextFieldValue("")
+
+                    // Cập nhật amount
                     amountValue = TextFieldValue(transaction.amount.toString())
-                    selectedDate = transaction.transactionDate.joinToString("-") // Đảm bảo định dạng "yyyy-MM-dd"
+
+                    // Cập nhật ngày và loại bỏ phần thông tin " (Th 7)"
+                    val year = transaction.transactionDate[0]
+                    val month = transaction.transactionDate[1]
+                    val day = transaction.transactionDate[2]
+
+                    // Dùng String.format để định dạng tháng và ngày
+                    val formattedMonth = String.format("%02d", month)
+                    val formattedDay = String.format("%02d", day)
+
+                    selectedDate = "$year-$formattedMonth-$formattedDay"
+                    selectedDate = selectedDate.split(" ")[0]
                     selectedCategory = categories.find { it.name == transaction.categoryName }
                 } else {
                     errorMessage = "Không tìm thấy giao dịch!"
@@ -129,7 +195,6 @@ fun EditExpenseTransaction(
             .fillMaxSize()
             .background(Color.White)
     ) {
-
         // Thanh tiêu đề với nút Quay lại và Xóa
         Box(modifier = Modifier.fillMaxWidth()) {
             Row(
@@ -171,6 +236,7 @@ fun EditExpenseTransaction(
                 )
             }
         }
+
         Divider(modifier = Modifier.padding(vertical = 8.dp))
 
         // Các trường nhập liệu
@@ -179,13 +245,6 @@ fun EditExpenseTransaction(
                 .padding(16.dp)
                 .background(Color.White)
         ) {
-            Text(
-                "$transactionId",
-                color = Color.DarkGray,
-                fontWeight = FontWeight.Bold,
-                fontFamily = montserrat,
-                fontSize = 20.sp
-            )
             // Chọn ngày
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
@@ -195,12 +254,18 @@ fun EditExpenseTransaction(
                     fontFamily = montserrat
                 )
                 DatePickerButton(
-                    onDateSelected = { date -> selectedDate = date },
+                    onDateSelected = { date ->
+                        // Lấy phần ngày hợp lệ bằng cách tách chuỗi
+                        val validDate = date.split(" ")[0] // Tách theo khoảng trắng và lấy phần ngày "yyyy-MM-dd"
+
+                        selectedDate = validDate
+                    },
                 )
             }
 
-            DrawBottomLine(16.dp)
+            // Kiểm tra selectedDate có hợp lệ không trước khi parse
 
+            DrawBottomLine(16.dp)
             // Ghi chú
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
@@ -259,18 +324,19 @@ fun EditExpenseTransaction(
                     onClick = {
                         val amount = amountValue.text.toLongOrNull() ?: 0L
                         val updatedTransaction = Transaction(
-                            category_id = 5,
-                            amount = 10000,
-                            transaction_date = "2024-12-2", // Đảm bảo định dạng "yyyy-MM-dd"
-                            note = "DCMMM"
+                            category_id = selectedCategory?.id ?: 1,
+                            amount = amount,
+                            transaction_date = selectedDate,
+                            note = textNote.text
                         )
+                        Log.d("EditExpenseTransaction", "Updated Transaction: $updatedTransaction")
 
                         // Sửa dữ liệu giao dịch
                         putViewModel.putTransaction(
                             transactionId = transactionId,
                             data = updatedTransaction,
                             onSuccess = { message ->
-                                successMessage = message
+                                successMessage = "Chỉnh sửa thành công!"
                                 showPopup = true
                                 navController.popBackStack()
                             },
@@ -297,6 +363,7 @@ fun EditExpenseTransaction(
         )
     }
 }
+
 
 
 

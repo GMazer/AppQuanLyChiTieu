@@ -50,7 +50,16 @@ fun AppQuanLyChiTieu() {
                 EditExpenseTransaction(navController = navController, transactionId = transactionId)
             }
 
-            composable("editIncome") { EditIncomeTransaction(navController) }
+            composable(
+                "editIncome/{transactionId}",
+                arguments = listOf(navArgument("transactionId") { type = NavType.IntType })
+            ) { backStackEntry ->
+                // Lấy transactionId từ NavArgument
+                val transactionId = backStackEntry.arguments?.getInt("transactionId") ?: 0
+                EditIncomeTransaction(navController = navController, transactionId = transactionId)
+            }
+
+
         }
     } else {
         NavHost(navController = navController, startDestination = "mainscreen") {
@@ -71,8 +80,14 @@ fun AppQuanLyChiTieu() {
                 val transactionId = backStackEntry.arguments?.getInt("transactionId") ?: 0
                 EditExpenseTransaction(navController = navController, transactionId = transactionId)
             }
-
-            composable("editIncome") { EditIncomeTransaction(navController) }
+            composable(
+                "editIncome/{transactionId}",
+                arguments = listOf(navArgument("transactionId") { type = NavType.IntType })
+            ) { backStackEntry ->
+                // Lấy transactionId từ NavArgument
+                val transactionId = backStackEntry.arguments?.getInt("transactionId") ?: 0
+                EditIncomeTransaction(navController = navController, transactionId = transactionId)
+            }
         }
     }
 }
