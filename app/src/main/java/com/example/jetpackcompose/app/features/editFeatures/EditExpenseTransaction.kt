@@ -102,7 +102,7 @@ fun EditExpenseTransaction(
             onSuccess1 = { _ ->
                 // Sau khi lấy tất cả giao dịch, tìm giao dịch có ID tương ứng
                 val transaction = getViewModel.dateTransactionList.values.flatten()
-                    .find { it.transactionId == transactionId }
+                    .find { it.transaction_id == transactionId }
 
                 if (transaction != null) {
                     // Cập nhật dữ liệu ban đầu vào các trường nhập liệu

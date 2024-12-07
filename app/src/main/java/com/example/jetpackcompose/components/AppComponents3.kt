@@ -439,7 +439,7 @@ fun DayIndex(
                             .height(50.dp)
                             .padding(horizontal = 16.dp)
                             .clickable {
-                                val id = transaction.transactionId
+                                val id = transaction.transaction_id
                                 Log.d("DayIndex", "Navigating to editExpense with id: $id")
 //                                    // Điều hướng đến màn hình chỉnh sửa với transactionId cụ thể
 //                                    navController.navigate("editExpense/$id")
@@ -448,8 +448,8 @@ fun DayIndex(
                     ) {
                         Log.d("DayIndex", "Transaction Amount: ${transaction.amount}")
                         Log.d("DayIndex", "Transaction Date: ${transaction.transactionDate}")
-                        Log.d("DayIndex", "Transaction ID: ${transaction.transactionId}")
-                        transaction.transactionId?.let { id ->
+                        Log.d("DayIndex", "Transaction ID: ${transaction.transaction_id}")
+                        transaction.transaction_id?.let { id ->
                             transaction.note?.let {
                                 transaction.type?.let { it1 ->
                                     CategoryIconWithName(

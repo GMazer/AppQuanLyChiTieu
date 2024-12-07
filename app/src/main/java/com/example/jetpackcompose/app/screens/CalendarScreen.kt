@@ -107,7 +107,7 @@ fun CalendarScreen(navController: NavController) {
                             transactionDate = it.transactionDate,
                             note = it.note,
                             type = it.type,
-                            transactionId = it.transactionId
+                            transaction_id = it.transaction_id
                         )
                     }
                     date to details
