@@ -1,5 +1,7 @@
 package com.example.jetpackcompose.app
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -15,12 +17,14 @@ import com.example.jetpackcompose.app.features.MainScreen
 import com.example.jetpackcompose.app.features.apiService.LogAPI.SignInViewModel
 import com.example.jetpackcompose.app.features.apiService.LogAPI.SignInViewModelFactory
 import com.example.jetpackcompose.app.features.editFeatures.EditExpenseTransaction
+import com.example.jetpackcompose.app.features.editFeatures.EditFixedExpenseTransaction
 import com.example.jetpackcompose.app.features.editFeatures.EditIncomeTransaction
 import com.example.jetpackcompose.app.screens.CalendarScreen
 import com.example.jetpackcompose.app.screens.anual_sceens.InputFixedTab
 import com.example.jetpackcompose.app.screens.OtherScreen
 import com.example.jetpackcompose.app.screens.anual_sceens.AnualScreen
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AppQuanLyChiTieu() {
     val navController = rememberNavController()
@@ -47,7 +51,7 @@ fun AppQuanLyChiTieu() {
             ) { backStackEntry ->
                 // Lấy transactionId từ NavArgument
                 val transactionId = backStackEntry.arguments?.getInt("transactionId") ?: 0
-                EditExpenseTransaction(navController = navController, transactionId = transactionId)
+                EditExpenseTransaction(navController = navController, fixedTransactionId = transactionId)
             }
 
             composable(
@@ -58,6 +62,17 @@ fun AppQuanLyChiTieu() {
                 val transactionId = backStackEntry.arguments?.getInt("transactionId") ?: 0
                 EditIncomeTransaction(navController = navController, transactionId = transactionId)
             }
+
+            composable(
+                "editFixedExpense/{fixedTransactionId}",
+                arguments = listOf(navArgument("fixedTransactionId") { type = NavType.IntType })
+            ) { backStackEntry ->
+                // Lấy transactionId từ NavArgument
+                val fixedTransactionId = backStackEntry.arguments?.getInt("fixedTransactionId") ?: 0
+                EditFixedExpenseTransaction(navController = navController, fixedTransactionId = fixedTransactionId)
+            }
+
+
 
 
         }
@@ -78,7 +93,7 @@ fun AppQuanLyChiTieu() {
             ) { backStackEntry ->
                 // Lấy transactionId từ NavArgument
                 val transactionId = backStackEntry.arguments?.getInt("transactionId") ?: 0
-                EditExpenseTransaction(navController = navController, transactionId = transactionId)
+                EditExpenseTransaction(navController = navController, fixedTransactionId = transactionId)
             }
             composable(
                 "editIncome/{transactionId}",
@@ -87,6 +102,14 @@ fun AppQuanLyChiTieu() {
                 // Lấy transactionId từ NavArgument
                 val transactionId = backStackEntry.arguments?.getInt("transactionId") ?: 0
                 EditIncomeTransaction(navController = navController, transactionId = transactionId)
+            }
+
+            composable(
+                "editFixedExpense/{fixedTransactionId}",
+                arguments = listOf(navArgument("fixedTransactionId") { type = NavType.IntType })
+            ) { backStackEntry ->
+                val fixedTransactionId = backStackEntry.arguments?.getInt("fixedTransactionId") ?: 0
+                EditFixedExpenseTransaction(navController = navController, fixedTransactionId = fixedTransactionId)
             }
         }
     }

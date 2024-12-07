@@ -4,6 +4,7 @@ import com.example.jetpackcompose.app.features.inputFeatures.LimitTransaction
 import com.example.jetpackcompose.app.features.inputFeatures.RemainLimit
 import com.example.jetpackcompose.app.features.inputFeatures.Transaction
 import com.example.jetpackcompose.app.features.apiService.FixedTransactionAPI.FixedTransaction
+import com.example.jetpackcompose.app.features.apiService.FixedTransactionAPI.FixedTransactionUpdate
 import com.example.jetpackcompose.app.features.apiService.FixedTransactionAPI.GetFixedTransactionResponse
 import retrofit2.Response
 import retrofit2.http.Body
@@ -132,6 +133,13 @@ interface ApiService {
     suspend fun getFixedTransactions(
         @Header("Authorization") token: String
     ): Response<GetFixedTransactionResponse>
+
+    @PUT("/api/fixed-transactions/{fixedTransactionId}")
+    suspend fun putFixedTransaction(
+        @Header("Authorization") token: String,
+        @Path("fixedTransactionId") fixedTransactionId: Int,
+        @Body fixedTransaction: FixedTransactionUpdate
+    ): Response<ApiResponse>
 
     @DELETE("/api/fixed-transactions/{fixedTransactionId}")
     suspend fun deleteFixedTransaction(

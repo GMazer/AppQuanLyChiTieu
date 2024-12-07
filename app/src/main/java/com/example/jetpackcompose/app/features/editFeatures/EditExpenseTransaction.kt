@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -57,14 +56,13 @@ import com.example.jetpackcompose.ui.theme.componentShapes
 import com.example.jetpackcompose.ui.theme.textColor
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
-import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 @Composable
 fun EditExpenseTransaction(
     navController: NavHostController,
-    transactionId: Int,
+    fixedTransactionId: Int,
 ) {
     val getViewModel: GetTransactionViewModel = GetTransactionViewModel(LocalContext.current)
     val putViewModel: PutTransactionViewModel = PutTransactionViewModel(LocalContext.current)
@@ -157,14 +155,14 @@ fun EditExpenseTransaction(
     )
 
     // Tải danh sách giao dịch và tìm giao dịch cần chỉnh sửa
-    LaunchedEffect(transactionId) {
+    LaunchedEffect(fixedTransactionId) {
         getViewModel.getTransactions(
             month = 12,
             year = 2024,
             onSuccess1 = { _ ->
                 // Sau khi lấy tất cả giao dịch, tìm giao dịch có ID tương ứng
                 val transaction = getViewModel.dateTransactionList.values.flatten()
-                    .find { it.transaction_id == transactionId }
+                    .find { it.transaction_id == fixedTransactionId }
 
                 if (transaction != null) {
                     // Cập nhật dữ liệu ban đầu vào các trường nhập liệu
@@ -342,7 +340,7 @@ fun EditExpenseTransaction(
 
                         // Sửa dữ liệu giao dịch
                         putViewModel.putTransaction(
-                            transactionId = transactionId,
+                            transactionId = fixedTransactionId,
                             data = updatedTransaction,
                             onSuccess = { message ->
                                 successMessage = "Chỉnh sửa thành công!"
@@ -407,7 +405,7 @@ fun EditExpenseTransaction(
                         TextButton(onClick = {
                             // Gọi API xóa giao dịch
                             delViewModel.deleteTransaction(
-                                transactionId = transactionId,
+                                transactionId = fixedTransactionId,
                                 onSuccess = { message ->
                                     successMessage = "Xóa giao dịch thành công!"
                                     showPopup = true

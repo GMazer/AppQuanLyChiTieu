@@ -37,7 +37,18 @@ data class FixedTransactionResponse(
     val startDate: List<Int>,
     val endDate: List<Int>?,
     val fixed_transaction_id: Int,
-    val category_id: Int
+    val category_id: Int,
+    val repeate_frequency: String
+)
+
+data class FixedTransactionUpdate(
+    val category_id: Int,
+    val title: String,
+    val amount: Long,
+    val type: String,
+    val repeat_frequency: String,
+    val start_date: String,
+    val end_date: String
 )
 
 

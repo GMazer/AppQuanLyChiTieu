@@ -25,8 +25,6 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun InputFixedTab(navController: NavHostController) {
-    // Tạo instance của FixedExpenseViewModel với Factory
-    var incomeData by rememberSaveable { mutableStateOf<FixedTransaction?>(null) }
 
     val tabs = listOf(
         TabItem("Expense", icon = Icons.Default.ArrowBack) {

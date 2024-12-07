@@ -143,10 +143,12 @@ fun AnualScreen(navController: NavHostController) {
                 .fillMaxSize()
         ) {
             items(fixedTransactions) { transaction ->
+                Log.d("AnualScreen", "Transaction: ${transaction.repeate_frequency}")
                 FixedTransactionRow(
                     transaction = transaction,
                     isEditing = isEditing,
-                    onTransactionDeleted = { reloadTransactions() } // Truyền hàm reload vào FixedTransactionRow
+                    onTransactionDeleted = { reloadTransactions() },
+                    navController = navController
                 )
                 Spacer(modifier = Modifier.height(8.dp))
             }
@@ -159,9 +161,11 @@ fun AnualScreen(navController: NavHostController) {
 fun FixedTransactionRow(
     transaction: FixedTransactionResponse,
     isEditing: Boolean,
+    navController: NavHostController,
     onTransactionDeleted: () -> Unit // Hàm gọi lại để reload dữ liệu sau khi xóa
 ) {
-    val viewModel: DeleteFixedTransactionViewModel = DeleteFixedTransactionViewModel(LocalContext.current)
+    val viewModel: DeleteFixedTransactionViewModel =
+        DeleteFixedTransactionViewModel(LocalContext.current)
     val currencyFormatter = remember {
         val symbols = DecimalFormatSymbols(Locale("vi", "VN"))
         symbols.decimalSeparator = '.'
@@ -187,7 +191,13 @@ fun FixedTransactionRow(
             .fillMaxWidth()
             .background(Color.White)
             .padding(8.dp)
-            .clickable { /* Hành động khi click vào dòng */ },
+            .clickable {
+                if (transaction.category_id >= 10) {
+
+                } else {
+                    navController.navigate("editFixedExpense/${transaction.fixed_transaction_id}")
+                }
+            },
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -197,11 +207,13 @@ fun FixedTransactionRow(
                 painter = painterResource(id = R.drawable.baseline_remove_circle_24),
                 contentDescription = "Remove",
                 tint = Color(0xffff3c28),
-                modifier = Modifier.size(24.dp).clickable {
-                    // Hiển thị AlertDialog xác nhận xoá
-                    isDialogVisible = true
-                    dialogMessage = "Bạn có muốn xoá giao dịch này không?"
-                }
+                modifier = Modifier
+                    .size(24.dp)
+                    .clickable {
+                        // Hiển thị AlertDialog xác nhận xoá
+                        isDialogVisible = true
+                        dialogMessage = "Bạn có muốn xoá giao dịch này không?"
+                    }
             )
             Spacer(modifier = Modifier.width(8.dp))
         }
@@ -297,9 +309,6 @@ fun FixedTransactionRow(
         )
     }
 }
-
-
-
 
 
 @Preview
