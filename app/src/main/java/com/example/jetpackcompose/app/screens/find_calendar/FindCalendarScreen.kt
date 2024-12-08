@@ -224,7 +224,7 @@ fun FindCalendarScreen(navController: NavController) {
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         Icon(
-                                            painter = painterResource(id = R.drawable.baseline_find_in_page_24), // Icon của bạn
+                                            painter = painterResource(id = android.R.drawable.ic_search_category_default), // Icon của bạn
                                             contentDescription = "Tìm kiếm",
                                         )
                                         Spacer(modifier = Modifier.width(8.dp))

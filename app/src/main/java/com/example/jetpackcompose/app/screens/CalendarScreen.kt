@@ -214,7 +214,7 @@ fun CalendarScreen(navController: NavController) {
                                     modifier = Modifier.align(Alignment.CenterEnd) // Căn phải trong Box
                                 ) {
                                     Icon(
-                                        painter = painterResource(id = R.drawable.baseline_find_in_page_24), // Icon của bạn
+                                        painter = painterResource(id = android.R.drawable.ic_search_category_default), // Icon của bạn
                                         contentDescription = "Tìm kiếm",
                                         tint = Color.Black
                                     )
