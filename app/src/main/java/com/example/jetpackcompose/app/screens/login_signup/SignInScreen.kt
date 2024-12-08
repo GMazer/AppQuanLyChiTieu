@@ -97,6 +97,7 @@ fun SignInScreen(navController: NavHostController) {
                     signInViewModel.signInUser(
                         data = loginData,
                         onSuccess = {
+                            errorMessage = ""
                             successMessage = it
                             showPopup = true
                             navController.navigate("mainscreen")
