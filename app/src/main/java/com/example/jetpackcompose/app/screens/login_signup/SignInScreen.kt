@@ -38,6 +38,16 @@ fun SignInScreen(navController: NavHostController) {
     var errorMessage by remember { mutableStateOf("") }
     var successMessage by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
+    var showPopup by remember { mutableStateOf(false) }
+
+
+
+    MessagePopup(
+        showPopup = showPopup,
+        successMessage = successMessage,
+        errorMessage = errorMessage,
+        onDismiss = { showPopup = false } // Đóng popup khi nhấn ngoài
+    )
 
     Surface(
         modifier = Modifier
@@ -81,16 +91,19 @@ fun SignInScreen(navController: NavHostController) {
                     isLoading = true
                 if (phoneNumber.isEmpty() || password.isEmpty()) {
                     errorMessage = "Vui lòng điền đầy đủ thông tin."
+                    isLoading = false
                 } else {
                     val loginData = LoginData(phone_number = phoneNumber, password = password)
                     signInViewModel.signInUser(
                         data = loginData,
                         onSuccess = {
                             successMessage = it
+                            showPopup = true
                             navController.navigate("mainscreen")
                         },
                         onError = {
                             errorMessage = it
+                            isLoading = false
                         }
                     )
                 }
