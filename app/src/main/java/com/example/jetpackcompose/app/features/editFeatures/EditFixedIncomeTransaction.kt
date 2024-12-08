@@ -80,6 +80,7 @@ fun EditIncomeExpenseTransaction(navController: NavHostController, fixedTransact
     var errorMessage1 by remember { mutableStateOf("") }
     var successMessage2 by remember { mutableStateOf("Đang tải dữ liệu") }
     var errorMessage2 by remember { mutableStateOf("") }
+    var isLoading by remember { mutableStateOf(false) }
 
 
     // Dữ liệu giao dịch cố định
@@ -108,13 +109,23 @@ fun EditIncomeExpenseTransaction(navController: NavHostController, fixedTransact
         )
     }
 
-    Column(modifier = Modifier.fillMaxSize().background(Color.White)) {
+    Column(modifier = Modifier
+        .background(Color(0xfff5f5f5))
+        .fillMaxSize()) {
         // Thanh tiêu đề với nút Quay lại và Xóa
-        Box(modifier = Modifier.fillMaxWidth()) {
+        Box(
+            modifier = Modifier
+                .background(Color(0xfff1f1f1))
+                .height(50.dp)
+                .fillMaxWidth()
+        ) {
             Row(
-                modifier = Modifier.fillMaxWidth().height(50.dp).padding(8.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
+                    .padding(8.dp),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.Center
             ) {
                 IconButton(onClick = { navController.popBackStack() }) {
                     Icon(
@@ -129,12 +140,15 @@ fun EditIncomeExpenseTransaction(navController: NavHostController, fixedTransact
                     fontFamily = montserrat,
                     fontWeight = FontWeight.Bold,
                     color = textColor,
-                    modifier = Modifier.weight(1f),
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.weight(1f)
                 )
             }
         }
-        Divider(modifier = Modifier.padding(vertical = 8.dp))
+        Divider(
+            color = Color.LightGray,
+            thickness = 1.dp
+        )
 
         // Hiển thị thông báo thành công hay thất bại
         MessagePopup(
@@ -148,7 +162,10 @@ fun EditIncomeExpenseTransaction(navController: NavHostController, fixedTransact
             }
         )
 
-        Column(modifier = Modifier.fillMaxWidth()) {
+        Column(modifier = Modifier
+            .background(Color(0xfff5f5f5))
+            .fillMaxSize()
+        ) {
             // Tiêu đề và số tiền
             Box(
                 modifier = Modifier
@@ -225,7 +242,9 @@ fun EditIncomeExpenseTransaction(navController: NavHostController, fixedTransact
             ) {
                 MyButtonComponent(
                     value = "Chỉnh sửa thu nhập",
+                    isLoading = isLoading,
                     onClick = {
+                        isLoading = true
                         // Tạo đối tượng FixedTransactionUpdate
                         val updatedTransaction = FixedTransactionUpdate(
                             category_id = when (selectedCategory)

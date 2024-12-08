@@ -1,5 +1,6 @@
 package com.example.jetpackcompose.navigation
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,6 +34,8 @@ import androidx.compose.ui.unit.sp
 import com.example.jetpackcompose.R
 import com.example.jetpackcompose.components.montserrat
 import com.example.jetpackcompose.ui.theme.colorPrimary
+import com.example.jetpackcompose.ui.theme.textColor
+import com.example.jetpackcompose.ui.theme.topBarColor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -43,6 +46,7 @@ fun CustomBottomAppBar(pagerState: PagerState, coroutineScope: CoroutineScope) {
 
     Box(
         modifier = Modifier
+            .background(topBarColor)
             .fillMaxWidth()
             .height(60.dp)
             .border(1.dp, Color.LightGray, shape = RectangleShape)
@@ -120,14 +124,14 @@ fun BottomBarItem(
             Icon(
                 painter = painterResource(id = iconRes),
                 contentDescription = title,
-                tint = if (isSelected) colorPrimary else Color.Gray,
+                tint = if (isSelected) colorPrimary else textColor,
                 modifier = Modifier.size(20.dp)
                         .padding(0.dp)
             )
         }
         Text(
             text = title,
-            color = if (isSelected) colorPrimary else Color. Gray,
+            color = if (isSelected) colorPrimary else textColor,
             fontFamily = montserrat,
             fontSize = 8.sp,
             modifier = Modifier.padding(top = 0.dp) // Giảm khoảng cách giữa text và icon

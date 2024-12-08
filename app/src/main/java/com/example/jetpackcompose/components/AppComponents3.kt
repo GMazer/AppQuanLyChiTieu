@@ -847,11 +847,12 @@ fun RowNumberField(
                 .weight(3.5f),
             value = textState,
             onValueChange = { newValue ->
-                // Lọc chỉ cho phép nhập số và xử lý vị trí con trỏ
+                // Lọc chỉ cho phép nhập số
                 val filteredText = newValue.text.filter { it.isDigit() }
 
-                // Nếu ô đang rỗng, không cho phép số 0 làm ký tự đầu tiên
-                if (filteredText.isNotEmpty() || (filteredText == "0" && textState.text.isNotEmpty())) {
+                // Kiểm tra xem chuỗi có rỗng không hoặc không bắt đầu bằng '0' nếu không phải là số duy nhất
+                if (filteredText.isEmpty() || (filteredText != "0" && filteredText.first() != '0')) {
+                    // Nếu chuỗi không bắt đầu bằng 0 hoặc là 0 duy nhất, cập nhật giá trị
                     onValueChange(
                         TextFieldValue(
                             text = filteredText,
@@ -891,6 +892,7 @@ fun RowNumberField(
         )
     }
 }
+
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
@@ -1026,15 +1028,14 @@ fun MessagePopup(
     onDismiss: () -> Unit
 ) {
     if (showPopup) {
-        // Tự động ẩn popup sau 1 giây
         LaunchedEffect(key1 = showPopup) {
-            delay(1000) // Đợi 1 giây
-            onDismiss() // Đóng popup sau 1 giây
+            delay(800)
+            onDismiss() //
         }
 
         AlertDialog(
-            onDismissRequest = onDismiss, // Đóng AlertDialog khi nhấn ngoài
-            title = null, // Không có tiêu đề
+            onDismissRequest = onDismiss,
+            title = null,
             text = {
                 Column(
                     modifier = Modifier
@@ -1079,7 +1080,7 @@ fun MessagePopup(
                 }
             },
             buttons = {},
-            shape = RoundedCornerShape(12.dp), // Bo góc cho AlertDialog
+            shape = RoundedCornerShape(12.dp),
             modifier = Modifier
                 .heightIn(min = 70.dp)
                 .fillMaxWidth(0.8f)

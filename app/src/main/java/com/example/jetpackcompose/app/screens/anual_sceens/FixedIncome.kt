@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.jetpackcompose.R
 import com.example.jetpackcompose.app.features.apiService.FixedTransactionAPI.FixedTransaction
 import com.example.jetpackcompose.app.features.apiService.FixedTransactionAPI.PostFixedTransactionViewModel
@@ -40,7 +41,10 @@ import java.util.Locale
 
 @SuppressLint("NewApi")
 @Composable
-fun FixedIncome(viewModel: PostFixedTransactionViewModel = PostFixedTransactionViewModel(LocalContext.current)) {
+fun FixedIncome(
+    viewModel: PostFixedTransactionViewModel = PostFixedTransactionViewModel(LocalContext.current),
+    navController: NavController
+) {
 
     // Dữ liệu cần thiết cho form
     val vietnamLocale = Locale("vi", "VN")
@@ -61,6 +65,7 @@ fun FixedIncome(viewModel: PostFixedTransactionViewModel = PostFixedTransactionV
     var showPopup by remember { mutableStateOf(false) }
     var successMessage by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf("") }
+    var isLoading by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
@@ -144,7 +149,9 @@ fun FixedIncome(viewModel: PostFixedTransactionViewModel = PostFixedTransactionV
             // Nút thêm giao dịch
             MyButtonComponent(
                 value = "Thêm",
+                isLoading = isLoading,
                 onClick = {
+                    isLoading = true
                     // Chuyển giá trị sang FixedTransaction và gọi ViewModel để thêm
                     val amount = amountState.text.toLongOrNull() ?: 0L
 
@@ -168,6 +175,7 @@ fun FixedIncome(viewModel: PostFixedTransactionViewModel = PostFixedTransactionV
                     // Gọi ViewModel để thêm giao dịch và xử lý kết quả
                     viewModel.addFixedTransaction(fixedTransaction,
                         onSuccess = { message ->
+                            navController.popBackStack("anual", inclusive = false)
                             // Cập nhật thông báo thành công và hiển thị popup
                             successMessage = "Gửi dữ liệu thành công"
                             errorMessage = ""

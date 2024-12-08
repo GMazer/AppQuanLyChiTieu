@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.jetpackcompose.R
 import com.example.jetpackcompose.app.features.apiService.FixedTransactionAPI.PostFixedTransactionViewModel
 import com.example.jetpackcompose.app.features.apiService.FixedTransactionAPI.FixedTransaction
@@ -40,7 +41,10 @@ import java.util.Locale
 
 @SuppressLint("NewApi")
 @Composable
-fun FixedExpense(viewModel: PostFixedTransactionViewModel = PostFixedTransactionViewModel(LocalContext.current)) {
+fun FixedExpense(
+    viewModel: PostFixedTransactionViewModel = PostFixedTransactionViewModel(LocalContext.current),
+    navController: NavController
+) {
 
     // Dữ liệu cần thiết cho form
     val vietnamLocale = Locale("vi", "VN")
@@ -61,6 +65,7 @@ fun FixedExpense(viewModel: PostFixedTransactionViewModel = PostFixedTransaction
     var showPopup by remember { mutableStateOf(false) }
     var successMessage by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf("") }
+    var isLoading by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
@@ -146,7 +151,9 @@ fun FixedExpense(viewModel: PostFixedTransactionViewModel = PostFixedTransaction
             // Nút thêm giao dịch
             MyButtonComponent(
                 value = "Thêm",
+                isLoading = isLoading,
                 onClick = {
+                    isLoading = true
                     // Chuyển giá trị sang FixedTransaction và gọi ViewModel để thêm
                     val amount = amountState.text.toLongOrNull() ?: 0L
 
@@ -180,6 +187,7 @@ fun FixedExpense(viewModel: PostFixedTransactionViewModel = PostFixedTransaction
                             statusMessage = message
                             statusColor = Color.Green
                             showPopup = true // Hiển thị popup thành công
+                            navController.popBackStack("anual", inclusive = false)
                         },
                         onError = { message ->
                             // Cập nhật thông báo lỗi và hiển thị popup

@@ -44,6 +44,7 @@ fun SignUpScreen(navController: NavHostController, viewModel: SignUpViewModel = 
     var agreeToTerms by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
     var successMessage by remember { mutableStateOf("") }
+    var isLoading by remember { mutableStateOf(false) }
 
     Surface(
         modifier = Modifier
@@ -93,7 +94,10 @@ fun SignUpScreen(navController: NavHostController, viewModel: SignUpViewModel = 
                 onCheckedChange = { agreeToTerms = it }
             )
             Spacer(modifier = Modifier.height(10.dp))
-            MyButtonComponent("Đăng ký", onClick = {
+            MyButtonComponent(
+                "Đăng ký",
+                isLoading = isLoading,
+                onClick = {
                 if (phoneNumber.isEmpty() || email.isEmpty() || password.isEmpty() || retypePassword.isEmpty()) {
                     errorMessage = "Vui lòng điền đầy đủ thông tin."
                 } else if (password != retypePassword) {

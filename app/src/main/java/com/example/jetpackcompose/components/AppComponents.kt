@@ -90,6 +90,7 @@ import com.example.jetpackcompose.ui.theme.componentShapes
 import com.example.jetpackcompose.ui.theme.highGray
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.layout.onSizeChanged
@@ -110,7 +111,8 @@ val montserrat = FontFamily(
     Font(R.font.montserrat_regular, FontWeight.Normal),
     Font(R.font.montserrat_bold, FontWeight.Bold),
     Font(R.font.montserrat_light, FontWeight.Light),
-    Font(R.font.montserrat_medium, FontWeight.Medium)
+    Font(R.font.montserrat_medium, FontWeight.Medium),
+    Font(R.font.montserrat_semibold, FontWeight.SemiBold)
 )
 
 @Composable
@@ -529,8 +531,7 @@ fun CategoryItem(
 
 
 @Composable
-fun MyButtonComponent(value: String, onClick: () -> Unit)
-{
+fun MyButtonComponent(value: String, onClick: () -> Unit, isLoading: Boolean) {
     Button(
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(containerColor = colorPrimary),
@@ -538,15 +539,27 @@ fun MyButtonComponent(value: String, onClick: () -> Unit)
             .fillMaxWidth()
             .height(56.dp)
             .padding(top = 16.dp),
+        enabled = !isLoading // Disable button while loading
     ) {
-        Text(
-            value,
-            color = Color.White,
-            fontFamily = montserrat,
-            fontWeight = FontWeight.Bold,
-            fontSize = 16.sp)
+        if (isLoading) {
+            // Hiển thị CircularProgressIndicator khi đang loading
+            CircularProgressIndicator(
+                color = Color.White,
+                modifier = Modifier.size(24.dp)
+            )
+        } else {
+            // Hiển thị text bình thường khi không loading
+            Text(
+                value,
+                color = Color.White,
+                fontFamily = montserrat,
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp
+            )
+        }
     }
 }
+
 
 @Composable
 fun ClickableTextComponent(value: String, onClick: () -> Unit) {

@@ -32,6 +32,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -75,11 +76,13 @@ fun EditFixedExpenseTransaction(navController: NavHostController, fixedTransacti
     var selectedEndDate by remember { mutableStateOf("") }
     var amountState by remember { mutableStateOf(TextFieldValue("")) }
 
+
     // Trạng thái hiển thị thông báo
     var showPopup by remember { mutableStateOf(false) }
     var errorMessage1 by remember { mutableStateOf("") }
     var successMessage2 by remember { mutableStateOf("Đang tải dữ liệu") }
     var errorMessage2 by remember { mutableStateOf("") }
+    var isLoading by remember { mutableStateOf(false) }
 
 
     // Dữ liệu giao dịch cố định
@@ -89,7 +92,8 @@ fun EditFixedExpenseTransaction(navController: NavHostController, fixedTransacti
     LaunchedEffect(fixedTransactionId) {
         getFixedTransactionViewModel.getFixedTransactions(
             onSuccess = { transactionList ->
-                fixedTransaction = transactionList.find { it.fixed_transaction_id == fixedTransactionId }
+                fixedTransaction =
+                    transactionList.find { it.fixed_transaction_id == fixedTransactionId }
                 // Điền dữ liệu vào các trường nhập liệu
                 fixedTransaction?.let {
                     titleState = TextFieldValue(it.title ?: "")
@@ -108,13 +112,25 @@ fun EditFixedExpenseTransaction(navController: NavHostController, fixedTransacti
         )
     }
 
-    Column(modifier = Modifier.fillMaxSize().background(Color.White)) {
+    Column(
+        modifier = Modifier
+            .background(Color(0xfff5f5f5))
+            .fillMaxSize()
+    ) {
         // Thanh tiêu đề với nút Quay lại và Xóa
-        Box(modifier = Modifier.fillMaxWidth()) {
+        Box(
+            modifier = Modifier
+                .background(Color(0xfff1f1f1))
+                .height(50.dp)
+                .fillMaxWidth()
+        ) {
             Row(
-                modifier = Modifier.fillMaxWidth().height(50.dp).padding(8.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
+                    .padding(8.dp),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.Center
             ) {
                 IconButton(onClick = { navController.popBackStack() }) {
                     Icon(
@@ -129,12 +145,15 @@ fun EditFixedExpenseTransaction(navController: NavHostController, fixedTransacti
                     fontFamily = montserrat,
                     fontWeight = FontWeight.Bold,
                     color = textColor,
-                    modifier = Modifier.weight(1f),
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.weight(1f)
                 )
             }
         }
-        Divider(modifier = Modifier.padding(vertical = 8.dp))
+        Divider(
+            color = Color.LightGray,
+            thickness = 1.dp
+        )
 
         // Hiển thị thông báo thành công hay thất bại
         MessagePopup(
@@ -148,7 +167,11 @@ fun EditFixedExpenseTransaction(navController: NavHostController, fixedTransacti
             }
         )
 
-        Column(modifier = Modifier.fillMaxWidth()) {
+        Column(
+            modifier = Modifier
+                .background(Color(0xfff5f5f5))
+                .fillMaxSize()
+        ) {
             // Tiêu đề và số tiền
             Box(
                 modifier = Modifier
@@ -229,11 +252,12 @@ fun EditFixedExpenseTransaction(navController: NavHostController, fixedTransacti
             ) {
                 MyButtonComponent(
                     value = "Chỉnh sửa chi phí",
+                    isLoading = isLoading,
                     onClick = {
+                        isLoading = true
                         // Tạo đối tượng FixedTransactionUpdate
                         val updatedTransaction = FixedTransactionUpdate(
-                            category_id = when (selectedCategory)
-                            {
+                            category_id = when (selectedCategory) {
                                 "Chi phí nhà ở" -> 1
                                 "Ăn uống" -> 2
                                 "Mua sắm quần áo" -> 3
@@ -252,8 +276,14 @@ fun EditFixedExpenseTransaction(navController: NavHostController, fixedTransacti
                             end_date = selectedEndDate
                         )
 
-                        Log.d("EditFixedExpenseTransaction", "Fixed Transaction ID: $fixedTransactionId")
-                        Log.d("EditFixedExpenseTransaction", "Updated Transaction: $updatedTransaction")
+                        Log.d(
+                            "EditFixedExpenseTransaction",
+                            "Fixed Transaction ID: $fixedTransactionId"
+                        )
+                        Log.d(
+                            "EditFixedExpenseTransaction",
+                            "Updated Transaction: $updatedTransaction"
+                        )
                         // Gọi PutFixedTransactionViewModel để cập nhật giao dịch
                         putFixedTransactionViewModel.putFixedTransaction(
                             fixed_transaction_id = fixedTransactionId,
@@ -273,5 +303,17 @@ fun EditFixedExpenseTransaction(navController: NavHostController, fixedTransacti
             }
         }
     }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Preview
+@Composable
+fun EditFixedExpenseTransactionPreview() {
+    val context = LocalContext.current
+    EditFixedExpenseTransaction(
+        navController = NavHostController(
+            context = context
+        ), fixedTransactionId = 1
+    )
 }
 

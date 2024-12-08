@@ -169,8 +169,9 @@ fun ExpenseContent(
                     Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
                         Button(
                             onClick = {
+                                successMessage = "Đang gửi dữ liệu..."
+                                showPopup = true
                                 val amount = amountValue.text.toLongOrNull() ?: 0L
-
                                 val transaction = Transaction(
                                     transaction_date = selectedDate.substring(0, 11),
                                     note = textNote.text,

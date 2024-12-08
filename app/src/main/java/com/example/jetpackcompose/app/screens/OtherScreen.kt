@@ -63,6 +63,8 @@ fun OtherScreen(navController: NavHostController) {
                         title = {
                             Box(
                                 modifier = Modifier
+                                    .background(color = topBarColor)
+                                    .height(50.dp)
                                     .fillMaxSize()
                                     .padding(start = 16.dp, end = 32.dp),
                                 contentAlignment = Alignment.Center
@@ -98,7 +100,7 @@ fun OtherScreen(navController: NavHostController) {
                 modifier = Modifier
                     .padding(paddingValues)
                     .fillMaxHeight()
-                    .background(color = lightGray)
+                    .background(Color(0xfff5f5f5))
             ) {
                 Spacer(modifier = Modifier.height(16.dp))
 

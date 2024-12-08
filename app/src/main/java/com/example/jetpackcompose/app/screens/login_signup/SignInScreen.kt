@@ -37,6 +37,7 @@ fun SignInScreen(navController: NavHostController) {
     var password by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf("") }
     var successMessage by remember { mutableStateOf("") }
+    var isLoading by remember { mutableStateOf(false) }
 
     Surface(
         modifier = Modifier
@@ -73,7 +74,11 @@ fun SignInScreen(navController: NavHostController) {
             )
 
             Spacer(modifier = Modifier.height(40.dp))
-            MyButtonComponent("Đăng nhập", onClick = {
+            MyButtonComponent(
+                "Đăng nhập",
+                isLoading = isLoading,
+                onClick = {
+                    isLoading = true
                 if (phoneNumber.isEmpty() || password.isEmpty()) {
                     errorMessage = "Vui lòng điền đầy đủ thông tin."
                 } else {

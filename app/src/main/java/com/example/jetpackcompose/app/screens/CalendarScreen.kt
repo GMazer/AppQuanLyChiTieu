@@ -39,6 +39,7 @@ import com.example.jetpackcompose.app.features.apiService.TransactionAPI.GetTran
 import com.example.jetpackcompose.app.network.TransactionResponse
 import com.example.jetpackcompose.components.CustomCalendar
 import com.example.jetpackcompose.components.DayIndex
+import com.example.jetpackcompose.components.MessagePopup
 import com.example.jetpackcompose.components.MonthPickerButton
 import com.example.jetpackcompose.components.montserrat
 import com.example.jetpackcompose.ui.theme.textColor
@@ -80,12 +81,22 @@ fun CalendarScreen(navController: NavController) {
     var transactionList by remember { mutableStateOf(listOf<DailyTransaction>()) }
     var dateTransactionList by remember { mutableStateOf<Map<String, List<TransactionResponse.TransactionDetail>>>(emptyMap()) }
     var errorMessage by remember { mutableStateOf("") }
+    var successMessage by remember { mutableStateOf("") }
+    var showPopup by remember { mutableStateOf(false) }
+
+    MessagePopup(
+        showPopup = showPopup,
+        successMessage = successMessage,
+        errorMessage = errorMessage,
+        onDismiss = { showPopup = false } // Đóng popup khi nhấn ngoài
+    )
 
     // Khởi tạo NavHostController
     LaunchedEffect(selectedMonthYear) {
+        successMessage = "Đang tải dữ liệu..."
+        showPopup = true
         val (month, year) = selectedMonthYear.split("/").map { it.toInt() }
         selectedDate = ""
-
         viewModel.getTransactions(
             month = month,
             year = year,

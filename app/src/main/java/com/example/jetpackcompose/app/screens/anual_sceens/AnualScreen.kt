@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredWidthIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -36,8 +38,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -46,6 +51,8 @@ import com.example.jetpackcompose.R
 import com.example.jetpackcompose.app.features.apiService.FixedTransactionAPI.DeleteFixedTransactionViewModel
 import com.example.jetpackcompose.app.features.apiService.FixedTransactionAPI.FixedTransactionResponse
 import com.example.jetpackcompose.app.features.apiService.FixedTransactionAPI.GetFixedTransactionViewModel
+import com.example.jetpackcompose.app.features.inputFeatures.Category
+import com.example.jetpackcompose.components.MessagePopup
 import com.example.jetpackcompose.components.montserrat
 import com.example.jetpackcompose.ui.theme.colorPrimary
 import com.example.jetpackcompose.ui.theme.componentShapes
@@ -56,12 +63,26 @@ import java.util.Locale
 
 @Composable
 fun AnualScreen(navController: NavHostController) {
+
+
     var isEditing by remember { mutableStateOf(false) }
     val viewModel: GetFixedTransactionViewModel = GetFixedTransactionViewModel(LocalContext.current)
     var fixedTransactions by remember { mutableStateOf<List<FixedTransactionResponse>>(emptyList()) }
+    var showPopup by remember { mutableStateOf(false) }
+    var successMessage by remember { mutableStateOf("") }
+    var errorMessage by remember { mutableStateOf("") }
+
+    MessagePopup(
+        showPopup = showPopup,
+        successMessage = successMessage,
+        errorMessage = errorMessage,
+        onDismiss = { showPopup = false } // Đóng popup khi nhấn ngoài
+    )
 
     // Hàm gọi lại API để tải lại danh sách giao dịch
     fun reloadTransactions() {
+        successMessage = "Đang tải dữ liệu..."
+        showPopup = true
         viewModel.getFixedTransactions(
             onSuccess = { transactions ->
                 fixedTransactions = transactions
@@ -73,6 +94,8 @@ fun AnualScreen(navController: NavHostController) {
     }
 
     LaunchedEffect(Unit) {
+        successMessage = "Đang tải dữ liệu..."
+        showPopup = true
         reloadTransactions() // Load dữ liệu ngay khi màn hình được tạo
     }
 
@@ -87,47 +110,64 @@ fun AnualScreen(navController: NavHostController) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            IconButton(onClick = {
-                navController.popBackStack("mainscreen", inclusive = false)
-            }) {
-                Icon(
-                    painter = painterResource(id = R.drawable.outline_arrow_back_ios_24),
-                    contentDescription = "Back",
-                    tint = colorPrimary,
-                    modifier = Modifier.size(24.dp)
+            // Nút quay lại
+            Box(modifier = Modifier.weight(1.5f)) {
+                IconButton(onClick = {
+                    navController.popBackStack("mainscreen", inclusive = false)
+                }) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.outline_arrow_back_ios_24),
+                        contentDescription = "Back",
+                        tint = colorPrimary,
+                        modifier = Modifier
+                            .size(24.dp)
+                    )
+                }
+            }
+
+            // Chữ "Thu chi cố định" luôn nằm giữa và ẩn nếu diện tích không đủ
+            Box(modifier = Modifier.weight(2f)) {
+                Text(
+                    "Thu chi cố định",
+                    fontSize = 14.sp,
+                    fontFamily = montserrat,
+                    fontWeight = FontWeight.Bold,
+                    color = textColor,
+                    modifier = Modifier
+                        .requiredWidthIn(min = 0.dp) // Ẩn chữ khi không đủ diện tích
+                        .fillMaxWidth(), // Đảm bảo chiếm toàn bộ không gian của Row
+                    textAlign = TextAlign.Center
                 )
             }
 
-            Text(
-                "Thu chi cố định",
-                fontSize = 16.sp,
-                fontFamily = montserrat,
-                fontWeight = FontWeight.Bold,
-                color = textColor,
-                modifier = Modifier.weight(1f),
-                textAlign = TextAlign.Center
-            )
-
-            Text(
-                if (isEditing) "Hoàn thành" else "Chỉnh sửa",
-                fontSize = 12.sp,
-                fontFamily = montserrat,
-                fontWeight = FontWeight.Normal,
-                color = colorPrimary,
-                modifier = Modifier.clickable(onClick = {
-                    isEditing = !isEditing
-                })
-            )
-
-            IconButton(onClick = {
-                navController.navigate("inputfixedtab")
-            }) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Add",
-                    tint = colorPrimary,
-                    modifier = Modifier.size(24.dp)
+            // Chữ "Chỉnh sửa" hoặc "Hoàn thành"
+            Box(modifier = Modifier.weight(1f)) {
+                Text(
+                    if (isEditing) "Hoàn thành" else "Chỉnh sửa",
+                    fontSize = 12.sp,
+                    fontFamily = montserrat,
+                    fontWeight = FontWeight.Normal,
+                    color = colorPrimary,
+                    modifier = Modifier
+                        .clickable(onClick = {
+                            isEditing = !isEditing
+                        })
                 )
+            }
+
+            // Nút thêm mới
+            Box(modifier = Modifier.weight(0.5f)) {
+                IconButton(onClick = {
+                    navController.navigate("inputfixedtab")
+                }) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Add",
+                        tint = colorPrimary,
+                        modifier = Modifier
+                            .size(24.dp)
+                    )
+                }
             }
         }
 
@@ -143,7 +183,6 @@ fun AnualScreen(navController: NavHostController) {
                 .fillMaxSize()
         ) {
             items(fixedTransactions) { transaction ->
-                Log.d("AnualScreen", "Transaction: ${transaction.repeate_frequency}")
                 FixedTransactionRow(
                     transaction = transaction,
                     isEditing = isEditing,
@@ -174,16 +213,104 @@ fun FixedTransactionRow(
         format
     }
 
-    val formattedAmount = if (transaction.category_id >= 10) {
-        "+${currencyFormatter.format(transaction.amount)}₫"
-    } else {
-        "${currencyFormatter.format(transaction.amount)}₫"
+    val amountText = buildAnnotatedString {
+        append(
+            if (transaction.category_id >= 10) {
+                "+${currencyFormatter.format(transaction.amount)}"
+            } else {
+                "${currencyFormatter.format(transaction.amount)}"
+            }
+        )
+        withStyle(style = SpanStyle(fontSize = 12.sp)) {  // Kích thước nhỏ hơn cho ký tự "₫"
+            append("₫")
+        }
     }
 
     // State để hiển thị AlertDialog
     var isDialogVisible by remember { mutableStateOf(false) }
     var dialogMessage by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
+
+    val categories = listOf(
+        Category(
+            1,
+            "Chi phí nhà ở",
+            { painterResource(R.drawable.outline_home_work_24) },
+            Color(0xFFfb791d),
+            1.00f
+        ),
+        Category(
+            2,
+            "Ăn uống",
+            { painterResource(R.drawable.outline_ramen_dining_24) },
+            Color(0xFF37c166),
+            1.00f
+        ),
+        Category(
+            3,
+            "Mua sắm quần áo",
+            { painterResource(R.drawable.clothes) },
+            Color(0xFF283eaa),
+            1.00f
+        ),
+        Category(
+            4,
+            "Đi lại",
+            { painterResource(R.drawable.outline_train_24) },
+            Color(0xFFa06749),
+            1.00f
+        ),
+        Category(
+            5,
+            "Chăm sóc sắc đẹp",
+            { painterResource(R.drawable.outline_cosmetic) },
+            Color(0xFFf95aa9),
+            1.00f
+        ),
+        Category(
+            6,
+            "Giao lưu",
+            { painterResource(R.drawable.entertainment) },
+            Color(0xFF6a1b9a),
+            1.00f
+        ),
+        Category(
+            7,
+            "Y tế",
+            { painterResource(R.drawable.outline_health_and_safety_24) },
+            Color(0xFFfc3d39),
+            1.00f
+        ),
+        Category(
+            8,
+            "Học tập",
+            { painterResource(R.drawable.outline_education) },
+            Color(0xFFfc7c1f),
+            1.00f
+        ),
+        Category(
+            10,
+            "Tiền lương",
+            { painterResource(R.drawable.salary) },
+            Color(0xFFfb791d),
+            1.00f
+        ),
+        Category(
+            11,
+            "Tiền thưởng",
+            { painterResource(R.drawable.baseline_card_giftcard_24) },
+            Color(0xFF37c166),
+            1.00f
+        ),
+        Category(
+            12,
+            "Thu nhập phụ",
+            { painterResource(R.drawable.secondary) },
+            Color(0xFFf95aa9),
+            1.00f
+        ),
+        Category(11, "Trợ cấp", { painterResource(R.drawable.subsidy) }, Color(0xFFfba74a), 1.00f)
+    )
 
     Row(
         modifier = Modifier
@@ -201,7 +328,7 @@ fun FixedTransactionRow(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Nếu đang chỉnh sửa, hiển thị dấu trừ, nếu không hiển thị mũi tên
+
         if (isEditing) {
             Icon(
                 painter = painterResource(id = R.drawable.baseline_remove_circle_24),
@@ -218,20 +345,52 @@ fun FixedTransactionRow(
             Spacer(modifier = Modifier.width(8.dp))
         }
 
-        // Cột bên trái: Note và Category Name
+        val category = categories.find { it.id == transaction.category_id }
+        if (category != null) {
+            Icon(
+                painter = category.iconPainter(),
+                contentDescription = category.name,
+                tint = category.iconColor,
+                modifier = Modifier
+                    .size(32.dp)
+                    .padding(end = 8.dp)
+            )
+        }
+
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = transaction.title ?: "No Title",
-                fontWeight = FontWeight.Bold,
+                fontWeight = FontWeight.SemiBold,
                 fontFamily = montserrat,
-                fontSize = 16.sp,
+                color = textColor,
+                fontSize = 12.sp,
             )
             Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = transaction.categoryName,
-                fontSize = 10.sp,
-                fontFamily = montserrat,
-            )
+            Row {
+                Text(
+                    text = transaction.categoryName,
+                    fontSize = 8.sp,
+                    fontFamily = montserrat,
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = "\u2022",
+                    fontSize = 8.sp,
+                    fontFamily = montserrat,
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = when (transaction.repeate_frequency) {
+                        "daily" -> "Hàng ngày"
+                        "weekly" -> "Hàng tuần"
+                        "monthly" -> "Hàng tháng"
+                        "yearly" -> "Hàng năm"
+                        else -> "Không xác định"
+                    },
+                    fontSize = 8.sp,
+                    fontFamily = montserrat,
+                )
+            }
         }
 
         // Cột bên phải: Amount và Mũi tên
@@ -241,11 +400,11 @@ fun FixedTransactionRow(
         ) {
             // Hiển thị Amount
             Text(
-                text = formattedAmount,
-                fontWeight = FontWeight.Bold,
+                text = amountText,
+                fontWeight = FontWeight.SemiBold,
                 fontFamily = montserrat,
-                fontSize = 18.sp,
-                color = if (transaction.category_id >= 10) Color(0xff62bbeb) else Color(0xffff4948),
+                fontSize = 16.sp,
+                color = if (transaction.category_id >= 10) Color(0xff62bbeb) else Color(0xffff5c46),
             )
             Spacer(modifier = Modifier.width(6.dp))
 
@@ -260,6 +419,7 @@ fun FixedTransactionRow(
             }
         }
     }
+
 
     // Hiển thị AlertDialog khi isDialogVisible = true
     if (isDialogVisible) {
@@ -313,5 +473,6 @@ fun FixedTransactionRow(
 @Preview
 @Composable
 fun PreviewAnualScreen() {
-    AnualScreen(navController = NavHostController(context = TODO()))
+    val context = LocalContext.current
+    AnualScreen(navController = NavHostController(context = context))
 }
