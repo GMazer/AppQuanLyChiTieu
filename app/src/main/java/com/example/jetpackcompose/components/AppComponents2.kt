@@ -1126,9 +1126,9 @@ fun OtherFunction(
         items.forEachIndexed { index, item ->
             // Xác định bo góc cho phần tử dựa vào vị trí của nó
             val cornerShape = when (index) {
-                0 -> RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp) // Phần tử đầu tiên bo góc trên
-                1 -> RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp) // Phần tử thứ hai bo góc dưới
-                else -> RoundedCornerShape(0.dp) // Phần tử thứ ba và các phần tử khác không bo góc
+                0 -> RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)
+                1 -> RoundedCornerShape(bottomStart = 8.dp, bottomEnd = 8.dp)
+                else -> RoundedCornerShape(0.dp)
             }
 
             Box(
