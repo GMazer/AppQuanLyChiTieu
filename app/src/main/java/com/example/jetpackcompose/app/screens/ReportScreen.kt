@@ -90,8 +90,6 @@ fun ReportScreen(viewModel: GetReportViewModel = GetReportViewModel(LocalContext
             month = month,
             year = year,
             onSuccess = { report ->
-                successMessage = "Thành công"
-                showPopup = true
                 Log.d("MainActivity", "Report data: $selectedMonthYear")
 
                 // Lấy giá trị từ report và gán vào các danh sách
