@@ -31,10 +31,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.input.pointer.motionEventSpy
 import androidx.compose.ui.platform.LocalContext
 import com.example.jetpackcompose.app.features.apiService.ReportAPI.GetReportViewModel
+import com.example.jetpackcompose.components.CategoryIconWithName
 import com.example.jetpackcompose.components.YearPickerButton
 import com.example.jetpackcompose.components.DonutChartWithProgress
+import com.example.jetpackcompose.components.MessagePopup
 import com.example.jetpackcompose.components.MonthPickerButton
-import com.example.jetpackcompose.components.ReportCategory
 import com.example.jetpackcompose.components.ReportTable
 import com.example.jetpackcompose.ui.theme.highGray
 import com.example.jetpackcompose.ui.theme.lightGray
@@ -48,9 +49,11 @@ data class ReportData(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReportScreen(viewModel: GetReportViewModel = GetReportViewModel(LocalContext.current)) {
-    val values = listOf(10, 20, 30, 25, 40, 35, 45, 50, 60, 55, 70, 65) // Dữ liệu cho các tháng
-    val indexs = listOf(12, 22, 33, 24, 45, 36, 47, 58, 69, 50, 71, 62) // Mốc cho mỗi tháng
-    val months = listOf("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+
+    var showPopup by remember { mutableStateOf(false) }
+
+    var successMessage by remember { mutableStateOf("") }
+    var errorMessage by remember { mutableStateOf("") }
 
     var percentSpent by remember { mutableStateOf(listOf<Float>()) }
     var percentLimit by remember { mutableStateOf(listOf<Int>()) }
@@ -70,8 +73,20 @@ fun ReportScreen(viewModel: GetReportViewModel = GetReportViewModel(LocalContext
 
     var selectedMonthYear by remember { mutableStateOf(currentMonthYear) }
 
+    MessagePopup(
+        showPopup = showPopup,
+        successMessage = successMessage,
+        errorMessage = errorMessage,
+        onDismiss = { showPopup = false } // Đóng popup khi nhấn ngoài
+    )
+
     // Dùng LaunchedEffect để gọi lại API khi selectedMonthYear thay đổi
     LaunchedEffect(selectedMonthYear) {
+
+        successMessage = "Đang tải dữ liệu..."
+        showPopup = true
+
+        // Lấy tháng và năm từ selectedMonthYear
         val (month, year) = selectedMonthYear.split("/").map { it.toInt() }.let { it[0] to it[1] }
 
         viewModel.getReport(
@@ -91,15 +106,15 @@ fun ReportScreen(viewModel: GetReportViewModel = GetReportViewModel(LocalContext
 
                 // Màu sắc cho biểu đồ (có thể mở rộng theo số lượng danh mục)
                 colors = listOf(
-                    Color(0xFFDED600),
-                    Color(0xFFedaf25),
-                    Color(0xFFdc5f26),
-                    Color(0xFFaf2e2b),
-                    Color(0xFF8a358d),
-                    Color(0xFF26476d),
-                    Color(0xFF4076b6),
-                    Color(0xFF60ace2),
-                    Color(0xFF60b141)
+                    Color(0xFFD5CC00),
+                    Color(0xFFEE9305),
+                    Color(0xFFD94E0F),
+                    Color(0xFFB40300),
+                    Color(0xFF911294),
+                    Color(0xFF0C326E),
+                    Color(0xFF126AB6),
+                    Color(0xFF0D96DA),
+                    Color(0xFF4DB218)
                 )
             },
             onError = { error ->
@@ -183,6 +198,29 @@ fun ReportScreen(viewModel: GetReportViewModel = GetReportViewModel(LocalContext
                             selectedMonthYear = month
                         })
 
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                    }
+                }
+
+                item{
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+
+                item{
+                    ReportTable(totalIncome, totalExpense, netAmount)
+                }
+
+                item{
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+
+                item {
+                    Column(
+                        modifier = Modifier
+                            .background(color = Color.White)
+                            .fillMaxWidth()
+                    ){
                         // Hiển thị biểu đồ nếu đã có dữ liệu
                         if (percentLimit.isNotEmpty() && percentSpent.isNotEmpty() && labels.isNotEmpty()) {
                             DonutChartWithProgress(percentLimit, colors, labels, percentSpent)
@@ -197,22 +235,27 @@ fun ReportScreen(viewModel: GetReportViewModel = GetReportViewModel(LocalContext
                     }
                 }
 
-                item {
-                    Spacer(modifier = Modifier.height(16.dp))
-                }
 
                 item{
-                    ReportTable(totalIncome, totalExpense, netAmount)
-                }
-
-                item{
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Divider(modifier = Modifier.fillMaxWidth().height(2.dp))
                 }
 
                 for (item in listReport) {
                     if (item.name != "Tiết kiệm") {
                         item {
-                            ReportCategory("${item.name}", item.amount.toInt())
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Start,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(color = Color.White)
+                                    .height(50.dp)
+                                    .padding(horizontal = 16.dp)
+                            ) {
+                                CategoryIconWithName(item.name, "", item.amount, "expense", 0)
+                            }
+                        }
+                        item {
                             Divider(modifier = Modifier.fillMaxWidth().height(2.dp))
                         }
                     }

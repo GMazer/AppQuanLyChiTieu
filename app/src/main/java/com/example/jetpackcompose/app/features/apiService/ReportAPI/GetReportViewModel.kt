@@ -58,6 +58,7 @@ class GetReportViewModel(private val context: Context) : ViewModel() {
 
                 val response = api.getReport("Bearer $token", month, year)
                 Log.d("GetReportViewModel", "Response Code: ${response.code()}")
+                Log.d("GetReportViewModel", "Response Code: ${response.body()}")
                 Log.d("GetReportViewModel", "Response Error Body: ${response.errorBody()?.string()}")
 
                 if (response.isSuccessful) {
