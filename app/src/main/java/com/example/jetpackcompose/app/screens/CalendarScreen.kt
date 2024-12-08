@@ -27,9 +27,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -133,10 +136,33 @@ fun CalendarScreen(navController: NavController) {
     val totalExpense = transactionList.sumOf { it.amountExpense }
     val totalIncome = transactionList.sumOf { it.amountIncome }
     val totalBalance = totalIncome - totalExpense
-    val formattedBalance = if (totalBalance >= 0) {
-        "+${currencyFormatter.format(totalBalance)}₫"
-    } else {
-        "${currencyFormatter.format(totalBalance)}₫"
+
+
+    val formattedBalance = buildAnnotatedString {
+        append(
+            if (totalBalance >= 0) {
+                "+${currencyFormatter.format(totalBalance)}"
+            } else {
+                "${currencyFormatter.format(totalBalance)}"
+            }
+        )
+        withStyle(style = SpanStyle(fontSize = 12.sp)) {  // Kích thước nhỏ hơn cho ký tự "₫"
+            append("₫")
+        }
+    }
+
+    val formattedTotalExpense = buildAnnotatedString {
+        append("${currencyFormatter.format(totalExpense)}")
+        withStyle(style = SpanStyle(fontSize = 12.sp)) {  // Kích thước nhỏ hơn cho ký tự "₫"
+            append("₫")
+        }
+    }
+
+    val formattedTotalIncome = buildAnnotatedString {
+        append("${currencyFormatter.format(totalIncome)}")
+        withStyle(style = SpanStyle(fontSize = 12.sp)) {  // Kích thước nhỏ hơn cho ký tự "₫"
+            append("₫")
+        }
     }
 
     MaterialTheme(
@@ -162,6 +188,7 @@ fun CalendarScreen(navController: NavController) {
                                     text = "Lịch",
                                     style = TextStyle(
                                         fontWeight = FontWeight.Bold,
+                                        fontFamily = montserrat,
                                         fontSize = 16.sp,
                                     ),
                                     textAlign = TextAlign.Center,
@@ -213,6 +240,7 @@ fun CalendarScreen(navController: NavController) {
                             text = "Thu nhập",
                             style = TextStyle(
                                 fontWeight = FontWeight.Bold,
+                                fontFamily = montserrat,
                                 fontSize = 12.sp,
                             ),
                             color = textColor,
@@ -221,9 +249,10 @@ fun CalendarScreen(navController: NavController) {
                                 .fillMaxWidth()
                         )
                         Text(
-                            text = "${currencyFormatter.format(totalIncome)}₫",
+                            text = formattedTotalIncome,
                             style = TextStyle(
                                 fontWeight = FontWeight.Bold,
+                                fontFamily = montserrat,
                                 fontSize = 16.sp,
                             ),
                             color = Color(0xff37c8ec),
@@ -237,6 +266,7 @@ fun CalendarScreen(navController: NavController) {
                             text = "Chi tiêu",
                             style = TextStyle(
                                 fontWeight = FontWeight.Bold,
+                                fontFamily = montserrat,
                                 fontSize = 12.sp,
                             ),
                             color = textColor,
@@ -245,11 +275,12 @@ fun CalendarScreen(navController: NavController) {
                                 .fillMaxWidth()
                         )
                         Text(
-                            text = "${currencyFormatter.format(totalExpense)}₫",
+                            text = formattedTotalExpense,
                             style = TextStyle(
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 16.sp,
-                            ),
+                                fontFamily = montserrat,
+                                ),
                             color = colorPrimary,
                             textAlign = TextAlign.Center,
                             modifier = Modifier
@@ -261,6 +292,7 @@ fun CalendarScreen(navController: NavController) {
                             text = "Tổng",
                             style = TextStyle(
                                 fontWeight = FontWeight.Bold,
+                                fontFamily = montserrat,
                                 fontSize = 12.sp,
                             ),
                             color = textColor,
@@ -272,6 +304,7 @@ fun CalendarScreen(navController: NavController) {
                             text = formattedBalance,
                             style = TextStyle(
                                 fontWeight = FontWeight.Bold,
+                                fontFamily = montserrat,
                                 fontSize = 16.sp,
                             ),
                             color = if (totalBalance >= 0) Color(0xff37c8ec) else colorPrimary,

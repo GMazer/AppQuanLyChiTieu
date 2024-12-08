@@ -14,8 +14,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -32,7 +30,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
-import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -52,17 +49,19 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Popup
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.jetpackcompose.R
@@ -219,8 +218,7 @@ fun CategoryIconWithName(
     categoryName: String,
     transactionNote: String,
     transactionAmount: Long,
-    transactionType: String,
-    transactionId: Int
+    transactionType: String
 ) {
     val currencyFormatter = remember {
         val symbols = DecimalFormatSymbols(Locale("vi", "VN"))
@@ -229,6 +227,13 @@ fun CategoryIconWithName(
 
         val format = DecimalFormat("#,###", symbols)
         format
+    }
+
+    val amountText = buildAnnotatedString {
+        append("${currencyFormatter.format(transactionAmount)}")
+        withStyle(style = SpanStyle(fontSize = 10.sp)) {  // Kích thước nhỏ hơn cho ký tự "₫"
+            append("₫")
+        }
     }
 
     // Danh sách các Category
@@ -356,7 +361,7 @@ fun CategoryIconWithName(
                 Spacer(modifier = Modifier.weight(1f))
             }
             Text(
-                text = "${currencyFormatter.format(transactionAmount)}₫",
+                text = amountText,
                 fontFamily = montserrat,
                 fontWeight = FontWeight.Bold,
                 color = if (transactionType == "expense") textColor else Color(0xff37c8ec),
@@ -463,8 +468,7 @@ fun DayIndex(
                                         categoryName = transaction.categoryName,
                                         transactionNote = it,
                                         transactionAmount = transaction.amount,
-                                        transactionType = it1,
-                                        transactionId = id
+                                        transactionType = it1
                                     )
                                 }
                             }

@@ -28,16 +28,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.input.pointer.motionEventSpy
 import androidx.compose.ui.platform.LocalContext
 import com.example.jetpackcompose.app.features.apiService.ReportAPI.GetReportViewModel
 import com.example.jetpackcompose.components.CategoryIconWithName
-import com.example.jetpackcompose.components.YearPickerButton
 import com.example.jetpackcompose.components.DonutChartWithProgress
 import com.example.jetpackcompose.components.MessagePopup
 import com.example.jetpackcompose.components.MonthPickerButton
 import com.example.jetpackcompose.components.ReportTable
-import com.example.jetpackcompose.ui.theme.highGray
 import com.example.jetpackcompose.ui.theme.lightGray
 import java.util.Calendar
 
@@ -252,7 +249,7 @@ fun ReportScreen(viewModel: GetReportViewModel = GetReportViewModel(LocalContext
                                     .height(50.dp)
                                     .padding(horizontal = 16.dp)
                             ) {
-                                CategoryIconWithName(item.name, "", item.amount, "expense", 0)
+                                CategoryIconWithName(item.name, "", item.amount, "expense")
                             }
                         }
                         item {
