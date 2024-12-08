@@ -21,8 +21,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.LocalTextStyle
@@ -45,7 +43,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -56,7 +53,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import com.example.jetpackcompose.R
 import com.example.jetpackcompose.ui.theme.textColor
 import com.example.jetpackcompose.ui.theme.colorPrimary
 import java.util.Calendar
@@ -65,14 +61,19 @@ import androidx.compose.material.Divider
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import com.example.jetpackcompose.app.features.apiService.TransactionAPI.GetLimitTransactionViewModel
 import com.example.jetpackcompose.app.features.inputFeatures.LimitTransaction
 import com.example.jetpackcompose.app.features.inputFeatures.montserrat
 import com.example.jetpackcompose.ui.theme.highGray
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
+import java.util.Locale
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -417,88 +418,6 @@ fun YearPickerDialog(
                 }
             }
         }
-    }
-}
-
-@Composable
-fun YearPickerButton(onYearSelected: (String) -> Unit) {
-    var yearText by remember { mutableStateOf("") }
-    var showYearPicker by remember { mutableStateOf(false) }
-    val calendar = remember { mutableStateOf(Calendar.getInstance()) }
-
-    // Hàm để cập nhật chuỗi hiển thị năm
-    fun updateYearText() {
-        val year = calendar.value.get(Calendar.YEAR).toString()
-        yearText = year // Cập nhật năm
-        onYearSelected(year) // Gọi callback với giá trị năm
-    }
-
-    // Cập nhật năm hiện tại khi khởi tạo
-    LaunchedEffect(key1 = true) {
-        updateYearText()
-    }
-
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        // Nút lùi năm
-        IconButton(
-            onClick = {
-                calendar.value.add(Calendar.YEAR, -1)
-                updateYearText() // Gọi callback khi lùi năm
-            },
-            modifier = Modifier
-                .weight(1f)
-                .size(20.dp)
-        ) {
-            androidx.compose.material3.Icon(
-                painter = painterResource(id = R.drawable.outline_arrow_back_ios_24),
-                contentDescription = "Lùi năm",
-                tint = Color(0xFF444444)
-            )
-        }
-        // Nút chọn năm
-        Button(
-            modifier = Modifier.weight(8f),
-            shape = RoundedCornerShape(8.dp),
-            onClick = { showYearPicker = true }, // Hiển thị YearPickerDialog
-            colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFe1e1e1))
-        ) {
-            Text(
-                yearText,
-                fontFamily = montserrat,
-                color = Color(0xFF444444),
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp
-            )
-        }
-        // Nút tiến năm
-        IconButton(
-            onClick = {
-                calendar.value.add(Calendar.YEAR, +1)
-                updateYearText() // Gọi callback khi tiến năm
-            },
-            modifier = Modifier
-                .weight(1f)
-                .size(20.dp)
-        ) {
-            androidx.compose.material3.Icon(
-                painter = painterResource(id = R.drawable.outline_arrow_forward_ios_24),
-                contentDescription = "Tiến năm",
-                tint = Color(0xFF444444)
-            )
-        }
-    }
-
-    // Hiển thị YearPickerDialog khi cần
-    if (showYearPicker) {
-        YearPickerDialog(
-            initialYear = calendar.value.get(Calendar.YEAR),
-            onDismiss = { showYearPicker = false },
-            onYearSelected = { selectedYear ->
-                calendar.value.set(Calendar.YEAR, selectedYear)
-                updateYearText() // Cập nhật năm sau khi chọn
-                showYearPicker = false
-            }
-        )
     }
 }
 
@@ -1216,6 +1135,42 @@ fun OtherTab(value: String, onClick: () -> Unit, painter: Painter) {
 
 @Composable
 fun ReportTable(income: Long, expense: Long, net: Long) {
+
+    val currencyFormatter = remember {
+        val symbols = DecimalFormatSymbols(Locale("vi", "VN"))
+        symbols.decimalSeparator = '.'
+        symbols.groupingSeparator = ','
+        val format = DecimalFormat("#,###", symbols)
+        format
+    }
+
+    val formattedIncome = buildAnnotatedString {
+        append("+${currencyFormatter.format(income)}")
+        withStyle(style = SpanStyle(fontSize = 12.sp)) {  // Kích thước nhỏ hơn cho ký tự "₫"
+            append("₫")
+        }
+    }
+
+    val formattedExpense = buildAnnotatedString {
+        append("-${currencyFormatter.format(expense)}")
+        withStyle(style = SpanStyle(fontSize = 12.sp)) {  // Kích thước nhỏ hơn cho ký tự "₫"
+            append("₫")
+        }
+    }
+
+    val formattedBalance = buildAnnotatedString {
+        append(
+            if (net >= 0) {
+                "+${currencyFormatter.format(net)}"
+            } else {
+                "${currencyFormatter.format(net)}"
+            }
+        )
+        withStyle(style = SpanStyle(fontSize = 14.sp)) {  // Kích thước nhỏ hơn cho ký tự "₫"
+            append("₫")
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -1244,18 +1199,19 @@ fun ReportTable(income: Long, expense: Long, net: Long) {
                     verticalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = "Tổng thu",
+                        text = "Thu nhập",
                         fontFamily = montserrat,
-                        color = Color(0xFF444444),
+                        color = textColor,
                         fontWeight = FontWeight.Bold,
                         fontSize = 16.sp,
                     )
+                    Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = "$income ₫",
+                        text = formattedIncome,
                         fontFamily = montserrat,
-                        color = Color(0xFF444444),
-                        fontWeight = FontWeight.Normal,
-                        fontSize = 16.sp
+                        color = Color(0xff1d9fca),
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 14.sp
                     )
                 }
 
@@ -1276,17 +1232,18 @@ fun ReportTable(income: Long, expense: Long, net: Long) {
                     verticalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = "Tổng chi",
+                        text = "Chi tiêu",
                         fontFamily = montserrat,
-                        color = Color(0xFF444444),
+                        color = textColor,
                         fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp
+                        fontSize = 14.sp
                     )
+                    Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = "$expense ₫",
+                        text = formattedExpense,
                         fontFamily = montserrat,
-                        color = Color(0xFF444444),
-                        fontWeight = FontWeight.Normal,
+                        color = Color(0xffff6561),
+                        fontWeight = FontWeight.SemiBold,
                         fontSize = 16.sp
                     )
                 }
@@ -1304,15 +1261,15 @@ fun ReportTable(income: Long, expense: Long, net: Long) {
                 Text(
                     text = "Balance",
                     fontFamily = montserrat,
-                    color = Color(0xFF444444),
-                    fontWeight = FontWeight.Normal,
+                    color = textColor,
+                    fontWeight = FontWeight.Bold,
                     fontSize = 16.sp,
                 )
                 Text(
-                    text = "$net ₫",
+                    text = formattedBalance,
                     fontFamily = montserrat,
-                    color = Color(0xFF444444),
-                    fontWeight = FontWeight.Normal,
+                    color = textColor,
+                    fontWeight = FontWeight.SemiBold,
                     fontSize = 16.sp,
                 )
             }

@@ -35,6 +35,7 @@ import com.example.jetpackcompose.components.DonutChartWithProgress
 import com.example.jetpackcompose.components.MessagePopup
 import com.example.jetpackcompose.components.MonthPickerButton
 import com.example.jetpackcompose.components.ReportTable
+import com.example.jetpackcompose.components.montserrat
 import com.example.jetpackcompose.ui.theme.lightGray
 import java.util.Calendar
 
@@ -146,6 +147,7 @@ fun ReportScreen(viewModel: GetReportViewModel = GetReportViewModel(LocalContext
                             Box(
                                 modifier = Modifier
                                     .fillMaxSize()
+                                    .height(50.dp)
                                     .padding(start = 16.dp, end = 32.dp),
                                 contentAlignment = Alignment.Center
                             ) {
@@ -153,6 +155,7 @@ fun ReportScreen(viewModel: GetReportViewModel = GetReportViewModel(LocalContext
                                     text = "Báo cáo",
                                     style = TextStyle(
                                         fontWeight = FontWeight.Bold,
+                                        fontFamily = montserrat,
                                         fontSize = 16.sp,
                                     ),
                                     textAlign = TextAlign.Center,
@@ -182,7 +185,7 @@ fun ReportScreen(viewModel: GetReportViewModel = GetReportViewModel(LocalContext
                 modifier = Modifier
                     .padding(paddingValues)
                     .fillMaxHeight()
-                    .background(color = lightGray)
+                    .background(Color(0xFFF5F5F5))
             ) {
                 item {
                     // Phần header
