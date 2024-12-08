@@ -17,7 +17,7 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 object BaseURL {
-    val baseUrl = "https://d9b6-42-112-110-251.ngrok-free.app"
+    val baseUrl = "https://672e-118-70-42-146.ngrok-free.app"
 }
 
 data class RegistrationData(
@@ -42,6 +42,14 @@ data class RegistrationResponse(
     val message: String
 )
 
+data class FindTransactionResponse(
+    val categoryName: String,
+    val amount: Long,
+    val transactionDate: List<Int>,
+    val note: String,
+    val type: String,
+    val transaction_id: Long
+)
 
 data class PostTransactionResponse(
     val categoryName: String,
@@ -49,7 +57,7 @@ data class PostTransactionResponse(
     val transactionDate: List<Int>,
     val note: String,
     val type: String,
-    val transactionId: Long
+    val transaction_id: Long
 )
 
 data class ApiResponse(
@@ -178,5 +186,11 @@ interface ApiService {
         @Query("month") month: Int,
         @Query("year") year: Int
     ): Response<ReportResponse>
+
+    @GET("/api/transactions/search")
+    suspend fun findTransactions(
+        @Header("Authorization") token: String,
+        @Query("note") note: String
+    ): Response<List<FindTransactionResponse>>
 
 }

@@ -111,7 +111,6 @@ fun FixedTabRow(
                     "inputfixedtab",
                     inclusive = true
                 ) // Navigate to AnualScreen
-                navController.navigate("anual") // Navigate to AnualScreen
             }
 
             Spacer(modifier = Modifier.weight(1f))

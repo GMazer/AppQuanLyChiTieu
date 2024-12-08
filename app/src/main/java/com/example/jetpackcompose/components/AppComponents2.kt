@@ -489,7 +489,7 @@ fun PopUpSetValueDialog(
             errorMessage = "Giá trị không được vượt quá 100%"
             return
         } else {
-            errorMessage = null.toString()
+            errorMessage = ""
         }
 
         // Tính tổng giá trị đã nhập
@@ -1303,7 +1303,7 @@ fun ReportTable(income: Long, expense: Long, net: Long) {
                     .height(60.dp)
             ) {
                 Text(
-                    text = "Balance",
+                    text = "Số dư",
                     fontFamily = montserrat,
                     color = textColor,
                     fontWeight = FontWeight.Bold,

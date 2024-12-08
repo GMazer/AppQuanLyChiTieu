@@ -24,6 +24,7 @@ import com.example.jetpackcompose.app.screens.CalendarScreen
 import com.example.jetpackcompose.app.screens.anual_sceens.InputFixedTab
 import com.example.jetpackcompose.app.screens.OtherScreen
 import com.example.jetpackcompose.app.screens.anual_sceens.AnualScreen
+import com.example.jetpackcompose.app.screens.find_calendar.FindCalendarScreen
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -95,6 +96,7 @@ fun AppQuanLyChiTieu() {
             composable("other") { OtherScreen(navController) }
             composable("inputfixedtab") { InputFixedTab(navController) }
             composable("calendar") { CalendarScreen(navController) }
+            composable("findtransaction") { FindCalendarScreen(navController) }
 
             // Chỉnh sửa giao dịch (truyền transactionId)
             composable(

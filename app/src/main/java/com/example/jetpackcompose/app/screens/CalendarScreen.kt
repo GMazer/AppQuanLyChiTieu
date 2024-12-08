@@ -1,5 +1,6 @@
 package com.example.jetpackcompose.app.screens
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -7,13 +8,16 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Divider
+import androidx.compose.material.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.Typography
@@ -27,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -38,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.jetpackcompose.R
 import com.example.jetpackcompose.app.features.apiService.TransactionAPI.GetTransactionViewModel
 import com.example.jetpackcompose.app.network.TransactionResponse
 import com.example.jetpackcompose.components.CustomCalendar
@@ -47,6 +53,7 @@ import com.example.jetpackcompose.components.MonthPickerButton
 import com.example.jetpackcompose.components.montserrat
 import com.example.jetpackcompose.ui.theme.textColor
 import com.example.jetpackcompose.ui.theme.colorPrimary
+import com.example.jetpackcompose.ui.theme.highGray
 import com.example.jetpackcompose.ui.theme.topBarColor
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
@@ -173,17 +180,19 @@ fun CalendarScreen(navController: NavController) {
     ) {
         Scaffold(
             topBar = {
-                Column(modifier = Modifier
-                    .padding(0.dp)
-                    .fillMaxWidth()) {
+                Column(
+                    modifier = Modifier
+                        .padding(0.dp)
+                        .fillMaxWidth()
+                ) {
                     TopAppBar(
                         title = {
                             Box(
                                 modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(start = 16.dp, end = 32.dp),
-                                contentAlignment = Alignment.Center
+                                    .fillMaxWidth(),
                             ) {
+
+                                // Text "Lịch" căn giữa
                                 Text(
                                     text = "Lịch",
                                     style = TextStyle(
@@ -193,8 +202,23 @@ fun CalendarScreen(navController: NavController) {
                                     ),
                                     textAlign = TextAlign.Center,
                                     modifier = Modifier
-                                        .fillMaxWidth()
+                                        .align(Alignment.Center)
+                                        .offset(x = (-8).dp)
                                 )
+
+                                // IconButton căn phải
+                                IconButton(
+                                    onClick = {
+                                        navController.navigate("findtransaction")
+                                    },
+                                    modifier = Modifier.align(Alignment.CenterEnd) // Căn phải trong Box
+                                ) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.baseline_find_in_page_24), // Icon của bạn
+                                        contentDescription = "Tìm kiếm",
+                                        tint = Color.Black
+                                    )
+                                }
                             }
                         },
                         colors = TopAppBarDefaults.smallTopAppBarColors(
@@ -239,7 +263,7 @@ fun CalendarScreen(navController: NavController) {
                         Text(
                             text = "Thu nhập",
                             style = TextStyle(
-                                fontWeight = FontWeight.SemiBold,
+                                fontWeight = FontWeight.Bold,
                                 fontFamily = montserrat,
                                 fontSize = 12.sp,
                             ),
@@ -265,7 +289,7 @@ fun CalendarScreen(navController: NavController) {
                         Text(
                             text = "Chi tiêu",
                             style = TextStyle(
-                                fontWeight = FontWeight.SemiBold,
+                                fontWeight = FontWeight.Bold,
                                 fontFamily = montserrat,
                                 fontSize = 12.sp,
                             ),
@@ -280,7 +304,7 @@ fun CalendarScreen(navController: NavController) {
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 16.sp,
                                 fontFamily = montserrat,
-                                ),
+                            ),
                             color = colorPrimary,
                             textAlign = TextAlign.Center,
                             modifier = Modifier
@@ -291,7 +315,7 @@ fun CalendarScreen(navController: NavController) {
                         Text(
                             text = "Tổng",
                             style = TextStyle(
-                                fontWeight = FontWeight.SemiBold,
+                                fontWeight = FontWeight.Bold,
                                 fontFamily = montserrat,
                                 fontSize = 12.sp,
                             ),
@@ -327,7 +351,12 @@ fun CalendarScreen(navController: NavController) {
                     )
                 } else {
                     Spacer(modifier = Modifier.height(8.dp))
+                    Divider(
+                        color = highGray,
+                        thickness = 0.7.dp
+                    )
                     LazyColumn {
+
                         item {
                             // Truyền navController vào DayIndex
                             DayIndex(
