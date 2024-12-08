@@ -200,8 +200,8 @@ fun DonutChartWithProgress(
                     y = center.y + (radius - maxStrokeWidth / 2 - extendedOffset) * sin(angleInRadians).toFloat()
                 )
                 val lineEnd = Offset(
-                    x = center.x + (radius + maxStrokeWidth / 2 + extendedOffset) * cos(angleInRadians).toFloat(),
-                    y = center.y + (radius + maxStrokeWidth / 2 + extendedOffset) * sin(angleInRadians).toFloat()
+                    x = center.x + (radius + maxStrokeWidth / 2) * cos(angleInRadians).toFloat(),
+                    y = center.y + (radius + maxStrokeWidth / 2) * sin(angleInRadians).toFloat()
                 )
 
                 // Vẽ đường ngăn
@@ -439,7 +439,17 @@ fun PopUpSetValueDialog(
     var medicalValue by remember { mutableStateOf(TextFieldValue()) }
     var educatingValue by remember { mutableStateOf(TextFieldValue()) }
     var saveValue by remember { mutableStateOf(TextFieldValue()) }
-    var errorMessage by remember { mutableStateOf<String?>(null) }
+
+    var errorMessage by remember { mutableStateOf("") }
+    var successMessage by remember { mutableStateOf("") }
+    var showPopup by remember { mutableStateOf(false) }
+
+    MessagePopup(
+        showPopup = showPopup,
+        successMessage = successMessage,
+        errorMessage = errorMessage,
+        onDismiss = { showPopup = false } // Đóng popup khi nhấn ngoài
+    )
 
     viewModel.getLimitTransaction(
         onError = {
@@ -476,7 +486,7 @@ fun PopUpSetValueDialog(
             errorMessage = "Giá trị không được vượt quá 100%"
             return
         } else {
-            errorMessage = null
+            errorMessage = null.toString()
         }
 
         // Tính tổng giá trị đã nhập
@@ -1007,6 +1017,9 @@ fun PopUpSetValueDialog(
                 }
             }
         }
+    } else {
+        showPopup = true
+        successMessage = "Đang tải dữ liệu..."
     }
 
 

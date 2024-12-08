@@ -103,22 +103,12 @@ fun SignInScreen(navController: NavHostController) {
                         },
                         onError = {
                             errorMessage = it
+                            showPopup = true
                             isLoading = false
                         }
                     )
                 }
             })
-
-            if (errorMessage.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(20.dp))
-                Text(text = errorMessage, color = Color.Red, style = MaterialTheme.typography.bodyMedium)
-            }
-
-            if (successMessage.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(20.dp))
-                Thread.sleep(3000)
-                Text(text = successMessage, color = Color.Green, style = MaterialTheme.typography.bodyMedium)
-            }
 
             Row(modifier = Modifier.fillMaxWidth()) {
                 Spacer(modifier = Modifier.weight(1f))
