@@ -1,5 +1,6 @@
 package com.example.jetpackcompose.app.features.editFeatures
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -59,6 +60,7 @@ import java.text.DecimalFormatSymbols
 import java.text.SimpleDateFormat
 import java.util.Locale
 
+@SuppressLint("DefaultLocale")
 @Composable
 fun EditExpenseTransaction(
     navController: NavHostController,
@@ -206,6 +208,7 @@ fun EditExpenseTransaction(
         Box(modifier = Modifier.fillMaxWidth()) {
             Row(
                 modifier = Modifier
+                    .background(Color(0xfff1f1f1))
                     .fillMaxWidth()
                     .height(50.dp)
                     .padding(8.dp),
@@ -236,7 +239,8 @@ fun EditExpenseTransaction(
                 Text(
                     text = "Xoá",
                     fontSize = 16.sp,
-                    color = Color.Red,
+                    fontFamily = montserrat,
+                    color = colorPrimary,
                     modifier = Modifier.clickable {
                         showDeleteDialog = true
                     }
@@ -244,7 +248,7 @@ fun EditExpenseTransaction(
             }
         }
 
-        Divider(modifier = Modifier.padding(vertical = 8.dp))
+        Divider(color = Color.LightGray, thickness = 1.dp)
 
         // Các trường nhập liệu
         Column(
@@ -329,6 +333,8 @@ fun EditExpenseTransaction(
             ) {
                 Button(
                     onClick = {
+                        successMessage = "Đang gửi dữ liệu..."
+                        showPopup = true
                         val amount = amountValue.text.toLongOrNull() ?: 0L
                         val updatedTransaction = Transaction(
                             category_id = selectedCategory?.id ?: 1,

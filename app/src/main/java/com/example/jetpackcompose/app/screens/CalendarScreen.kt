@@ -239,7 +239,7 @@ fun CalendarScreen(navController: NavController) {
                         Text(
                             text = "Thu nhập",
                             style = TextStyle(
-                                fontWeight = FontWeight.Bold,
+                                fontWeight = FontWeight.SemiBold,
                                 fontFamily = montserrat,
                                 fontSize = 12.sp,
                             ),
@@ -265,7 +265,7 @@ fun CalendarScreen(navController: NavController) {
                         Text(
                             text = "Chi tiêu",
                             style = TextStyle(
-                                fontWeight = FontWeight.Bold,
+                                fontWeight = FontWeight.SemiBold,
                                 fontFamily = montserrat,
                                 fontSize = 12.sp,
                             ),
@@ -291,7 +291,7 @@ fun CalendarScreen(navController: NavController) {
                         Text(
                             text = "Tổng",
                             style = TextStyle(
-                                fontWeight = FontWeight.Bold,
+                                fontWeight = FontWeight.SemiBold,
                                 fontFamily = montserrat,
                                 fontSize = 12.sp,
                             ),

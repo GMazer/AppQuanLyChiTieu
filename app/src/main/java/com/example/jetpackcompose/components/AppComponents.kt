@@ -31,10 +31,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.Checkbox
+//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.CheckboxDefaults
+//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.Icon
+//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.LocalTextStyle
+//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material3.Text
 //noinspection UsingMaterialAndMaterial3Libraries
@@ -75,7 +80,6 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.TextFieldValue
 import com.example.jetpackcompose.R
@@ -92,9 +96,9 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.layout.onSizeChanged
-import com.example.jetpackcompose.app.screens.CalendarScreen
 import com.example.jetpackcompose.app.screens.DailyTransaction
 import com.example.jetpackcompose.ui.theme.SaturDayColor
 import com.example.jetpackcompose.ui.theme.SundayColor
@@ -364,25 +368,6 @@ fun DrawBottomLine(height: Dp) {
     )
 }
 
-@Composable
-fun DrawTopLine(height: Dp) {
-    Spacer(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(height)
-            .drawBehind {
-                val strokeWidth = 0.8.dp.toPx()
-                val y = strokeWidth / 2
-                drawLine(
-                    color = Color.LightGray,
-                    start = Offset(0f, y),
-                    end = Offset(size.width, y),
-                    strokeWidth = strokeWidth
-                )
-            }
-    )
-}
-
 //Tạo layout với LazyColumn
 @Composable
 fun CategoriesGrid(
@@ -398,13 +383,12 @@ fun CategoriesGrid(
     ) {
         items(categories) { category ->
             CategoryItem(
-                id = category.id,
+                column = column,
                 category = category,
                 buttonColor = buttonColor,
                 isSelected = (category == selectedCategory),
-                onClick = { onCategorySelected(category) },
-                column = column,
-                percentage = category.percentage
+                percentage = category.percentage,
+                onClick = { onCategorySelected(category) }
             )
         }
     }
@@ -413,7 +397,6 @@ fun CategoriesGrid(
 @Composable
 fun CategoryItem(
     column: Int,
-    id: Int,
     category: Category,
     buttonColor: Color,
     isSelected: Boolean,
@@ -423,7 +406,7 @@ fun CategoryItem(
     val borderColor = if (isSelected) buttonColor else Color.Transparent
 
     // State to hold the size of the Box
-    var boxHeight by remember { mutableStateOf(0f) }
+    var boxHeight by remember { mutableFloatStateOf(0f) }
 
     // Tạo Animatable để điều khiển offset cho sóng
     val waveOffset = remember { Animatable(0f) }
@@ -445,7 +428,7 @@ fun CategoryItem(
     // Tạo giá trị sóng thay đổi theo percentage (nâng lên hạ xuống)
     val waveYOffset by animateFloatAsState(
         targetValue = boxHeight * (1 - percentage - 0.04f), // Tính giá trị y cho sóng theo percentage
-        animationSpec = tween(durationMillis = 500, easing = LinearEasing)
+        animationSpec = tween(durationMillis = 500, easing = LinearEasing), label = ""
     )
 
     val height = if (column == 2) 120.dp else 90.dp
@@ -593,7 +576,7 @@ fun NumberTextField(amountState: String, onValueChange: (String) -> Unit) {
                 onValueChange(
                     if (filteredInput.isNotEmpty() && filteredInput != "0") {
                         filteredInput
-                    } else if (filteredInput == "0" && !amountState.isEmpty()) {
+                    } else if (filteredInput == "0" && amountState.isNotEmpty()) {
                         filteredInput
                     } else {
                         ""
@@ -780,11 +763,11 @@ fun MonthPickerButton(onDateSelected: (String) -> Unit) {
 
 
 
-@SuppressLint("UnusedBoxWithConstraintsScope")
+@SuppressLint("UnusedBoxWithConstraintsScope", "DefaultLocale")
 @Composable
 fun CustomCalendar(
     selectedMonthYear: String,
-    transactionList: List<DailyTransaction>, // Nhận transactionList từ bên ngoài
+    transactionList: List<DailyTransaction>,
     onDateSelected: (String) -> Unit // Callback để trả về ngày đã chọn
 ) {
     val calendar = Calendar.getInstance()
@@ -840,7 +823,7 @@ fun CustomCalendar(
     val calendarHeight = if (rows.size == 6) 230.dp else 200.dp // Nếu có 6 hàng, chiều cao là 230.dp
 
     // Trạng thái cho ngày được chọn
-    val selectedDate = remember { mutableStateOf<String>("") }
+    val selectedDate = remember { mutableStateOf("") }
 
     BoxWithConstraints(
         modifier = Modifier
@@ -876,7 +859,7 @@ fun CustomCalendar(
             }
 
             // Lưới ngày
-            rows.forEachIndexed { rowIndex, week ->
+            rows.forEachIndexed { _, week ->
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceAround
@@ -890,16 +873,18 @@ fun CustomCalendar(
                                     when {
                                         day.isEmpty() -> Color(0xfff1f1f1) // Màu nền cho ngày của tháng trước và tháng sau
                                         day == selectedDate.value -> Color(0xFFF8E6D6) // Màu nền cho ngày được chọn
-                                        else -> Color.White // Nền trắng nếu là ngày của tháng hiện tại
+                                        else -> Color.White
                                     }
                                 )
                                 .border(0.25.dp, Color(0xFFd4d4d4))
                                 .clickable {
                                     // Thực hiện hành động khi người dùng chọn ngày
-                                    val formattedDay = String.format("%02d", day.toInt())
-                                    val selectedDay = "$year-${month + 1}-$formattedDay"
-                                    selectedDate.value = selectedDay // Lưu trữ ngày đã chọn
-                                    onDateSelected(selectedDay) // Trả về ngày đã chọn qua callback
+                                    if(day.isNotEmpty()) {
+                                        val formattedDay = String.format("%02d", day.toInt())
+                                        val selectedDay = "$year-${month + 1}-$formattedDay"
+                                        selectedDate.value = selectedDay
+                                        onDateSelected(selectedDay) // Trả về ngày đã chọn qua callback
+                                    }
                                 },
                             contentAlignment = Alignment.TopStart
                         ) {
@@ -910,9 +895,9 @@ fun CustomCalendar(
                                     // Hiển thị ngày
                                     Text(
                                         text = day,
-                                        color = when {
-                                            columnIndex == 6 -> SundayColor // Chủ nhật
-                                            columnIndex == 5 -> SaturDayColor // Thứ 7
+                                        color = when (columnIndex) {
+                                            6 -> SundayColor // Chủ nhật
+                                            5 -> SaturDayColor // Thứ 7
                                             else -> Color.Black // Các ngày trong tuần
                                         },
                                         fontFamily = montserrat,
@@ -931,10 +916,10 @@ fun CustomCalendar(
                                         if (it.amountIncome > 0) {
                                             Row(
                                                 modifier = Modifier.fillMaxWidth(),
-                                                horizontalArrangement = Arrangement.End // Căn lề phải
+                                                horizontalArrangement = Arrangement.End
                                             ) {
                                                 Text(
-                                                    text = "${currencyFormatter.format(it.amountIncome)}",
+                                                    text = currencyFormatter.format(it.amountIncome),
                                                     color = Color(0xff37c8ec),
                                                     fontSize = 7.sp,
                                                     textAlign = TextAlign.End,
@@ -946,10 +931,10 @@ fun CustomCalendar(
                                         if (it.amountExpense > 0) {
                                             Row(
                                                 modifier = Modifier.fillMaxWidth(),
-                                                horizontalArrangement = Arrangement.End // Căn lề phải
+                                                horizontalArrangement = Arrangement.End
                                             ) {
                                                 Text(
-                                                    text = "${currencyFormatter.format(it.amountExpense)}",
+                                                    text = currencyFormatter.format(it.amountExpense),
                                                     color = colorPrimary,
                                                     fontSize = 7.sp,
                                                     textAlign = TextAlign.End,

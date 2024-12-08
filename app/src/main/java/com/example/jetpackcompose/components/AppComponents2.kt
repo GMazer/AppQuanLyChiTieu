@@ -64,12 +64,15 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
+import com.example.jetpackcompose.R
 import com.example.jetpackcompose.app.features.apiService.TransactionAPI.GetLimitTransactionViewModel
 import com.example.jetpackcompose.app.features.inputFeatures.LimitTransaction
 import com.example.jetpackcompose.app.features.inputFeatures.montserrat
+import com.example.jetpackcompose.ui.theme.componentShapes
 import com.example.jetpackcompose.ui.theme.highGray
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
@@ -1112,39 +1115,67 @@ fun PercentTextField(
 
 
 @Composable
-fun OtherTab(value: String, onClick: () -> Unit, painter: Painter) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(64.dp)
-            .padding(top = 16.dp)
-            .background(Color.White) // Thêm màu nền
-            .clickable(onClick = onClick), // Thêm chức năng click
-        contentAlignment = Alignment.CenterStart // Căn chỉnh nội dung
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically, // Căn giữa theo chiều dọc
-            horizontalArrangement = Arrangement.Start, // Căn trái theo chiều ngang
-            modifier = Modifier.fillMaxWidth() // Chiếm toàn bộ chiều rộng của Box
-        ) {
-            Spacer(modifier = Modifier.width(16.dp))
-            Icon(
-                painter = painter,
-                contentDescription = "Icon",
-                tint = colorPrimary,
-                modifier = Modifier.size(24.dp)
-            )
-            Spacer(modifier = Modifier.width(16.dp))
-            Text(
-                text = value,
-                fontFamily = montserrat,
-                color = Color(0xFF444444),
-                fontWeight = FontWeight.Normal,
-                fontSize = 12.sp
-            )
+fun OtherFunction(
+    items: List<Pair<String, () -> Unit>>, // Danh sách các mục với mô tả và chức năng không phải Composable
+    painters: List<Painter> // Danh sách các biểu tượng (painter) tương ứng với từng mục
+) {
+    // Kiểm tra độ dài của painters và items có khớp không
+    require(items.size == painters.size) { "The number of items and painters must match." }
+
+    Column(modifier = Modifier.fillMaxWidth()) {
+        items.forEachIndexed { index, item ->
+            // Xác định bo góc cho phần tử dựa vào vị trí của nó
+            val cornerShape = when (index) {
+                0 -> RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp) // Phần tử đầu tiên bo góc trên
+                1 -> RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp) // Phần tử thứ hai bo góc dưới
+                else -> RoundedCornerShape(0.dp) // Phần tử thứ ba và các phần tử khác không bo góc
+            }
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
+                    .background(Color.White, shape = cornerShape) // Bo góc tùy vào phần tử
+                    .clickable(onClick = item.second), // Gọi onClick khi nhấn
+                contentAlignment = Alignment.CenterStart
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Start,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Icon(
+                        painter = painters[index], // Sử dụng painter tương ứng với index
+                        contentDescription = "Icon",
+                        tint = colorPrimary,
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Text(
+                        text = item.first,
+                        fontFamily = montserrat,
+                        color = textColor,
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 12.sp
+                    )
+                }
+            }
+
+            // Thêm Divider giữa các mục, trừ mục cuối cùng
+            if (index < items.size - 1) {
+                Divider(
+                    color = Color.LightGray,
+                    thickness = 0.5.dp
+                )
+            }
         }
     }
 }
+
+
+
+
 
 @Composable
 fun ReportTable(income: Long, expense: Long, net: Long) {
@@ -1291,9 +1322,3 @@ fun ReportTable(income: Long, expense: Long, net: Long) {
     }
 }
 
-
-@Preview
-@Composable
-fun PreviewMonthPickerDialog() {
-//    PopUpSetValueDialog {  }
-}

@@ -177,7 +177,9 @@ fun EditIncomeTransaction(
             .background(Color.White)
     ) {
         // Thanh tiêu đề với nút Quay lại và Xóa
-        Box(modifier = Modifier.fillMaxWidth()) {
+        Box(modifier = Modifier
+            .background(Color(0xfff1f1f1))
+            .fillMaxWidth()) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -218,7 +220,7 @@ fun EditIncomeTransaction(
             }
         }
 
-        Divider(modifier = Modifier.padding(vertical = 8.dp))
+        Divider(color = Color.LightGray, thickness = 1.dp)
 
         // Các trường nhập liệu
         Column(
@@ -302,6 +304,8 @@ fun EditIncomeTransaction(
             ) {
                 Button(
                     onClick = {
+                        successMessage = "Đang gửi dữ liệu..."
+                        showPopup = true
                         val amount = amountValue.text.toLongOrNull() ?: 0L
                         val updatedTransaction = Transaction(
                             category_id = selectedCategory?.id ?: 10,
@@ -379,7 +383,7 @@ fun EditIncomeTransaction(
                             // Gọi API xóa giao dịch
                             delViewModel.deleteTransaction(
                                 transactionId = transactionId,
-                                onSuccess = { message ->
+                                onSuccess = {
                                     successMessage = "Xóa giao dịch thành công!"
                                     showPopup = true
                                     showDeleteDialog = false

@@ -345,7 +345,7 @@ fun CategoryIconWithName(
                 fontFamily = montserrat,
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFF444444)
+                color = textColor
             )
             Spacer(modifier = Modifier.width(8.dp))
             if (transactionNote.isNotEmpty()) {
@@ -354,7 +354,7 @@ fun CategoryIconWithName(
                     fontFamily = montserrat,
                     fontWeight = FontWeight.Light,
                     fontSize = 12.sp,
-                    color = Color(0xFF444444),
+                    color = textColor,
                     modifier = Modifier.weight(1f)
                 )
             } else {
@@ -375,7 +375,7 @@ fun CategoryIconWithName(
                 modifier = Modifier
                     .size(16.dp)
                     .padding(start = 8.dp),
-                tint = Color(0xFF444444)
+                tint = textColor
             )
         }
     }
@@ -407,7 +407,6 @@ fun DayIndex(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(8.dp)
             ) {
                 val formattedDate = try {
                     val dateParsed = dateFormat.parse(date)
@@ -428,8 +427,8 @@ fun DayIndex(
                     Text(
                         text = formattedDate,
                         fontFamily = montserrat,
-                        color = Color(0xFF444444),
-                        fontWeight = FontWeight.Bold,
+                        color = textColor,
+                        fontWeight = FontWeight.SemiBold,
                         fontSize = 12.sp
                     )
                 }
@@ -474,7 +473,6 @@ fun DayIndex(
                             }
                         }
                     }
-
                     Divider(
                         color = highGray,
                         thickness = 0.7.dp
@@ -912,7 +910,7 @@ fun EndDateRow(
     var showDatePicker by remember { mutableStateOf(false) } // Điều khiển hiển thị DatePickerDialog
 
     val vietnamLocale = Locale("vi", "VN") // Locale Việt Nam
-    val displayFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+    DateTimeFormatter.ofPattern("dd/MM/yyyy")
 
     Row(
         modifier = Modifier

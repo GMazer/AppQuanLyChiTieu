@@ -99,7 +99,9 @@ fun AnualScreen(navController: NavHostController) {
         reloadTransactions() // Load dữ liệu ngay khi màn hình được tạo
     }
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = Modifier
+        .background(Color(0xfff5f5f5))
+        .fillMaxSize()) {
         // Hàng chứa nút trở về và nút chuyển hướng
         Row(
             modifier = Modifier
@@ -174,7 +176,6 @@ fun AnualScreen(navController: NavHostController) {
         Divider(color = Color.LightGray, thickness = 1.dp)
 
         Spacer(modifier = Modifier.height(16.dp))
-
         // Hiển thị danh sách FixedTransaction
         LazyColumn(
             modifier = Modifier
@@ -428,10 +429,22 @@ fun FixedTransactionRow(
                 isDialogVisible = false // Đóng dialog khi nhấn ra ngoài
             },
             title = {
-                Text(text = "Xác nhận xóa")
+                Text(
+                    text = "Xác nhận xóa",
+                    fontFamily = montserrat,
+                    color = textColor,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 14.sp
+                )
             },
             text = {
-                Text(text = dialogMessage)
+                Text(
+                    text = dialogMessage,
+                    fontFamily = montserrat,
+                    color = textColor,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Normal
+                )
             },
             confirmButton = {
                 if (!isLoading) {
@@ -452,7 +465,11 @@ fun FixedTransactionRow(
                             }
                         )
                     }) {
-                        Text("OK")
+                        Text(
+                            "Xoá",
+                            fontFamily = montserrat,
+                            color = colorPrimary,
+                        )
                     }
                 } else {
                     CircularProgressIndicator(modifier = Modifier.size(24.dp)) // Hiển thị loading
@@ -462,7 +479,11 @@ fun FixedTransactionRow(
                 TextButton(onClick = {
                     isDialogVisible = false // Đóng dialog khi nhấn bỏ qua
                 }) {
-                    Text("Bỏ qua")
+                    Text(
+                        "Bỏ qua",
+                        fontFamily = montserrat,
+                        color = Color(0xFF62B7E5),
+                    )
                 }
             }
         )
