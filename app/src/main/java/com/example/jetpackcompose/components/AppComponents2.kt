@@ -199,8 +199,8 @@ fun DonutChartWithProgress(
                     y = center.y + (radius - maxStrokeWidth / 2 - extendedOffset) * sin(angleInRadians).toFloat()
                 )
                 val lineEnd = Offset(
-                    x = center.x + (radius + maxStrokeWidth / 2 + extendedOffset) * cos(angleInRadians).toFloat(),
-                    y = center.y + (radius + maxStrokeWidth / 2 + extendedOffset) * sin(angleInRadians).toFloat()
+                    x = center.x + (radius + maxStrokeWidth / 2) * cos(angleInRadians).toFloat(),
+                    y = center.y + (radius + maxStrokeWidth / 2) * sin(angleInRadians).toFloat()
                 )
 
                 // Vẽ đường ngăn
