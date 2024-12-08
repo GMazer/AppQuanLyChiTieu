@@ -129,6 +129,7 @@ fun BottomBarItem(
                         .padding(0.dp)
             )
         }
+        // Nothing
         Text(
             text = title,
             color = if (isSelected) colorPrimary else textColor,
