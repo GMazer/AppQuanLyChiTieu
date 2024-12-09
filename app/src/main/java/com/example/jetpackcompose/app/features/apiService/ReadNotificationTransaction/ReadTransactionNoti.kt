@@ -10,6 +10,7 @@ import java.util.Locale
 
 class ReadTransactionNoti : NotificationListenerService() {
 
+    // Danh sách giao dịch lưu trong bộ nhớ
     private val transactionList = mutableListOf<TransactionReadNoti>()
 
     // Giả sử bạn có một ViewModel Singleton hoặc một ViewModel được lấy từ Application Context
@@ -24,10 +25,10 @@ class ReadTransactionNoti : NotificationListenerService() {
         val transactionData = getTransactionData(notificationText)
 
         transactionData?.let {
-            // Thêm giao dịch vào danh sách
+            // Thêm giao dịch vào danh sách (không ghi đè)
             transactionList.add(it)
 
-            // Gửi danh sách giao dịch ra ViewModel
+            // Gửi danh sách giao dịch đã cập nhật ra ViewModel
             sendTransactionList(transactionList)
         }
     }
@@ -59,7 +60,7 @@ class ReadTransactionNoti : NotificationListenerService() {
     }
 
     private fun sendTransactionList(transactionList: List<TransactionReadNoti>) {
-        // Cập nhật danh sách giao dịch vào ViewModel
+        // Cập nhật danh sách giao dịch vào ViewModel mà không ghi đè
         transactionNotificationViewModel.updateTransactionList(transactionList)
         Log.d("NotificationService", "Danh sách giao dịch đã được cập nhật: $transactionList")
     }
@@ -68,6 +69,7 @@ class ReadTransactionNoti : NotificationListenerService() {
         Log.d("NotificationService", "Thông báo đã bị xóa: ${sbn.packageName}")
     }
 }
+
 
 
 
