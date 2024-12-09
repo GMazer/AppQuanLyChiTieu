@@ -5,6 +5,14 @@ plugins {
 }
 
 android {
+
+    lint {
+        disable
+        "GradleDetector";
+        "GradleDependency";
+        "GradlePath"
+    }
+
     namespace = "com.example.jetpackcompose"
     compileSdk = 35
 
@@ -48,12 +56,17 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    buildToolsVersion = "35.0.0"
 }
 
+configurations.all {
+    resolutionStrategy {
+        force(libs.androidx.espresso.core)
+    }
+}
+
+
 dependencies {
-//    implementation("com.google.android.material:material-icons-extended:1.4.0")
-//    implementation ("androidx.compose.material:material-*:1.8.0-alpha01")
-    implementation ("com.maxkeppeler.sheets-compose-dialogs:core:1.3.0")
     implementation(libs.androidx.material)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -74,34 +87,25 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    // CALENDAR
-    implementation ("com.maxkeppeler.sheets-compose-dialogs:calendar:1.3.0")
     implementation ("androidx.compose.foundation:foundation:1.5.0")
     implementation ("androidx.compose.material3:material3:1.2.0")
     implementation ("com.google.accompanist:accompanist-pager:0.32.0")
     implementation ("com.google.accompanist:accompanist-pager:0.32.0")
     implementation ("com.google.accompanist:accompanist-pager-indicators:0.32.0")
 
-    // Retrofit
     implementation ("com.squareup.retrofit2:retrofit:2.9.0")
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
 
-    // ViewModel
     implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
     implementation ("androidx.lifecycle:lifecycle-runtime-compose:2.6.1")
 
-    // Animation
     implementation ("androidx.compose.animation:animation:1.5.1")
     implementation ("androidx.compose.ui:ui-graphics:1.5.1")
 
-    // Shape
     implementation ("androidx.compose.ui:ui:1.5.0")
 
-    // Serialization
     implementation ("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
 
-    //Gson
     implementation (libs.gson)
-
 
 }

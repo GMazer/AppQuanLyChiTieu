@@ -19,7 +19,6 @@ runtimeLivedata = "1.7.5"
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-material = { module = "androidx.compose.material:material", version.ref = "material" }
-com-maxkeppeler-sheets-compose-dialogs-xmodule_z3 = { module = "com.maxkeppeler.sheets-compose-dialogs:<module>", version.ref = "comMaxkeppelerSheetsComposeDialogsXmodule_z2" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }

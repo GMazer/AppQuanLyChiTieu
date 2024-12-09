@@ -1,5 +1,7 @@
 package com.example.jetpackcompose.app.features.apiService.ReadNotificationTransaction
 
+import android.content.Intent
+import android.provider.Settings
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.util.Log
@@ -16,6 +18,16 @@ class ReadTransactionNoti : NotificationListenerService() {
                 // Xử lý logic cho việc nhận diện số dư
             }
         }
+    }
+
+    private fun requestNotificationPermission() {
+        val intent = Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)
+        startActivity(intent)
+    }
+
+    private fun isNotificationServiceEnabled(): Boolean {
+        val setting = Settings.Secure.getString(contentResolver, "enabled_notification_listeners")
+        return setting?.contains(packageName) == true
     }
 
     override fun onNotificationRemoved(sbn: StatusBarNotification) {

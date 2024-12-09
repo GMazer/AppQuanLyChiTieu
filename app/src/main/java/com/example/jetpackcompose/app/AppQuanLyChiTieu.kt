@@ -1,5 +1,6 @@
 package com.example.jetpackcompose.app
 
+import android.content.Intent
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
@@ -25,15 +26,19 @@ import com.example.jetpackcompose.app.screens.anual_sceens.InputFixedTab
 import com.example.jetpackcompose.app.screens.OtherScreen
 import com.example.jetpackcompose.app.screens.anual_sceens.AnualScreen
 import com.example.jetpackcompose.app.screens.find_calendar.FindCalendarScreen
+import com.example.jetpackcompose.app.features.apiService.ReadNotificationTransaction.ReadTransactionNoti
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AppQuanLyChiTieu() {
+
     val navController = rememberNavController()
     val context = LocalContext.current
     val signInViewModel: SignInViewModel = viewModel(
         factory = SignInViewModelFactory(context)
     )
+
+    enableNotificationListener(context)
 
     // Kiểm tra nếu Token đã được xác nhận hay không
     if (signInViewModel.isTokenCleared()) {
@@ -135,6 +140,21 @@ fun AppQuanLyChiTieu() {
     }
 }
 
+private fun enableNotificationListener(context: android.content.Context) {
+    val intent = Intent(context, ReadTransactionNoti::class.java)
+
+    // Kiểm tra xem Notification Listener đã cấp phép chưa
+    val isNotificationEnabled = android.provider.Settings.Secure.getString(
+        context.contentResolver,
+        "enabled_notification_listeners"
+    )?.contains(context.packageName) == true
+
+    if (!isNotificationEnabled) {
+        // Nếu chưa cấp quyền, chuyển người dùng đến màn hình cài đặt
+        val settingsIntent = Intent(android.provider.Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)
+        context.startActivity(settingsIntent)
+    }
+}
 
 
 
