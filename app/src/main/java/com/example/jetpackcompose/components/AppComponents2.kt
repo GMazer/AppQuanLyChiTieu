@@ -49,7 +49,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -57,26 +56,27 @@ import com.example.jetpackcompose.ui.theme.textColor
 import com.example.jetpackcompose.ui.theme.colorPrimary
 import java.util.Calendar
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.material.Divider
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
-import com.example.jetpackcompose.R
+import androidx.compose.ui.unit.IntSize
 import com.example.jetpackcompose.app.features.apiService.TransactionAPI.GetLimitTransactionViewModel
 import com.example.jetpackcompose.app.features.inputFeatures.LimitTransaction
 import com.example.jetpackcompose.app.features.inputFeatures.montserrat
-import com.example.jetpackcompose.ui.theme.componentShapes
 import com.example.jetpackcompose.ui.theme.highGray
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.Locale
+import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -91,8 +91,11 @@ fun DonutChartWithProgress(
     val proportions = values.map { it.toFloat() / totalValue }
     val angles = proportions.map { it * 360f }
 
+    var selectedSegment by remember { mutableStateOf(-1) } // Lưu trữ mảnh được chọn
+
     var progressWidth by remember { mutableStateOf(0f) }
     var progressRadius by remember { mutableStateOf(0f) }
+
 
     Box(
         modifier = Modifier
@@ -100,65 +103,71 @@ fun DonutChartWithProgress(
             .height(300.dp),
         contentAlignment = Alignment.Center
     ) {
-        Canvas(modifier = Modifier.size(200.dp)) {
-            val maxStrokeWidth = 150f  // Chiều rộng tối đa của vòng tròn donut
+        Canvas(
+            modifier = Modifier
+                .size(200.dp)
+                .pointerInput(Unit) {
+                    detectTapGestures { offset ->
+                        // Xử lý chạm
+                        val clickedAngle = calculateAngleFromCenter(offset, size)
+                        val segmentIndex = findSegmentIndex(clickedAngle, angles)
+                        selectedSegment = segmentIndex
+                    }
+                }
+        ) {
+            val maxStrokeWidth = 150f
             val radius = size.minDimension / 2
-
-            // Vẽ nền lightGray
-//            drawArc(
-//                color = Color.LightGray,
-//                startAngle = 0f,
-//                sweepAngle = 360f,
-//                useCenter = false,
-//                style = Stroke(width = maxStrokeWidth + 20f, cap = StrokeCap.Butt)
-//            )
-
             var startAngle = -90f
 
-            // Vẽ các phần của donut chart
+            // Vẽ các mảnh donut chart
             angles.forEachIndexed { index, sweepAngle ->
+
+                // Kiểm tra xem mảnh hiện tại có phải là mảnh được chọn không
+                val isSelected = selectedSegment == index
+                val segmentRadius = if (isSelected) radius + 20f else radius // Tăng bán kính nếu được chọn
+                val segmentStrokeWidth = if (isSelected) maxStrokeWidth + 10f else maxStrokeWidth // Tăng độ rộng nét nếu được chọn
+
                 // Vẽ phần chính của donut chart
                 drawArc(
                     color = colors[index].copy(alpha = 0.2f),
                     startAngle = startAngle,
                     sweepAngle = sweepAngle,
                     useCenter = false,
-                    style = Stroke(width = maxStrokeWidth, cap = StrokeCap.Butt)
+                    style = Stroke(width = segmentStrokeWidth, cap = StrokeCap.Butt),
+                    topLeft = Offset(center.x - segmentRadius, center.y - segmentRadius),
+                    size = Size(segmentRadius * 2, segmentRadius * 2) // Điều chỉnh kích thước
                 )
 
-
+                // Tương tự, điều chỉnh các phần khác như progress và inner circle cho mảnh được chọn
                 if (progresses[index] >= 1) {
                     progressWidth = maxStrokeWidth // Tỷ lệ chiều rộng mực nước
                 } else {
                     progressWidth = maxStrokeWidth * progresses[index] // Tỷ lệ chiều rộng mực nước
                 }
-
-                // Tính toán bán kính cho phần "mực nước" để áp vào lề trong
-                progressRadius = radius - (maxStrokeWidth - progressWidth) / 2
+                // Vẽ "mực nước" (progress)
+                progressRadius = if (isSelected) segmentRadius - (maxStrokeWidth - progressWidth) / 2 else radius - (maxStrokeWidth - progressWidth) / 2
+                drawArc(
+                    color = colors[index].copy(alpha = 0.8f),
+                    startAngle = startAngle,
+                    sweepAngle = sweepAngle,
+                    useCenter = false,
+                    style = Stroke(
+                        width = progressWidth,
+                        cap = StrokeCap.Butt
+                    ),
+                    topLeft = Offset(center.x - progressRadius, center.y - progressRadius),
+                    size = Size(progressRadius * 2, progressRadius * 2)
+                )
 
                 // Chiều rộng vòng trong
                 val innerWidth = maxStrokeWidth * 0.2f // Tỷ lệ chiều rộng mực nước
 
                 // Bán kính vòng trong
-                val innerRadius = radius - (maxStrokeWidth - innerWidth) / 2 - innerWidth
-
-                // Vẽ "mực nước" (progress) với chiều rộng theo tỷ lệ hoàn thành và bán kính được điều chỉnh
-                drawArc(
-                    color = colors[index].copy(alpha = 0.8f),
-                    startAngle = startAngle,
-                    sweepAngle = sweepAngle, // Giữ nguyên góc
-                    useCenter = false,
-                    style = Stroke(
-                        width = progressWidth, // Chiều rộng mực nước theo tỷ lệ
-                        cap = StrokeCap.Butt
-                    ),
-                    topLeft = Offset(center.x - progressRadius, center.y - progressRadius),
-                    size = Size(progressRadius * 2, progressRadius * 2) // Sử dụng bán kính trong để vẽ mực nước
-                )
+                val innerRadius = if (isSelected) segmentRadius - (maxStrokeWidth - innerWidth) / 2 - innerWidth - 0.25f else radius - (maxStrokeWidth - innerWidth) / 2 - innerWidth
 
                 // Vòng trong
                 drawArc(
-                    color = colors[index].copy(alpha = 0.4f), // Làm nhạt màu
+                    color = colors[index].copy(alpha = 0.6f), // Làm nhạt màu
                     startAngle = startAngle,
                     sweepAngle = sweepAngle, // Giữ nguyên góc
                     useCenter = false,
@@ -172,9 +181,9 @@ fun DonutChartWithProgress(
 
                 if (progresses[index] >= 1) {
                     val outerWidth = maxStrokeWidth * 0.2f // Tỷ lệ chiều rộng mực nước
-                    val outerRadius = radius + (maxStrokeWidth - outerWidth) / 2
+                    val outerRadius = if (isSelected) segmentRadius + (maxStrokeWidth - outerWidth) / 2 + 2.5f else radius + (maxStrokeWidth - outerWidth) / 2
 
-                    // Vòng trong
+                    // Vòng ngoài
                     drawArc(
                         color = colors[index],
                         startAngle = startAngle,
@@ -191,7 +200,6 @@ fun DonutChartWithProgress(
 
                 startAngle += sweepAngle
             }
-
             startAngle = -90f
             angles.forEach { sweepAngle ->
                 val angleInRadians = Math.toRadians(startAngle.toDouble())
@@ -203,8 +211,8 @@ fun DonutChartWithProgress(
                     y = center.y + (radius - maxStrokeWidth / 2 - extendedOffset) * sin(angleInRadians).toFloat()
                 )
                 val lineEnd = Offset(
-                    x = center.x + (radius + maxStrokeWidth / 2) * cos(angleInRadians).toFloat(),
-                    y = center.y + (radius + maxStrokeWidth / 2) * sin(angleInRadians).toFloat()
+                    x = center.x + (radius + maxStrokeWidth / 2 + extendedOffset) * cos(angleInRadians).toFloat(),
+                    y = center.y + (radius + maxStrokeWidth / 2 + extendedOffset) * sin(angleInRadians).toFloat()
                 )
 
                 // Vẽ đường ngăn
@@ -218,12 +226,63 @@ fun DonutChartWithProgress(
                 startAngle += sweepAngle
             }
         }
+
+        // Hiển thị thông tin khi click vào mảnh
+        if (selectedSegment != -1) {
+            Column {
+                Text(
+                    text = "${labels[selectedSegment]}",
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                    fontFamily = montserrat,
+                    fontWeight = FontWeight.Bold,
+                    color = colors[selectedSegment],
+                    fontSize = 12.sp
+                )
+                Text(
+                    text = "Phân bổ: ${values[selectedSegment]}%",
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                    fontFamily = montserrat,
+                    fontWeight = FontWeight.Normal,
+                    color = colors[selectedSegment],
+                    fontSize = 12.sp
+                )
+                Text(
+                    text = "Chi tiêu: ${(progresses[selectedSegment] * 100).toInt()}%",
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                    fontFamily = montserrat,
+                    fontWeight = FontWeight.Normal,
+                    color = colors[selectedSegment],
+                    fontSize = 12.sp
+                )
+            }
+        }
     }
 }
 
+// Tính góc từ tâm dựa trên tọa độ
+private fun calculateAngleFromCenter(tapOffset: Offset, canvasSize: IntSize): Float {
+    val centerX = canvasSize.width / 2
+    val centerY = canvasSize.height / 2
+    val dx = tapOffset.x - centerX
+    val dy = tapOffset.y - centerY
+    val angle = atan2(dy, dx).toDegrees() + 90f // Điều chỉnh để bắt đầu từ góc trên
+    return if (angle < 0) angle + 360f else angle
+}
 
+// Tìm mảnh chứa góc
+private fun findSegmentIndex(angle: Float, angles: List<Float>): Int {
+    var cumulativeAngle = 0f
+    for ((index, sweepAngle) in angles.withIndex()) {
+        cumulativeAngle += sweepAngle
+        if (angle <= cumulativeAngle) {
+            return index
+        }
+    }
+    return -1
+}
 
-
+// Chuyển đổi radian sang độ
+private fun Float.toDegrees(): Float = this * 180f / Math.PI.toFloat()
 
 @Composable
 fun MonthPickerDialog(

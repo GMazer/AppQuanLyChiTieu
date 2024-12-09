@@ -204,7 +204,7 @@ fun ReportScreen(viewModel: GetReportViewModel = GetReportViewModel(LocalContext
                 }
 
                 item{
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(24.dp))
                 }
 
                 item{
@@ -212,7 +212,7 @@ fun ReportScreen(viewModel: GetReportViewModel = GetReportViewModel(LocalContext
                 }
 
                 item{
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(24.dp))
                 }
 
                 item {
