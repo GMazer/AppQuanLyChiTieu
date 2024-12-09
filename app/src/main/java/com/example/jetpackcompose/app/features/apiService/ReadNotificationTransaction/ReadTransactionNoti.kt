@@ -7,14 +7,22 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-
 class ReadTransactionNoti : NotificationListenerService() {
 
-    // Danh sách giao dịch lưu trong bộ nhớ
+    // Lưu trữ danh sách giao dịch vào bộ nhớ
     private val transactionList = mutableListOf<TransactionReadNoti>()
 
-    // Giả sử bạn có một ViewModel Singleton hoặc một ViewModel được lấy từ Application Context
-    private val transactionNotificationViewModel = TransactionNotificationViewModel()
+    // Sử dụng TransactionStorage để quản lý lưu trữ
+    private val transactionStorage: TransactionStorage by lazy {
+        TransactionStorage(applicationContext)
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        // Tải danh sách giao dịch đã lưu từ bộ nhớ trong khi khởi tạo dịch vụ
+        transactionList.addAll(transactionStorage.loadTransactions())
+        Log.d("NotificationService", "Tải dữ liệu từ bộ nhớ trong: $transactionList")
+    }
 
     override fun onNotificationPosted(sbn: StatusBarNotification) {
         // Lấy nội dung thông báo
@@ -25,11 +33,13 @@ class ReadTransactionNoti : NotificationListenerService() {
         val transactionData = getTransactionData(notificationText)
 
         transactionData?.let {
-            // Thêm giao dịch vào danh sách (không ghi đè)
+            // Thêm giao dịch vào danh sách
             transactionList.add(it)
 
-            // Gửi danh sách giao dịch đã cập nhật ra ViewModel
-            sendTransactionList(transactionList)
+            // Lưu danh sách giao dịch vào bộ nhớ trong
+            transactionStorage.saveTransactions(transactionList)
+
+            Log.d("NotificationService", "Danh sách giao dịch đã được lưu: $transactionList")
         }
     }
 
@@ -59,23 +69,7 @@ class ReadTransactionNoti : NotificationListenerService() {
         }
     }
 
-    private fun sendTransactionList(transactionList: List<TransactionReadNoti>) {
-        // Cập nhật danh sách giao dịch vào ViewModel mà không ghi đè
-        transactionNotificationViewModel.updateTransactionList(transactionList)
-        Log.d("NotificationService", "Danh sách giao dịch đã được cập nhật: $transactionList")
-    }
-
     override fun onNotificationRemoved(sbn: StatusBarNotification) {
         Log.d("NotificationService", "Thông báo đã bị xóa: ${sbn.packageName}")
     }
 }
-
-
-
-
-
-
-
-
-
-

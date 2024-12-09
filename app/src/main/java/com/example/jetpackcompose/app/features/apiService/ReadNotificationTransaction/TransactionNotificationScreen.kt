@@ -47,6 +47,17 @@ import com.example.jetpackcompose.ui.theme.textColor
 
 @Composable
 fun TransactionNotificationScreen(navController: NavController) {
+
+    val context = LocalContext.current
+
+    // Tạo đối tượng TransactionStorage
+    val transactionStorage = TransactionStorage(context)
+
+    // Tải danh sách giao dịch từ bộ nhớ trong
+    val transactions = transactionStorage.loadTransactions()
+
+    Log.d("TransactionNotificationScreen", "Danh sách giao dịch đã tải: $transactions")
+
     // Nhận ViewModel và quan sát LiveData
     Column(
         modifier = Modifier

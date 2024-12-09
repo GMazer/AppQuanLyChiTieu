@@ -353,7 +353,7 @@ fun CustomTabRow(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InputTab(viewModel: PostLimitTransactionViewModel = PostLimitTransactionViewModel(LocalContext.current)) {
-    val transactionViewModel : TransactionNotificationViewModel = TransactionNotificationViewModel()
+    val transactionViewModel : TransactionNotificationViewModel = TransactionNotificationViewModel(LocalContext.current)
     val tabs = listOf(
         TabItem("Expense", icon = Icons.Default.ArrowBack) {
             ExpenseContent()
