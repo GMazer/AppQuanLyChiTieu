@@ -65,7 +65,7 @@ fun TransactionNotificationScreen(navController: NavController) {
 
             Box(modifier = Modifier.weight(1.5f)) {
                 IconButton(onClick = {
-                    navController.popBackStack("other", inclusive = false)
+                    navController.popBackStack("mainscreen", inclusive = false)
                 }) {
                     Icon(
                         painter = painterResource(id = R.drawable.outline_arrow_back_ios_24),

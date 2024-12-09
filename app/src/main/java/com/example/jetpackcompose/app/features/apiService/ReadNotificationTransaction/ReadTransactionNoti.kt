@@ -1,8 +1,17 @@
 package com.example.jetpackcompose.app.features.apiService.ReadNotificationTransaction
 
+import android.annotation.SuppressLint
+import android.app.Notification
+import android.content.BroadcastReceiver
+import android.content.ComponentCallbacks2
+import android.content.Intent
+import android.content.ServiceConnection
+import android.os.IBinder
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.util.Log
+import androidx.compose.ui.platform.LocalContext
+import com.example.jetpackcompose.R
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -17,17 +26,58 @@ class ReadTransactionNoti : NotificationListenerService() {
         TransactionStorage(applicationContext)
     }
 
+    @SuppressLint("NewApi")
     override fun onCreate() {
         super.onCreate()
-        // Tải danh sách giao dịch đã lưu từ bộ nhớ trong khi khởi tạo dịch vụ
+
+        // Tải dữ liệu từ bộ nhớ trong khi khởi tạo dịch vụ
         transactionList.addAll(transactionStorage.loadTransactions())
         Log.d("NotificationService", "Tải dữ liệu từ bộ nhớ trong: $transactionList")
+
+        // Tạo thông báo Foreground
+        startForegroundService()
+    }
+
+    private fun startForegroundService() {
+        // Tạo kênh thông báo (yêu cầu từ Android 8.0 trở lên)
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            val channelId = "transaction_notification_service"
+            val channelName = "Transaction Notification Listener"
+            val notificationManager = getSystemService(NOTIFICATION_SERVICE) as android.app.NotificationManager
+            val channel = android.app.NotificationChannel(
+                channelId,
+                channelName,
+                android.app.NotificationManager.IMPORTANCE_LOW
+            )
+            notificationManager.createNotificationChannel(channel)
+
+            val notification = Notification.Builder(this, channelId)
+                .setContentTitle("Đang lắng nghe thông báo")
+                .setContentText("Ứng dụng đang theo dõi các giao dịch từ thông báo.")
+                .setSmallIcon(R.drawable.logoapp) // Thay bằng icon của bạn
+                .setOngoing(true)
+                .build()
+
+        } else {
+            val notification = Notification.Builder(this)
+                .setContentTitle("Đang lắng nghe thông báo")
+                .setContentText("Ứng dụng đang theo dõi các giao dịch từ thông báo.")
+                .setSmallIcon(R.drawable.logoapp) // Thay bằng icon của bạn
+                .setOngoing(true)
+                .build()
+
+        }
     }
 
     override fun onNotificationPosted(sbn: StatusBarNotification) {
-        // Lấy nội dung thông báo
+        // Lấy thông tin thông báo
+        val packageName = sbn.packageName
+        val notificationTitle = sbn.notification.extras.getString("android.title") ?: "Unknown"
         val notificationText = sbn.notification.extras.getString("android.text") ?: "Unknown"
-        Log.d("NotificationService", "Thông báo mới được nhận: $notificationText")
+        Log.d("NotificationService", "Thông báo mới được nhận:")
+        Log.d("NotificationService", "Package Name: $packageName")
+        Log.d("NotificationService", "Title: $notificationTitle")
+        Log.d("NotificationService", "Text: $notificationText")
 
         // Kiểm tra xem thông báo có chứa thông tin về biến động số dư không
         val transactionData = getTransactionData(notificationText)
@@ -69,7 +119,53 @@ class ReadTransactionNoti : NotificationListenerService() {
         }
     }
 
+    private fun ensureServiceRunning() {
+        val intent = Intent(this, ReadTransactionNoti::class.java)
+        startService(intent)
+    }
+
+    override fun onBind(intent: Intent?): IBinder? {
+        return super.onBind(intent)
+    }
+
     override fun onNotificationRemoved(sbn: StatusBarNotification) {
         Log.d("NotificationService", "Thông báo đã bị xóa: ${sbn.packageName}")
     }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        Log.d("NotificationListener", "onStartCommand triggered")
+        startForegroundService()
+        // Dùng super với đầy đủ tham số
+        super.onStartCommand(intent, flags, startId)
+
+        return START_STICKY
+    }
+
+    override fun onDestroy() {
+        Log.d("NotificationListener", "onDestroy triggered")
+        ensureServiceRunning()
+        startForegroundService()
+    }
+
+    override fun onTaskRemoved(rootIntent: Intent?) {
+        Log.d("NotificationListener", "onTaskRemoved triggered")
+        ensureServiceRunning()
+        startForegroundService()
+    }
+
+    override fun onTrimMemory(level: Int) {
+        Log.d("NotificationListener", "onTrimMemory triggered with level $level")
+        if (level >= ComponentCallbacks2.TRIM_MEMORY_MODERATE) {
+            ensureServiceRunning()
+            startForegroundService()
+        }
+    }
+
+    override fun sendBroadcast(intent: Intent?) {
+        Log.d("NotificationListener", "sendBroadcast triggered")
+        ensureServiceRunning()
+        startForegroundService()
+        super.sendBroadcast(intent)
+    }
 }
+

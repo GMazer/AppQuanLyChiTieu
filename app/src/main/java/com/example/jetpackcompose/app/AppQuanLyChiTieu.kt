@@ -39,8 +39,6 @@ fun AppQuanLyChiTieu() {
         factory = SignInViewModelFactory(context)
     )
 
-    enableNotificationListener(context)
-
     // Kiểm tra nếu Token đã được xác nhận hay không
     if (signInViewModel.isTokenCleared()) {
         NavHost(navController = navController, startDestination = "signup") {
@@ -51,6 +49,7 @@ fun AppQuanLyChiTieu() {
             composable("other") { OtherScreen(navController) }
             composable("inputfixedtab") { InputFixedTab(navController) }
             composable("calendar") { CalendarScreen(navController) }
+            composable("transactionNotification") { TransactionNotificationScreen(navController) }
 
             // Chỉnh sửa giao dịch (truyền transactionId)
             composable(
@@ -88,10 +87,18 @@ fun AppQuanLyChiTieu() {
                 val fixedTransactionId = backStackEntry.arguments?.getInt("fixedTransactionId") ?: 0
                 EditIncomeExpenseTransaction(navController = navController, fixedTransactionId = fixedTransactionId)
             }
-            composable("transactionNotification") { TransactionNotificationScreen(navController) }
 
-
-
+            composable("postExpenseNotiTransaction/{amount}/{selectedDate}/{index}") { backStackEntry ->
+                val amount = backStackEntry.arguments?.getString("amount")?.toLongOrNull() ?: 0L
+                val selectedDate = backStackEntry.arguments?.getString("selectedDate") ?: ""
+                val index = backStackEntry.arguments?.getString("index")?.toIntOrNull() ?: 0
+                PostExpenseNotiTransaction(navController, amount, selectedDate, index)
+            }
+            composable("postIncomeNotiTransaction/{amount}/{selectedDate}/{index}") { backStackEntry ->
+                val amount = backStackEntry.arguments?.getString("amount")?.toLongOrNull() ?: 0L
+                val selectedDate = backStackEntry.arguments?.getString("selectedDate") ?: ""
+                val index = backStackEntry.arguments?.getString("index")?.toIntOrNull() ?: 0
+            }
 
         }
     } else {
@@ -104,6 +111,8 @@ fun AppQuanLyChiTieu() {
             composable("inputfixedtab") { InputFixedTab(navController) }
             composable("calendar") { CalendarScreen(navController) }
             composable("findtransaction") { FindCalendarScreen(navController) }
+            composable("transactionNotification") { TransactionNotificationScreen(navController) }
+
 
             // Chỉnh sửa giao dịch (truyền transactionId)
             composable(
@@ -138,7 +147,6 @@ fun AppQuanLyChiTieu() {
                 val fixedTransactionId = backStackEntry.arguments?.getInt("fixedTransactionId") ?: 0
                 EditIncomeExpenseTransaction(navController = navController, fixedTransactionId = fixedTransactionId)
             }
-            composable("transactionNotification") { TransactionNotificationScreen(navController) }
 
             composable("postExpenseNotiTransaction/{amount}/{selectedDate}/{index}") { backStackEntry ->
                 val amount = backStackEntry.arguments?.getString("amount")?.toLongOrNull() ?: 0L
@@ -156,21 +164,6 @@ fun AppQuanLyChiTieu() {
     }
 }
 
-private fun enableNotificationListener(context: android.content.Context) {
-    val intent = Intent(context, ReadTransactionNoti::class.java)
-
-    // Kiểm tra xem Notification Listener đã cấp phép chưa
-    val isNotificationEnabled = android.provider.Settings.Secure.getString(
-        context.contentResolver,
-        "enabled_notification_listeners"
-    )?.contains(context.packageName) == true
-
-    if (!isNotificationEnabled) {
-        // Nếu chưa cấp quyền, chuyển người dùng đến màn hình cài đặt
-        val settingsIntent = Intent(android.provider.Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)
-        context.startActivity(settingsIntent)
-    }
-}
 
 
 

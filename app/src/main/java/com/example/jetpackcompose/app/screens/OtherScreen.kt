@@ -44,6 +44,7 @@ fun OtherScreen(navController: NavHostController) {
     // Danh sách các biểu tượng tương ứng với từng mục
     val icons = listOf(
         painterResource(id = R.drawable.preodic),
+        painterResource(id = R.drawable.baseline_monetization_on_24),
         painterResource(id = R.drawable.logout)
     )
 
@@ -103,7 +104,11 @@ fun OtherScreen(navController: NavHostController) {
                             "Chi phí cố định và thu nhập định kỳ" to {
                                 navController.navigate("anual")
                             },
-                            "Log out" to {
+                            "Danh sách giao dịch ngân hàng" to {
+                                navController.navigate("transactionNotification")
+                            },
+
+                            "Đăng xuất" to {
                                 // Gọi clearToken từ SignInViewModel khi người dùng đăng xuất
                                 Log.i("CheckToken", "${signInViewModel.getToken()}")
                                 signInViewModel.clearToken()
@@ -114,13 +119,6 @@ fun OtherScreen(navController: NavHostController) {
                         painters = icons // Truyền danh sách biểu tượng vào
                     )
                 }
-                MyButtonComponent(
-                    value = "Test Transaction Noti",
-                    onClick = {
-                        navController.navigate("transactionNotification")
-                    },
-                    isLoading = false
-                )
             }
         }
     }
