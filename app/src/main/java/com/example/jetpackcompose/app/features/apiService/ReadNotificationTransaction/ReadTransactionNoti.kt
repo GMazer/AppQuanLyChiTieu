@@ -143,27 +143,26 @@ class ReadTransactionNoti : NotificationListenerService() {
 
     override fun onDestroy() {
         Log.d("NotificationListener", "onDestroy triggered")
-        ensureServiceRunning()
-        startForegroundService()
+        sendBroadcast(Intent(this, RestartServiceReceiver::class.java))
+        super.onDestroy()
     }
 
     override fun onTaskRemoved(rootIntent: Intent?) {
         Log.d("NotificationListener", "onTaskRemoved triggered")
-        ensureServiceRunning()
-        startForegroundService()
+        sendBroadcast(Intent(this, RestartServiceReceiver::class.java))
+        super.onTaskRemoved(rootIntent)
     }
 
     override fun onTrimMemory(level: Int) {
         Log.d("NotificationListener", "onTrimMemory triggered with level $level")
         if (level >= ComponentCallbacks2.TRIM_MEMORY_MODERATE) {
-            ensureServiceRunning()
-            startForegroundService()
+            sendBroadcast(Intent(this, RestartServiceReceiver::class.java))
         }
+        super.onTrimMemory(level)
     }
 
     override fun sendBroadcast(intent: Intent?) {
         Log.d("NotificationListener", "sendBroadcast triggered")
-        ensureServiceRunning()
         startForegroundService()
         super.sendBroadcast(intent)
     }

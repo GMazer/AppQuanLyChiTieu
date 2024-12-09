@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Quyền cần thiết -->
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY"/>
     <uses-permission android:name="android.permission.READ_NOTIFICATION"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.INTERNET" />
+
     <application
-        
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -16,6 +18,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.JetpackCompose"
         tools:targetApi="31">
+
+        <!-- Service -->
         <service
             android:name=".app.features.apiService.ReadNotificationTransaction.ReadTransactionNoti"
             android:exported="true"
@@ -25,6 +29,17 @@
                 <action android:name="android.service.notification.NotificationListenerService" />
             </intent-filter>
         </service>
+
+        <!-- BroadcastReceiver -->
+        <receiver android:name=".app.features.apiService.ReadNotificationTransaction.RestartServiceReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.example.ACTION_RESTART_SERVICE" />
+            </intent-filter>
+        </receiver>
+
+        <!-- MainActivity -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -36,7 +51,4 @@
             </intent-filter>
         </activity>
     </application>
-
-
-
 </manifest>
