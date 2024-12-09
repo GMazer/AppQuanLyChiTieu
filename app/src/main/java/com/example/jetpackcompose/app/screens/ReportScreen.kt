@@ -221,6 +221,7 @@ fun ReportScreen(viewModel: GetReportViewModel = GetReportViewModel(LocalContext
                             .background(color = Color.White)
                             .fillMaxWidth()
                     ){
+                        Spacer(modifier = Modifier.height(8.dp))
                         // Hiển thị biểu đồ nếu đã có dữ liệu
                         if (percentLimit.isNotEmpty() && percentSpent.isNotEmpty() && labels.isNotEmpty()) {
                             DonutChartWithProgress(percentLimit, colors, labels, percentSpent)
@@ -232,12 +233,13 @@ fun ReportScreen(viewModel: GetReportViewModel = GetReportViewModel(LocalContext
                                 fontSize = 16.sp
                             )
                         }
+                        Spacer(modifier = Modifier.height(8.dp))
                     }
                 }
 
 
                 item{
-                    Divider(modifier = Modifier.fillMaxWidth().height(2.dp))
+                    Divider(modifier = Modifier.fillMaxWidth().height(1.dp))
                 }
 
                 for (item in listReport) {
