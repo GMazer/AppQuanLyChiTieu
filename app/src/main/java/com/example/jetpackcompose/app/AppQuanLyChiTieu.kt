@@ -27,6 +27,7 @@ import com.example.jetpackcompose.app.screens.OtherScreen
 import com.example.jetpackcompose.app.screens.anual_sceens.AnualScreen
 import com.example.jetpackcompose.app.screens.find_calendar.FindCalendarScreen
 import com.example.jetpackcompose.app.features.apiService.ReadNotificationTransaction.ReadTransactionNoti
+import com.example.jetpackcompose.app.features.apiService.ReadNotificationTransaction.TransactionNotificationScreen
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -87,6 +88,7 @@ fun AppQuanLyChiTieu() {
                 val fixedTransactionId = backStackEntry.arguments?.getInt("fixedTransactionId") ?: 0
                 EditIncomeExpenseTransaction(navController = navController, fixedTransactionId = fixedTransactionId)
             }
+            composable("transactionNotification") { TransactionNotificationScreen(navController) }
 
 
 
@@ -136,6 +138,7 @@ fun AppQuanLyChiTieu() {
                 val fixedTransactionId = backStackEntry.arguments?.getInt("fixedTransactionId") ?: 0
                 EditIncomeExpenseTransaction(navController = navController, fixedTransactionId = fixedTransactionId)
             }
+            composable("transactionNotification") { TransactionNotificationScreen(navController) }
         }
     }
 }

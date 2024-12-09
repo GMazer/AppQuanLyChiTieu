@@ -23,6 +23,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.AlertDialog
 import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -40,6 +41,7 @@ import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -61,6 +63,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.jetpackcompose.R
+import com.example.jetpackcompose.app.features.apiService.ReadNotificationTransaction.TransactionNotificationViewModel
 import com.example.jetpackcompose.app.features.apiService.TransactionAPI.PostLimitTransactionViewModel
 import com.example.jetpackcompose.components.PopUpSetValueDialog
 import com.example.jetpackcompose.ui.theme.colorPrimary
@@ -350,47 +353,67 @@ fun CustomTabRow(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InputTab(viewModel: PostLimitTransactionViewModel = PostLimitTransactionViewModel(LocalContext.current)) {
-    val customTypography = Typography(
-        bodyLarge = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.montserrat),
-        bodyMedium = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.montserrat),
-        bodySmall = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.montserrat),
-        titleLarge = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.montserrat),
-        titleMedium = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.montserrat),
-        titleSmall = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.montserrat),
-        labelLarge = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.montserrat),
-        labelMedium = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.montserrat),
-        labelSmall = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.montserrat),
-        headlineLarge = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.montserrat),
-        headlineMedium = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.montserrat),
-        headlineSmall = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.montserrat)
-    )
-
+    val transactionViewModel : TransactionNotificationViewModel = TransactionNotificationViewModel()
     val tabs = listOf(
-        TabItem("Expense", icon =  Icons.Default.ArrowBack){
+        TabItem("Expense", icon = Icons.Default.ArrowBack) {
             ExpenseContent()
         },
-        TabItem("Income", icon =  Icons.Default.ArrowForward){
+        TabItem("Income", icon = Icons.Default.ArrowForward) {
             IncomeContent()
         }
     )
 
-    val pagerState = rememberPagerState (
-        pageCount = {tabs.size}
-    )
-
+    val pagerState = rememberPagerState(pageCount = { tabs.size })
     val coroutineScope = rememberCoroutineScope()
 
-    MaterialTheme(
-        typography = customTypography
-    ) {
+    // Lấy danh sách giao dịch từ TransactionNotificationViewModel
+    val transactionList by transactionViewModel.transactionList.observeAsState(emptyList())
+    Log.d("InputTab", "Danh sách giao dịch InputTab: $transactionList")
+
+    // Hiển thị AlertDialog nếu transactionList không rỗng
+    var showDialog by remember { mutableStateOf(false) }
+
+    if (transactionList.isNotEmpty()) {
+        showDialog = true
+    }
+
+    // Khi showDialog là true, hiển thị AlertDialog
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = { Text("Có giao dịch mới") },
+            text = {
+                Text("Bạn có muốn thêm giao dịch này không?")
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        // Thực hiện hành động khi người dùng đồng ý thêm giao dịch
+                        // Ví dụ: thêm giao dịch vào danh sách giao dịch
+                        Log.d("InputTab", "Giao dịch đã được thêm!")
+                        showDialog = false
+                    }
+                ) {
+                    Text("Thêm")
+                }
+            },
+            dismissButton = {
+                Button(onClick = { showDialog = false }) {
+                    Text("Hủy")
+                }
+            }
+        )
+    }
+
+    // Nội dung chính của màn hình
+    MaterialTheme {
         var tabIndex by rememberSaveable { mutableStateOf(0) }
         val tabTitles = listOf("Tiền chi", "Tiền thu")
 
-
         Column(modifier = Modifier
             .background(Color(0xFFF1F1F1))
-            .fillMaxSize())
-        {
+            .fillMaxSize()
+        ) {
             // Đặt CustomTabRow bên ngoài Scaffold
             CustomTabRow(
                 tabIndex = tabIndex,
@@ -409,13 +432,14 @@ fun InputTab(viewModel: PostLimitTransactionViewModel = PostLimitTransactionView
                 },
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
+
             HorizontalPager(state = pagerState, userScrollEnabled = false) {
                 tabs[it].screen()
             }
-
         }
     }
 }
+
 
 
 

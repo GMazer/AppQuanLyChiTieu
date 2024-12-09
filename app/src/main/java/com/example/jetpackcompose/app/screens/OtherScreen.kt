@@ -30,6 +30,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.jetpackcompose.app.features.apiService.LogAPI.SignInViewModel
 import com.example.jetpackcompose.app.features.apiService.LogAPI.SignInViewModelFactory
+import com.example.jetpackcompose.components.MyButtonComponent
 import com.example.jetpackcompose.components.montserrat
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -113,6 +114,13 @@ fun OtherScreen(navController: NavHostController) {
                         painters = icons // Truyền danh sách biểu tượng vào
                     )
                 }
+                MyButtonComponent(
+                    value = "Test Transaction Noti",
+                    onClick = {
+                        navController.navigate("transactionNotification")
+                    },
+                    isLoading = false
+                )
             }
         }
     }
