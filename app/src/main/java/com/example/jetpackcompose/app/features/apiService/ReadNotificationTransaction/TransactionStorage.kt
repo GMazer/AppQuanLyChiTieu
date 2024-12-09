@@ -27,4 +27,19 @@ class TransactionStorage(private val context: Context) {
         val type = object : TypeToken<List<TransactionReadNoti>>() {}.type
         return gson.fromJson(jsonString, type)
     }
+
+    // Xóa giao dịch theo chỉ số
+    fun deleteTransactionByIndex(index: Int) {
+        // Tải danh sách giao dịch hiện tại
+        val transactions = loadTransactions().toMutableList()
+
+        // Kiểm tra xem chỉ số có hợp lệ không
+        if (index >= 0 && index < transactions.size) {
+            // Xóa giao dịch tại chỉ số
+            transactions.removeAt(index)
+
+            // Lưu lại danh sách giao dịch đã được cập nhật
+            saveTransactions(transactions)
+        }
+    }
 }

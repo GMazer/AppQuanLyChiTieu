@@ -5,7 +5,6 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -17,6 +16,7 @@ import com.example.jetpackcompose.app.screens.login_signup.SignInScreen
 import com.example.jetpackcompose.app.features.MainScreen
 import com.example.jetpackcompose.app.features.apiService.LogAPI.SignInViewModel
 import com.example.jetpackcompose.app.features.apiService.LogAPI.SignInViewModelFactory
+import com.example.jetpackcompose.app.features.apiService.ReadNotificationTransaction.PostExpenseNotiTransaction
 import com.example.jetpackcompose.app.features.editFeatures.EditExpenseTransaction
 import com.example.jetpackcompose.app.features.editFeatures.EditFixedExpenseTransaction
 import com.example.jetpackcompose.app.features.editFeatures.EditIncomeExpenseTransaction
@@ -139,6 +139,19 @@ fun AppQuanLyChiTieu() {
                 EditIncomeExpenseTransaction(navController = navController, fixedTransactionId = fixedTransactionId)
             }
             composable("transactionNotification") { TransactionNotificationScreen(navController) }
+
+            composable("postExpenseNotiTransaction/{amount}/{selectedDate}/{index}") { backStackEntry ->
+                val amount = backStackEntry.arguments?.getString("amount")?.toLongOrNull() ?: 0L
+                val selectedDate = backStackEntry.arguments?.getString("selectedDate") ?: ""
+                val index = backStackEntry.arguments?.getString("index")?.toIntOrNull() ?: 0
+                PostExpenseNotiTransaction(navController, amount, selectedDate, index)
+            }
+            composable("postIncomeNotiTransaction/{amount}/{selectedDate}/{index}") { backStackEntry ->
+                val amount = backStackEntry.arguments?.getString("amount")?.toLongOrNull() ?: 0L
+                val selectedDate = backStackEntry.arguments?.getString("selectedDate") ?: ""
+                val index = backStackEntry.arguments?.getString("index")?.toIntOrNull() ?: 0
+//                PostIncomeNotiTransaction(navController, amount, selectedDate, index)
+            }
         }
     }
 }

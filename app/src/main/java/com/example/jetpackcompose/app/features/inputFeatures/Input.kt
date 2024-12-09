@@ -353,7 +353,6 @@ fun CustomTabRow(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InputTab(viewModel: PostLimitTransactionViewModel = PostLimitTransactionViewModel(LocalContext.current)) {
-    val transactionViewModel : TransactionNotificationViewModel = TransactionNotificationViewModel(LocalContext.current)
     val tabs = listOf(
         TabItem("Expense", icon = Icons.Default.ArrowBack) {
             ExpenseContent()
@@ -367,43 +366,8 @@ fun InputTab(viewModel: PostLimitTransactionViewModel = PostLimitTransactionView
     val coroutineScope = rememberCoroutineScope()
 
     // Lấy danh sách giao dịch từ TransactionNotificationViewModel
-    val transactionList by transactionViewModel.transactionList.observeAsState(emptyList())
-    Log.d("InputTab", "Danh sách giao dịch InputTab: $transactionList")
 
     // Hiển thị AlertDialog nếu transactionList không rỗng
-    var showDialog by remember { mutableStateOf(false) }
-
-    if (transactionList.isNotEmpty()) {
-        showDialog = true
-    }
-
-    // Khi showDialog là true, hiển thị AlertDialog
-    if (showDialog) {
-        AlertDialog(
-            onDismissRequest = { showDialog = false },
-            title = { Text("Có giao dịch mới") },
-            text = {
-                Text("Bạn có muốn thêm giao dịch này không?")
-            },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        // Thực hiện hành động khi người dùng đồng ý thêm giao dịch
-                        // Ví dụ: thêm giao dịch vào danh sách giao dịch
-                        Log.d("InputTab", "Giao dịch đã được thêm!")
-                        showDialog = false
-                    }
-                ) {
-                    Text("Thêm")
-                }
-            },
-            dismissButton = {
-                Button(onClick = { showDialog = false }) {
-                    Text("Hủy")
-                }
-            }
-        )
-    }
 
     // Nội dung chính của màn hình
     MaterialTheme {
