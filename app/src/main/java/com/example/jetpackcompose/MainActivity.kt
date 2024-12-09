@@ -2,6 +2,7 @@
 package com.example.jetpackcompose
 
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
@@ -15,6 +16,7 @@ import com.example.jetpackcompose.app.features.apiService.ReadNotificationTransa
 
 
 class MainActivity : ComponentActivity() {
+    @SuppressLint("NewApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
