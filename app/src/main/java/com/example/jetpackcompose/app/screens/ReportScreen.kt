@@ -104,15 +104,15 @@ fun ReportScreen(viewModel: GetReportViewModel = GetReportViewModel(LocalContext
 
                 // Màu sắc cho biểu đồ (có thể mở rộng theo số lượng danh mục)
                 colors = listOf(
-                    Color(0xFFD5CC00),
-                    Color(0xFFEE9305),
-                    Color(0xFFD94E0F),
                     Color(0xFFB40300),
                     Color(0xFF911294),
                     Color(0xFF0C326E),
                     Color(0xFF126AB6),
                     Color(0xFF0D96DA),
-                    Color(0xFF4DB218)
+                    Color(0xFF4DB218),
+                    Color(0xFFD5CC00),
+                    Color(0xFFEE9305),
+                    Color(0xFFD94E0F),
                 )
             },
             onError = { error ->
