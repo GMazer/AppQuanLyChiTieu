@@ -72,7 +72,7 @@ fun TransactionNotificationScreen(navController: NavController) {
 
             Box(modifier = Modifier.weight(1f)) {
                 IconButton(onClick = {
-                    navController.navigate("other")
+                    navController.popBackStack()
                 }) {
                     Icon(
                         painter = painterResource(id = R.drawable.outline_arrow_back_ios_24),
