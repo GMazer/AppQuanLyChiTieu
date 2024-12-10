@@ -3,9 +3,9 @@ package com.example.jetpackcompose.components
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -32,7 +32,10 @@ import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
@@ -44,6 +47,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -65,7 +69,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.jetpackcompose.R
-import com.example.jetpackcompose.app.features.inputFeatures.Category
+import com.example.jetpackcompose.app.screens.Category
+import com.example.jetpackcompose.app.screens.LimitTransaction
 import com.example.jetpackcompose.app.network.TransactionResponse
 import com.example.jetpackcompose.ui.theme.colorPrimary
 import com.example.jetpackcompose.ui.theme.componentShapes
@@ -73,6 +78,7 @@ import com.example.jetpackcompose.ui.theme.errorColor
 import com.example.jetpackcompose.ui.theme.highGray
 import com.example.jetpackcompose.ui.theme.successColor
 import com.example.jetpackcompose.ui.theme.textColor
+import com.example.jetpackcompose.ui.theme.topBarColor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -1092,6 +1098,222 @@ fun PreviewMessagePopup() {
         successMessage = "Gửi giao dịch thành công!",
         errorMessage = "",
         onDismiss = {}
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DatePickerButton(onDateSelected: (String) -> Unit) {
+    var dateText by remember { mutableStateOf("") }
+    val context = LocalContext.current
+    val calendar = Calendar.getInstance()
+
+    // Định dạng ngày tháng năm thứ
+    val dateFormat = SimpleDateFormat("yyyy-MM-dd (E)", Locale("vi", "VN"))
+
+    // Cập nhật ngày hiện tại khi khởi tạo
+    LaunchedEffect(key1 = true) {
+        dateText = dateFormat.format(calendar.time)
+        onDateSelected(dateText) // Gọi callback khi khởi tạo
+    }
+
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        // Nút lùi lịch
+        IconButton(
+            onClick = {
+                calendar.add(Calendar.DAY_OF_MONTH, -1)
+                dateText = dateFormat.format(calendar.time)
+                onDateSelected(dateText) // Gọi callback khi lùi ngày
+            },
+            modifier = Modifier
+                .weight(1f)
+                .size(20.dp)
+        ) {
+            androidx.compose.material3.Icon(
+                painter = painterResource(id = R.drawable.outline_arrow_back_ios_24),
+                contentDescription = "Lùi lịch",
+                tint = Color(0xFF444444)
+            )
+        }
+
+        // Nút chọn ngày
+        Button(
+            modifier = Modifier.weight(8f),
+            shape = componentShapes.medium,
+            onClick = {
+                val datePickerDialog = DatePickerDialog(
+                    context,
+                    { _, year, month, dayOfMonth ->
+                        calendar.set(Calendar.YEAR, year)
+                        calendar.set(Calendar.MONTH, month)
+                        calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+                        dateText = dateFormat.format(calendar.time)
+                        onDateSelected(dateText) // Gọi callback khi chọn ngày
+                    },
+                    calendar.get(Calendar.YEAR),
+                    calendar.get(Calendar.MONTH),
+                    calendar.get(Calendar.DAY_OF_MONTH)
+                )
+                datePickerDialog.show()
+            },
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFe1e1e1))
+        ) {
+            Text(
+                dateText,
+                color = Color(0xFF444444),
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp
+            )
+        }
+
+        // Nút tiến lịch
+        IconButton(
+            onClick = {
+                calendar.add(Calendar.DAY_OF_MONTH, +1)
+                dateText = dateFormat.format(calendar.time)
+                onDateSelected(dateText) // Gọi callback khi tiến ngày
+            },
+            modifier = Modifier
+                .weight(1f)
+                .size(20.dp)
+        ) {
+            androidx.compose.material3.Icon(
+                painter = painterResource(id = R.drawable.outline_arrow_forward_ios_24),
+                contentDescription = "Tiến lịch",
+                tint = Color(0xFF444444)
+            )
+        }
+    }
+}
+
+
+// Tạo custom TabRow
+@Composable
+fun CustomTabRow(
+    tabIndex: Int,
+    onTabSelected: (Int) -> Unit,
+    titles: List<String>,
+    pagerStatement: PagerState,
+    coroutineScoper: CoroutineScope,
+    onLimitTransactionUpdated: (LimitTransaction) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var isDialogOpen by remember { mutableStateOf(false) }
+    val inactiveColor = Color(0xFFe1e1e1)  // Màu cho tab không chọn
+    val inactiveTextColor = Color(0xFFF35E17)  // Màu văn bản cho tab không chọn
+
+
+
+
+    Column {
+        Row(
+            modifier = modifier
+                .height(50.dp)
+                .fillMaxWidth()
+                .background(topBarColor),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center // Căn giữa TabRow
+        ) {
+            // Nút ảo
+            IconButton(
+                onClick = {},
+                enabled = false // Đặt enabled = false để không thể nhấn được
+            ) {
+                // Không thêm Icon hoặc Text nào
+            }
+
+            TabRow(
+                selectedTabIndex = tabIndex,
+                modifier = Modifier
+                    .background(topBarColor)
+                    .width(200.dp),
+                indicator = {
+                },  // Không có chỉ báo
+                divider = {}  // Không có dòng phân cách
+            ) {
+                titles.forEachIndexed { index, title ->
+                    val isSelected = tabIndex == index
+                    val tabColor by animateColorAsState(
+                        if (isSelected) colorPrimary else inactiveColor,
+                        animationSpec = tween(500)
+                    )
+                    val textColor by animateColorAsState(
+                        targetValue = if (isSelected) Color.White else inactiveTextColor,
+                        animationSpec = tween(durationMillis = 500)
+                    )
+                    val shape = when (index) {
+                        0 -> RoundedCornerShape(topStart = 8.dp, bottomStart = 8.dp)
+                        titles.lastIndex -> RoundedCornerShape(topEnd = 8.dp, bottomEnd = 8.dp)
+                        else -> RoundedCornerShape(8.dp)
+                    }
+                    val tabWidth by animateDpAsState(
+                        targetValue = if (isSelected) 100.dp else 200.dp,
+                        animationSpec = tween(durationMillis = 500)
+                    )
+                    Box(
+                        modifier = Modifier
+                            .width(200.dp)
+                            .height(36.dp)
+                            .background(topBarColor)
+                            .background(inactiveColor, shape = shape)
+                            .clip(shape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Tab(
+                            modifier = if (isSelected) Modifier
+                                .width(100.dp)
+                                .height(32.dp)
+                                .padding(horizontal = 2.dp)
+                                .background(tabColor, shape = componentShapes.medium)
+                                .clip(componentShapes.medium)
+                            else Modifier.width(100.dp),
+                            selected = isSelected,
+                            onClick = {
+                                onTabSelected(index);
+                                coroutineScoper.launch {
+                                    pagerStatement.scrollToPage(index)
+                                }
+                            },
+                            text = {
+                                Text(
+                                    title,
+                                    color = textColor,
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.Normal,
+                                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp)
+                                )
+                            }
+                        )
+                    }
+                }
+            }
+
+            IconButton(
+                onClick = { isDialogOpen = true }
+            ) {
+                androidx.compose.material3.Icon(
+                    painter = painterResource(id = R.drawable.edit_value_dialog), // Icon mặc định, bạn có thể thay đổi thành icon khác
+                    contentDescription = "Mở Pop-up Form",
+                    tint = colorPrimary
+                )
+            }
+
+            // Hiển thị PopUpSetValueDialog khi isDialogOpen là true
+            if (isDialogOpen) {
+                PopUpSetValueDialog(
+                    onDismiss = { isDialogOpen = false } ,
+                    onConfirm = { newLimitTransaction ->
+                        onLimitTransactionUpdated(newLimitTransaction)
+                        isDialogOpen = false // Đóng dialog sau khi nhận giá trị
+                    }
+
+                )
+            }
+        }
+    }
+    Divider(
+        color = Color.LightGray,
+        thickness = 1.dp
     )
 }
 

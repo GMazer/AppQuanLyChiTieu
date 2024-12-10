@@ -51,7 +51,7 @@ import com.example.jetpackcompose.R
 import com.example.jetpackcompose.app.features.apiService.FixedTransactionAPI.DeleteFixedTransactionViewModel
 import com.example.jetpackcompose.app.features.apiService.FixedTransactionAPI.FixedTransactionResponse
 import com.example.jetpackcompose.app.features.apiService.FixedTransactionAPI.GetFixedTransactionViewModel
-import com.example.jetpackcompose.app.features.inputFeatures.Category
+import com.example.jetpackcompose.app.screens.Category
 import com.example.jetpackcompose.components.MessagePopup
 import com.example.jetpackcompose.components.montserrat
 import com.example.jetpackcompose.ui.theme.colorPrimary

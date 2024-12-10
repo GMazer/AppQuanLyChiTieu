@@ -42,7 +42,7 @@ import com.example.jetpackcompose.app.features.apiService.FixedTransactionAPI.Fi
 import com.example.jetpackcompose.app.features.apiService.FixedTransactionAPI.GetFixedTransactionViewModel
 import com.example.jetpackcompose.app.features.apiService.FixedTransactionAPI.PutFixedTransactionViewModel
 import com.example.jetpackcompose.app.features.apiService.FixedTransactionAPI.RepeatFrequency
-import com.example.jetpackcompose.app.features.inputFeatures.montserrat
+import com.example.jetpackcompose.app.screens.montserrat
 import com.example.jetpackcompose.components.DatePickerRow
 import com.example.jetpackcompose.components.DropdownRepeat
 import com.example.jetpackcompose.components.DropdownRow

@@ -83,7 +83,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.TextFieldValue
 import com.example.jetpackcompose.R
-import com.example.jetpackcompose.app.features.inputFeatures.Category
+import com.example.jetpackcompose.app.screens.Category
 import com.example.jetpackcompose.ui.theme.textColor
 import com.example.jetpackcompose.ui.theme.TextColorPrimary
 import com.example.jetpackcompose.ui.theme.bgColor

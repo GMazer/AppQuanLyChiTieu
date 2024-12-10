@@ -36,11 +36,11 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.jetpackcompose.R
 import com.example.jetpackcompose.app.features.apiService.TransactionAPI.PostTransactionViewModel
-import com.example.jetpackcompose.app.features.inputFeatures.Category
-import com.example.jetpackcompose.app.features.inputFeatures.DatePickerButton
-import com.example.jetpackcompose.app.features.inputFeatures.Transaction
-import com.example.jetpackcompose.app.features.inputFeatures.montserrat
+import com.example.jetpackcompose.app.screens.Category
+import com.example.jetpackcompose.app.screens.Transaction
+import com.example.jetpackcompose.app.screens.montserrat
 import com.example.jetpackcompose.components.CategoriesGrid
+import com.example.jetpackcompose.components.DatePickerButton
 import com.example.jetpackcompose.components.DrawBottomLine
 import com.example.jetpackcompose.components.MessagePopup
 import com.example.jetpackcompose.components.MyButtonComponent

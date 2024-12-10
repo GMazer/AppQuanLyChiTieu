@@ -1,6 +1,5 @@
 package com.example.jetpackcompose.app
 
-import android.content.Intent
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
@@ -13,7 +12,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.jetpackcompose.app.screens.login_signup.SignUpScreen
 import com.example.jetpackcompose.app.screens.login_signup.SignInScreen
-import com.example.jetpackcompose.app.features.MainScreen
+import com.example.jetpackcompose.app.screens.MainScreen
 import com.example.jetpackcompose.app.features.apiService.LogAPI.SignInViewModel
 import com.example.jetpackcompose.app.features.apiService.LogAPI.SignInViewModelFactory
 import com.example.jetpackcompose.app.features.apiService.ReadNotificationTransaction.PostExpenseNotiTransaction
@@ -27,7 +26,6 @@ import com.example.jetpackcompose.app.screens.anual_sceens.InputFixedTab
 import com.example.jetpackcompose.app.screens.OtherScreen
 import com.example.jetpackcompose.app.screens.anual_sceens.AnualScreen
 import com.example.jetpackcompose.app.screens.find_calendar.FindCalendarScreen
-import com.example.jetpackcompose.app.features.apiService.ReadNotificationTransaction.ReadTransactionNoti
 import com.example.jetpackcompose.app.features.apiService.ReadNotificationTransaction.TransactionNotificationScreen
 
 @RequiresApi(Build.VERSION_CODES.O)

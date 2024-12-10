@@ -70,8 +70,8 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.IntSize
 import com.example.jetpackcompose.app.features.apiService.TransactionAPI.GetLimitTransactionViewModel
-import com.example.jetpackcompose.app.features.inputFeatures.LimitTransaction
-import com.example.jetpackcompose.app.features.inputFeatures.montserrat
+import com.example.jetpackcompose.app.screens.LimitTransaction
+import com.example.jetpackcompose.app.screens.montserrat
 import com.example.jetpackcompose.ui.theme.highGray
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols

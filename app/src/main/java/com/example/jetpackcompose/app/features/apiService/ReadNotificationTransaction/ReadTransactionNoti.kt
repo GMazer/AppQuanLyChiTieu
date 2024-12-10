@@ -50,22 +50,6 @@ class ReadTransactionNoti : NotificationListenerService() {
                 android.app.NotificationManager.IMPORTANCE_LOW
             )
             notificationManager.createNotificationChannel(channel)
-
-            val notification = Notification.Builder(this, channelId)
-                .setContentTitle("Đang lắng nghe thông báo")
-                .setContentText("Ứng dụng đang theo dõi các giao dịch từ thông báo.")
-                .setSmallIcon(R.drawable.logoapp) // Thay bằng icon của bạn
-                .setOngoing(true)
-                .build()
-
-        } else {
-            val notification = Notification.Builder(this)
-                .setContentTitle("Đang lắng nghe thông báo")
-                .setContentText("Ứng dụng đang theo dõi các giao dịch từ thông báo.")
-                .setSmallIcon(R.drawable.logoapp) // Thay bằng icon của bạn
-                .setOngoing(true)
-                .build()
-
         }
     }
 
@@ -80,7 +64,7 @@ class ReadTransactionNoti : NotificationListenerService() {
         Log.d("NotificationService", "Text: $notificationText")
 
         // Kiểm tra xem thông báo có chứa thông tin về biến động số dư không
-        val transactionData = getTransactionData(notificationText)
+        val transactionData = getTransactionData(packageName, notificationText)
 
         transactionData?.let {
             // Thêm giao dịch vào danh sách
@@ -93,31 +77,47 @@ class ReadTransactionNoti : NotificationListenerService() {
         }
     }
 
-    private fun getTransactionData(text: String): TransactionReadNoti? {
-        // Sử dụng Regex để nhận diện số dư và loại giao dịch
-        val regex = """([+-])(\d{1,3}(?:,\d{3})*)(\s?VND)?""".toRegex()
-        val matchResult = regex.find(text)
+    private fun getTransactionData(packageName: String, text: String): TransactionReadNoti? {
+        // Chuyển packageName thành chữ thường và tách ra bằng dấu "."
+        val validPackageNames = listOf(
+            "bidv", "techcombank", "vcb", "vib", "acb", "vnpay", "mbmobile", "viettinbank",
+            "sgbank", "dongabank", "lpb", "hdbank", "ncb", "ocb", "sacombank", "cake", "tpb",
+            "msb", "bplus", "facebook", "agribank3"
+        )
 
-        return matchResult?.let {
-            val sign = it.groupValues[1]  // Dấu + hoặc -
-            val amountStr = it.groupValues[2].replace(",", "")  // Loại bỏ dấu phẩy
-            val amount = amountStr.toLongOrNull()  // Chuyển đổi sang kiểu Long
-            val note = if (sign == "+") "income" else "expense"
+        val packageNameParts = packageName.toLowerCase(Locale.getDefault()).split(".")
 
-            amount?.let {
-                // Lấy ngày hiện tại với định dạng "yyyy-MM-dd"
-                val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-                val currentDate = dateFormat.format(Date())
+        // Kiểm tra xem packageName có thuộc danh sách hợp lệ không
+        if (validPackageNames.any { it in packageNameParts }) {
+            // Sử dụng Regex để nhận diện số dư và loại giao dịch
+            val regex = """([+-])(\d{1,3}(?:,\d{3})*)(\s?VND)$""".toRegex()
+            val matchResult = regex.find(text)
 
-                // Tạo đối tượng TransactionReadNoti với dữ liệu đã nhận diện
-                TransactionReadNoti(
-                    type = note,
-                    amount = it,
-                    date = currentDate
-                )
+            return matchResult?.let {
+                val sign = it.groupValues[1]  // Dấu + hoặc -
+                val amountStr = it.groupValues[2].replace(",", "")  // Loại bỏ dấu phẩy
+                val amount = amountStr.toLongOrNull()  // Chuyển đổi sang kiểu Long
+                val note = if (sign == "+") "income" else "expense"
+
+                amount?.let {
+                    // Lấy ngày hiện tại với định dạng "yyyy-MM-dd"
+                    val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                    val currentDate = dateFormat.format(Date())
+
+                    // Tạo đối tượng TransactionReadNoti với dữ liệu đã nhận diện
+                    TransactionReadNoti(
+                        type = note,
+                        amount = it,
+                        date = currentDate
+                    )
+                }
             }
         }
+
+        // Trả về null nếu không hợp lệ
+        return null
     }
+
 
     private fun ensureServiceRunning() {
         val intent = Intent(this, ReadTransactionNoti::class.java)

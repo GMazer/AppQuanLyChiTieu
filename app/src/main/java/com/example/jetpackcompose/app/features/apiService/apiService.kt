@@ -1,8 +1,8 @@
 package com.example.jetpackcompose.app.network
 
-import com.example.jetpackcompose.app.features.inputFeatures.LimitTransaction
-import com.example.jetpackcompose.app.features.inputFeatures.RemainLimit
-import com.example.jetpackcompose.app.features.inputFeatures.Transaction
+import com.example.jetpackcompose.app.screens.LimitTransaction
+import com.example.jetpackcompose.app.screens.RemainLimit
+import com.example.jetpackcompose.app.screens.Transaction
 import com.example.jetpackcompose.app.features.apiService.FixedTransactionAPI.FixedTransaction
 import com.example.jetpackcompose.app.features.apiService.FixedTransactionAPI.FixedTransactionUpdate
 import com.example.jetpackcompose.app.features.apiService.FixedTransactionAPI.GetFixedTransactionResponse
@@ -17,8 +17,9 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 object BaseURL {
-    val baseUrl = "https://1411-171-255-56-107.ngrok-free.app"
+    val baseUrl = "https://5a43-104-28-254-74.ngrok-free.app"
 }
+
 
 data class RegistrationData(
     val phone_number: String,

@@ -4,8 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.jetpackcompose.app.features.inputFeatures.Transaction
-import com.example.jetpackcompose.app.network.ApiResponse
+import com.example.jetpackcompose.app.screens.Transaction
 import com.example.jetpackcompose.app.network.ApiService
 import com.example.jetpackcompose.app.network.BaseURL
 import com.google.gson.GsonBuilder

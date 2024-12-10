@@ -32,7 +32,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.jetpackcompose.R
 import com.example.jetpackcompose.app.features.apiService.TransactionAPI.PostTransactionViewModel
+import com.example.jetpackcompose.app.screens.Category
+import com.example.jetpackcompose.app.screens.Transaction
+import com.example.jetpackcompose.app.screens.montserrat
 import com.example.jetpackcompose.components.CategoriesGrid
+import com.example.jetpackcompose.components.DatePickerButton
 import com.example.jetpackcompose.components.DrawBottomLine
 import com.example.jetpackcompose.components.MessagePopup
 import com.example.jetpackcompose.components.NoteTextField

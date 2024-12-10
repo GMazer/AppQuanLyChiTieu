@@ -36,7 +36,6 @@ import com.example.jetpackcompose.components.MessagePopup
 import com.example.jetpackcompose.components.MonthPickerButton
 import com.example.jetpackcompose.components.ReportTable
 import com.example.jetpackcompose.components.montserrat
-import com.example.jetpackcompose.ui.theme.lightGray
 import java.util.Calendar
 
 data class ReportData(
@@ -122,18 +121,18 @@ fun ReportScreen(viewModel: GetReportViewModel = GetReportViewModel(LocalContext
     }
 
     val customTypography = Typography(
-        bodyLarge = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.montserrat),
-        bodyMedium = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.montserrat),
-        bodySmall = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.montserrat),
-        titleLarge = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.montserrat),
-        titleMedium = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.montserrat),
-        titleSmall = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.montserrat),
-        labelLarge = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.montserrat),
-        labelMedium = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.montserrat),
-        labelSmall = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.montserrat),
-        headlineLarge = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.montserrat),
-        headlineMedium = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.montserrat),
-        headlineSmall = TextStyle(fontFamily = com.example.jetpackcompose.app.features.inputFeatures.montserrat)
+        bodyLarge = TextStyle(fontFamily = com.example.jetpackcompose.app.screens.montserrat),
+        bodyMedium = TextStyle(fontFamily = com.example.jetpackcompose.app.screens.montserrat),
+        bodySmall = TextStyle(fontFamily = com.example.jetpackcompose.app.screens.montserrat),
+        titleLarge = TextStyle(fontFamily = com.example.jetpackcompose.app.screens.montserrat),
+        titleMedium = TextStyle(fontFamily = com.example.jetpackcompose.app.screens.montserrat),
+        titleSmall = TextStyle(fontFamily = com.example.jetpackcompose.app.screens.montserrat),
+        labelLarge = TextStyle(fontFamily = com.example.jetpackcompose.app.screens.montserrat),
+        labelMedium = TextStyle(fontFamily = com.example.jetpackcompose.app.screens.montserrat),
+        labelSmall = TextStyle(fontFamily = com.example.jetpackcompose.app.screens.montserrat),
+        headlineLarge = TextStyle(fontFamily = com.example.jetpackcompose.app.screens.montserrat),
+        headlineMedium = TextStyle(fontFamily = com.example.jetpackcompose.app.screens.montserrat),
+        headlineSmall = TextStyle(fontFamily = com.example.jetpackcompose.app.screens.montserrat)
     )
 
     MaterialTheme(typography = customTypography) {

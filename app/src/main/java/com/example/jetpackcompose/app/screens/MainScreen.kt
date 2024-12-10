@@ -1,24 +1,17 @@
-package com.example.jetpackcompose.app.features
+package com.example.jetpackcompose.app.screens
 
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.PagerDefaults
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.material.Scaffold
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
-import com.example.jetpackcompose.app.screens.InputScreen
-import com.example.jetpackcompose.app.screens.CalendarScreen
-import com.example.jetpackcompose.app.screens.OtherScreen
-import com.example.jetpackcompose.app.screens.ReportScreen
-import com.example.jetpackcompose.app.screens.OtherScreen
 import com.example.jetpackcompose.navigation.CustomBottomAppBar
 
 @Composable
@@ -44,7 +37,7 @@ fun MainScreen(navController: NavHostController) {
             reverseLayout = false
         ) { page ->
             when (page) {
-                0 -> InputScreen()
+                0 -> InputScreen(navController)
                 1 -> CalendarScreen(navController)
                 2 -> ReportScreen()
                 3 -> OtherScreen(navController)
