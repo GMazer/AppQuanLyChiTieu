@@ -104,10 +104,11 @@ fun OtherScreen(navController: NavHostController) {
                             "Chi phí cố định và thu nhập định kỳ" to {
                                 navController.navigate("anual")
                             },
-                            "Giao dịch biến động số dư" to {
+                            "Danh sách giao dịch ngân hàng" to {
                                 navController.navigate("transactionNotification")
                             },
-                            "Log out" to {
+
+                            "Đăng xuất" to {
                                 // Gọi clearToken từ SignInViewModel khi người dùng đăng xuất
                                 Log.i("CheckToken", "${signInViewModel.getToken()}")
                                 signInViewModel.clearToken()
