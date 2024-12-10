@@ -163,7 +163,7 @@ fun ExpenseContent(
                         onCategorySelected = { category -> selectedCategory = category }
                     )
 
-                    Spacer(Modifier.height(32.dp))
+                    Spacer(Modifier.height(16.dp))
 
                     // Nút nhập khoản chi
                     Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {

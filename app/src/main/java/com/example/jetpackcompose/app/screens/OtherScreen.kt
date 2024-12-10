@@ -113,7 +113,10 @@ fun OtherScreen(navController: NavHostController) {
                                 Log.i("CheckToken", "${signInViewModel.getToken()}")
                                 signInViewModel.clearToken()
                                 Log.i("CheckToken", "${signInViewModel.getToken()}")
-                                navController.navigate("signup")
+                                navController.navigate("signup") {
+                                    popUpTo(navController.graph.startDestinationId) { inclusive = true }
+                                    launchSingleTop = true // Đảm bảo không tạo nhiều bản sao của cùng một màn hình
+                                }
                             }
                         ),
                         painters = icons // Truyền danh sách biểu tượng vào

@@ -116,6 +116,9 @@ fun SignUpScreen(navController: NavHostController, viewModel: SignUpViewModel = 
                         onSuccess = {
                             successMessage = it
                             navController.navigate("signin")
+                            {
+                                launchSingleTop = true
+                            }
                         },
                         onError = {
                             errorMessage = it

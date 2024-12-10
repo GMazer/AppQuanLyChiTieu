@@ -115,6 +115,9 @@ fun SignInScreen(navController: NavHostController) {
                 Spacer(modifier = Modifier.weight(1f))
                 ClickableTextComponent("Chưa có tài khoản? Đăng ký ngay", onClick = {
                     navController.navigate("signup")
+                    {
+                        launchSingleTop = true
+                    }
                 })
             }
         }
