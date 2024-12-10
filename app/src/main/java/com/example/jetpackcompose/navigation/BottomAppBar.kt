@@ -81,7 +81,7 @@ fun CustomBottomAppBar(pagerState: PagerState, coroutineScope: CoroutineScope) {
 
             BottomBarItem(
                 title = "Báo cáo",
-                iconRes = R.drawable.chart_donut,
+                iconRes = R.drawable.chart,
                 isSelected = selectedPage == 2,
                 onClick = {
                     selectedPage = 2

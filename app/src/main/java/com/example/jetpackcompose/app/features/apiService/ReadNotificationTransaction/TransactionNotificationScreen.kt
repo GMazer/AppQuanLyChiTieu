@@ -19,13 +19,17 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -33,6 +37,9 @@ import com.example.jetpackcompose.R
 import com.example.jetpackcompose.components.montserrat
 import com.example.jetpackcompose.ui.theme.colorPrimary
 import com.example.jetpackcompose.ui.theme.textColor
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
+import java.util.Locale
 
 @Composable
 fun TransactionNotificationScreen(navController: NavController) {
@@ -63,9 +70,9 @@ fun TransactionNotificationScreen(navController: NavController) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween) {
 
-            Box(modifier = Modifier.weight(1.5f)) {
+            Box(modifier = Modifier.weight(1f)) {
                 IconButton(onClick = {
-                    navController.popBackStack("other", inclusive = false)
+                    navController.navigate("other")
                 }) {
                     Icon(
                         painter = painterResource(id = R.drawable.outline_arrow_back_ios_24),
@@ -95,11 +102,6 @@ fun TransactionNotificationScreen(navController: NavController) {
             Box(modifier = Modifier.weight(1f)) {
 
             }
-
-            // Nút thêm mới
-            Box(modifier = Modifier.weight(0.5f)) {
-
-            }
         }
 
         Divider(color = Color.LightGray, thickness = 1.dp)
@@ -111,15 +113,26 @@ fun TransactionNotificationScreen(navController: NavController) {
 
         // Hiển thị các nhóm giao dịch
         groupedTransactions.forEach { (date, transactionsForDate) ->
-            Column(modifier = Modifier.padding(16.dp)) {
+            Column(modifier = Modifier.background(Color(0xfff5f5f5))) {
                 // Hiển thị ngày
-                Text(
-                    text = date,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-
+                Divider(color = Color.LightGray, thickness = 0.7.dp)
+                Row(
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp)
+                        .height(35.dp)
+                        .background(Color(0xfff1f1f1))
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = date,
+                        fontWeight = FontWeight.SemiBold,
+                        fontFamily = montserrat,
+                        fontSize = 12.sp,
+                    )
+                }
+                Divider(color = Color.LightGray, thickness = 0.7.dp)
                 // Hiển thị danh sách giao dịch cho ngày này
                 transactionsForDate.forEach { transaction ->
                     TransactionRow(
@@ -135,11 +148,36 @@ fun TransactionNotificationScreen(navController: NavController) {
 
 @Composable
 fun TransactionRow(transaction: TransactionReadNoti, index: Int, navController: NavController) {
+
+    val currencyFormatter = remember {
+        val symbols = DecimalFormatSymbols(Locale("vi", "VN"))
+        symbols.decimalSeparator = '.'
+        symbols.groupingSeparator = ','
+
+        val format = DecimalFormat("#,###", symbols)
+        format
+    }
+
+    val amountText = buildAnnotatedString {
+        if(transaction.type == "income") {
+            append("+${currencyFormatter.format(transaction.amount)}")
+            withStyle(style = SpanStyle(fontSize = 10.sp)) {  // Kích thước nhỏ hơn cho ký tự "₫"
+                append("₫")
+            }
+        }
+        else if(transaction.type == "expense") {
+            append("-${currencyFormatter.format(transaction.amount)}")
+            withStyle(style = SpanStyle(fontSize = 10.sp)) {  // Kích thước nhỏ hơn cho ký tự "₫"
+                append("₫")
+            }
+        }
+    }
     // Hiển thị thông tin giao dịch
     Row(
         modifier = Modifier
+            .background(Color.White)
             .fillMaxWidth()
-            .padding(vertical = 8.dp)
+            .padding(start = 16.dp)
             .clickable {
                 // Điều hướng đến màn hình tương ứng với type là 'expense' hoặc 'income' và truyền thêm index
                 if (transaction.type == "expense") {
@@ -160,17 +198,20 @@ fun TransactionRow(transaction: TransactionReadNoti, index: Int, navController: 
                 "expense" -> "Tiền chi"
                 else -> "Không xác định"
             },
-            fontWeight = FontWeight.Normal,
+            fontWeight = FontWeight.Bold,
             fontSize = 14.sp,
+            fontFamily = montserrat,
+            color = textColor,
             modifier = Modifier.weight(1f)
         )
 
         // Hiển thị số tiền
         Text(
-            text = "${transaction.amount} VND",
+            text = amountText,
             fontWeight = FontWeight.Bold,
             fontSize = 14.sp,
             fontFamily = montserrat,
+            color = if(transaction.type == "income") Color(0xff62bbeb) else Color(0xffff5c46),
             modifier = Modifier.weight(1f),
             textAlign = TextAlign.End
         )
@@ -183,10 +224,12 @@ fun TransactionRow(transaction: TransactionReadNoti, index: Int, navController: 
                 painter = painterResource(id = R.drawable.outline_arrow_forward_ios_24),
                 contentDescription = "Arrow Forward",
                 tint = Color.LightGray,
-                modifier = Modifier.size(16.dp)
+                modifier = Modifier
+                    .size(16.dp)
             )
         }
     }
+    Divider(color = Color.LightGray, thickness = 0.7.dp)
 }
 
 

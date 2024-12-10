@@ -431,12 +431,10 @@ fun DayIndex(
                         fontSize = 12.sp
                     )
                 }
-
                 Divider(
                     color = highGray,
                     thickness = 0.7.dp
                 )
-
                 transactions.forEach { transaction ->
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -456,9 +454,6 @@ fun DayIndex(
                                 }
                             }
                     ) {
-                        Log.d("DayIndex", "Transaction Amount: ${transaction.amount}")
-                        Log.d("DayIndex", "Transaction Date: ${transaction.transactionDate}")
-                        Log.d("DayIndex", "Transaction ID: ${transaction.transaction_id}")
                         transaction.transaction_id?.let { id ->
                             transaction.note?.let {
                                 transaction.type?.let { it1 ->

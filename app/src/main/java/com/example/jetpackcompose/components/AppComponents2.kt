@@ -1183,18 +1183,18 @@ fun OtherFunction(
 
     Column(modifier = Modifier.fillMaxWidth()) {
         items.forEachIndexed { index, item ->
-            // Xác định bo góc cho phần tử dựa vào vị trí của nó
+            // Xác định bo góc cho phần tử đầu hoặc cuối
             val cornerShape = when (index) {
-                0 -> RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)
-                1 -> RoundedCornerShape(bottomStart = 8.dp, bottomEnd = 8.dp)
-                else -> RoundedCornerShape(0.dp)
+                0 -> RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp) // Phần tử đầu tiên
+                items.size - 1 -> RoundedCornerShape(bottomStart = 8.dp, bottomEnd = 8.dp) // Phần tử cuối cùng
+                else -> RoundedCornerShape(0.dp) // Không bo góc cho các phần tử khác
             }
 
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp)
-                    .background(Color.White, shape = cornerShape) // Bo góc tùy vào phần tử
+                    .background(Color.White, shape = cornerShape) // Bo góc tùy vào vị trí
                     .clickable(onClick = item.second), // Gọi onClick khi nhấn
                 contentAlignment = Alignment.CenterStart
             ) {
@@ -1231,6 +1231,7 @@ fun OtherFunction(
         }
     }
 }
+
 
 
 

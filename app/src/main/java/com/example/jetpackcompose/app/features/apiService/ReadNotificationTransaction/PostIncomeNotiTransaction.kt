@@ -50,7 +50,7 @@ import com.example.jetpackcompose.ui.theme.colorPrimary
 import com.example.jetpackcompose.ui.theme.textColor
 
 @Composable
-fun PostExpenseNotiTransaction(
+fun PostIncomeNotiTransaction(
     navController: NavHostController,
     amount: Long,
     selectedDate: String,
@@ -79,60 +79,32 @@ fun PostExpenseNotiTransaction(
     // Danh sách các Category
     val categories = listOf(
         Category(
-            1,
-            "Chi phí nhà ở",
-            { painterResource(R.drawable.outline_home_work_24) },
+            10,
+            "Tiền lương",
+            { painterResource(R.drawable.salary) },
             Color(0xFFfb791d),
-            1.00f
+            percentage = 1.00f // 75%
         ),
         Category(
-            2,
-            "Ăn uống",
-            { painterResource(R.drawable.outline_ramen_dining_24) },
+            11,
+            "Tiền thưởng",
+            { painterResource(R.drawable.baseline_card_giftcard_24) },
             Color(0xFF37c166),
-            1.00f
+            percentage = 1.00f // 90%
         ),
         Category(
-            3,
-            "Mua sắm quần áo",
-            { painterResource(R.drawable.clothes) },
-            Color(0xFF283eaa),
-            1.00f
-        ),
-        Category(
-            4,
-            "Đi lại",
-            { painterResource(R.drawable.outline_train_24) },
-            Color(0xFFa06749),
-            1.00f
-        ),
-        Category(
-            5,
-            "Chăm sóc sắc đẹp",
-            { painterResource(R.drawable.outline_cosmetic) },
+            12,
+            "Thu nhập phụ",
+            { painterResource(R.drawable.secondary) },
             Color(0xFFf95aa9),
-            1.00f
+            percentage = 1.00f // 30%
         ),
         Category(
-            6,
-            "Giao lưu",
-            { painterResource(R.drawable.entertainment) },
-            Color(0xFF6a1b9a),
-            1.00f
-        ),
-        Category(
-            7,
-            "Y tế",
-            { painterResource(R.drawable.outline_health_and_safety_24) },
-            Color(0xFFfc3d39),
-            1.00f
-        ),
-        Category(
-            8,
-            "Học tập",
-            { painterResource(R.drawable.outline_education) },
-            Color(0xFFfc7c1f),
-            0.50f
+            13,
+            "Trợ cấp",
+            { painterResource(R.drawable.subsidy) },
+            Color(0xFFfba74a),
+            percentage = 1.00f // 50%
         )
     )
 
@@ -279,7 +251,7 @@ fun PostExpenseNotiTransaction(
                     .fillMaxWidth()
             ) {
                 MyButtonComponent(
-                    value = "Nhập khoản chi",
+                    value = "Nhập khoản thu",
                     onClick = {
                         successMessage = "Đang gửi dữ liệu..."
                         showPopup = true
@@ -360,4 +332,3 @@ fun PostExpenseNotiTransaction(
         )
     }
 }
-

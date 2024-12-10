@@ -64,6 +64,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.jetpackcompose.R
 import com.example.jetpackcompose.app.features.apiService.ReadNotificationTransaction.TransactionNotificationViewModel
+import com.example.jetpackcompose.app.features.apiService.ReadNotificationTransaction.TransactionStorage
 import com.example.jetpackcompose.app.features.apiService.TransactionAPI.PostLimitTransactionViewModel
 import com.example.jetpackcompose.components.PopUpSetValueDialog
 import com.example.jetpackcompose.ui.theme.colorPrimary
@@ -364,10 +365,6 @@ fun InputTab(viewModel: PostLimitTransactionViewModel = PostLimitTransactionView
 
     val pagerState = rememberPagerState(pageCount = { tabs.size })
     val coroutineScope = rememberCoroutineScope()
-
-    // Lấy danh sách giao dịch từ TransactionNotificationViewModel
-
-    // Hiển thị AlertDialog nếu transactionList không rỗng
 
     // Nội dung chính của màn hình
     MaterialTheme {

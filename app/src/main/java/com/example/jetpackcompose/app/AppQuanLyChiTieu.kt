@@ -17,6 +17,7 @@ import com.example.jetpackcompose.app.features.MainScreen
 import com.example.jetpackcompose.app.features.apiService.LogAPI.SignInViewModel
 import com.example.jetpackcompose.app.features.apiService.LogAPI.SignInViewModelFactory
 import com.example.jetpackcompose.app.features.apiService.ReadNotificationTransaction.PostExpenseNotiTransaction
+import com.example.jetpackcompose.app.features.apiService.ReadNotificationTransaction.PostIncomeNotiTransaction
 import com.example.jetpackcompose.app.features.editFeatures.EditExpenseTransaction
 import com.example.jetpackcompose.app.features.editFeatures.EditFixedExpenseTransaction
 import com.example.jetpackcompose.app.features.editFeatures.EditIncomeExpenseTransaction
@@ -150,7 +151,7 @@ fun AppQuanLyChiTieu() {
                 val amount = backStackEntry.arguments?.getString("amount")?.toLongOrNull() ?: 0L
                 val selectedDate = backStackEntry.arguments?.getString("selectedDate") ?: ""
                 val index = backStackEntry.arguments?.getString("index")?.toIntOrNull() ?: 0
-//                PostIncomeNotiTransaction(navController, amount, selectedDate, index)
+                PostIncomeNotiTransaction(navController, amount, selectedDate, index)
             }
         }
     }
