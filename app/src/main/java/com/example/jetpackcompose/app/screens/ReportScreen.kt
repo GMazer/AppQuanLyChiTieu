@@ -257,7 +257,7 @@ fun ReportScreen(viewModel: GetReportViewModel = GetReportViewModel(LocalContext
                             }
                         }
                         item {
-                            Divider(modifier = Modifier.fillMaxWidth().height(2.dp))
+                            Divider(modifier = Modifier.fillMaxWidth().height(1.dp))
                         }
                     }
                 }
