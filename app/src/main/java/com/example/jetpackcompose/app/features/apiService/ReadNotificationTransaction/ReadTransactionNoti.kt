@@ -176,9 +176,7 @@ class ReadTransactionNoti : NotificationListenerService() {
 
     override fun onTrimMemory(level: Int) {
         Log.d("NotificationListener", "onTrimMemory triggered with level $level")
-        if (level >= ComponentCallbacks2.TRIM_MEMORY_MODERATE) {
-            sendBroadcast(Intent(this, RestartServiceReceiver::class.java))
-        }
+        sendBroadcast(Intent(this, RestartServiceReceiver::class.java))
         super.onTrimMemory(level)
     }
 
