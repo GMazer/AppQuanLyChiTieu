@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Notification
 import android.content.BroadcastReceiver
 import android.content.ComponentCallbacks2
+import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.IBinder
@@ -144,11 +145,21 @@ class ReadTransactionNoti : NotificationListenerService() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.d("NotificationListener", "onStartCommand triggered")
-        startForegroundService()
-        // Dùng super với đầy đủ tham số
-        super.onStartCommand(intent, flags, startId)
+
+        if (!isServiceRunning()) {
+            startForegroundService()
+        } else {
+            Log.d("NotificationListener", "Service is already running.")
+        }
 
         return START_STICKY
+    }
+
+    private fun isServiceRunning(): Boolean {
+        val manager = getSystemService(Context.ACTIVITY_SERVICE) as android.app.ActivityManager
+        return manager.getRunningServices(Integer.MAX_VALUE).any {
+            it.service.className == ReadTransactionNoti::class.java.name
+        }
     }
 
     override fun onDestroy() {

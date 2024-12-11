@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidthIn
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -72,7 +73,7 @@ fun TransactionNotificationScreen(navController: NavController) {
 
             Box(modifier = Modifier.weight(1f)) {
                 IconButton(onClick = {
-                    navController.popBackStack()
+                    navController.popBackStack("mainscreen", inclusive = false)
                 }) {
                     Icon(
                         painter = painterResource(id = R.drawable.outline_arrow_back_ios_24),
@@ -112,34 +113,38 @@ fun TransactionNotificationScreen(navController: NavController) {
             // Chữ "Thu chi cố định" luôn nằm giữa và ẩn nếu diện tích không đủ
 
         // Hiển thị các nhóm giao dịch
-        groupedTransactions.forEach { (date, transactionsForDate) ->
-            Column(modifier = Modifier.background(Color(0xfff5f5f5))) {
-                // Hiển thị ngày
-                Divider(color = Color.LightGray, thickness = 0.7.dp)
-                Row(
-                    modifier = Modifier
-                        .padding(horizontal = 8.dp)
-                        .height(35.dp)
-                        .background(Color(0xfff1f1f1))
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Start,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = date,
-                        fontWeight = FontWeight.SemiBold,
-                        fontFamily = montserrat,
-                        fontSize = 12.sp,
-                    )
-                }
-                Divider(color = Color.LightGray, thickness = 0.7.dp)
-                // Hiển thị danh sách giao dịch cho ngày này
-                transactionsForDate.forEach { transaction ->
-                    TransactionRow(
-                        transaction = transaction,
-                        index = transactions.indexOf(transaction),
-                        navController = navController
-                    )
+        LazyColumn {
+            groupedTransactions.forEach { (date, transactionsForDate) ->
+                item{
+                    Column(modifier = Modifier.background(Color(0xfff5f5f5))) {
+                        // Hiển thị ngày
+                        Divider(color = Color.LightGray, thickness = 0.7.dp)
+                        Row(
+                            modifier = Modifier
+                                .padding(horizontal = 8.dp)
+                                .height(35.dp)
+                                .background(Color(0xfff1f1f1))
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Start,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = date,
+                                fontWeight = FontWeight.SemiBold,
+                                fontFamily = montserrat,
+                                fontSize = 12.sp,
+                            )
+                        }
+                        Divider(color = Color.LightGray, thickness = 0.7.dp)
+                        // Hiển thị danh sách giao dịch cho ngày này
+                        transactionsForDate.forEach { transaction ->
+                            TransactionRow(
+                                transaction = transaction,
+                                index = transactions.indexOf(transaction),
+                                navController = navController
+                            )
+                        }
+                    }
                 }
             }
         }
