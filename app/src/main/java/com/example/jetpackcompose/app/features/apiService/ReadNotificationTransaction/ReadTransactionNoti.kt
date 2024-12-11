@@ -86,12 +86,18 @@ class ReadTransactionNoti : NotificationListenerService() {
         )
 
         val packageNameParts = packageName.toLowerCase(Locale.getDefault()).split(".")
+        Log.d("NotificationService", "Package Name Parts: $packageNameParts")
 
         // Kiểm tra xem packageName có thuộc danh sách hợp lệ không
         if (validPackageNames.any { it in packageNameParts }) {
+
+            val transactionStartIndex = text.indexOfFirst { it == '+' || it == '-' }
+            if (transactionStartIndex == -1) return null
+            val transactionText = text.substring(transactionStartIndex)
+
             // Sử dụng Regex để nhận diện số dư và loại giao dịch
             val regex = """([+-])(\d{1,3}(?:,\d{3})*)(\s?VND)$""".toRegex()
-            val matchResult = regex.find(text)
+            val matchResult = regex.find(transactionText)
 
             return matchResult?.let {
                 val sign = it.groupValues[1]  // Dấu + hoặc -
@@ -117,6 +123,7 @@ class ReadTransactionNoti : NotificationListenerService() {
         // Trả về null nếu không hợp lệ
         return null
     }
+
 
 
     private fun ensureServiceRunning() {
