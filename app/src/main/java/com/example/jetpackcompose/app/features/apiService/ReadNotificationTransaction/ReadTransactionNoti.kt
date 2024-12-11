@@ -93,7 +93,9 @@ class ReadTransactionNoti : NotificationListenerService() {
 
             val transactionStartIndex = text.indexOfFirst { it == '+' || it == '-' }
             if (transactionStartIndex == -1) return null
-            val transactionText = text.substring(transactionStartIndex)
+            val vndIndex = text.indexOf("VND", transactionStartIndex)
+            if (vndIndex == -1) return null
+            val transactionText = text.substring(transactionStartIndex, vndIndex + 3) // +3 để bao gồm "VND"
 
             // Sử dụng Regex để nhận diện số dư và loại giao dịch
             val regex = """([+-])(\d{1,3}(?:,\d{3})*)(\s?VND)$""".toRegex()
@@ -123,6 +125,7 @@ class ReadTransactionNoti : NotificationListenerService() {
         // Trả về null nếu không hợp lệ
         return null
     }
+
 
 
 
