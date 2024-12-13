@@ -15,7 +15,6 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TextButton
@@ -23,7 +22,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -117,26 +115,8 @@ fun InputScreen(navController: NavController) {
         }
     )
 
-    var showDialog by rememberSaveable { mutableStateOf(false) }
     val pagerState = rememberPagerState(pageCount = { tabs.size })
     val coroutineScope = rememberCoroutineScope()
-
-    val context = LocalContext.current
-    val transactionStorage = TransactionStorage(context)
-    val transactions = transactionStorage.loadTransactions()
-
-    // Kiểm tra trạng thái đã hiển thị thông báo từ SharedPreferences
-    val sharedPreferences = context.getSharedPreferences("app_preferences", Context.MODE_PRIVATE)
-    val isDialogShown = sharedPreferences.getBoolean("is_dialog_shown", false)
-
-    LaunchedEffect(transactions) {
-        if (transactions.isNotEmpty() && !isDialogShown) {
-            // Hiển thị dialog nếu có giao dịch và chưa hiển thị thông báo
-            showDialog = true
-            // Lưu trạng thái đã hiển thị thông báo
-            sharedPreferences.edit().putBoolean("is_dialog_shown", true).apply()
-        }
-    }
 
     // Nội dung chính của màn hình
     MaterialTheme {
@@ -172,53 +152,7 @@ fun InputScreen(navController: NavController) {
     }
 
     // Hiển thị dialog nếu có giao dịch và chưa hiển thị
-    if (showDialog) {
-        AlertDialog(
-            onDismissRequest = { showDialog = false },
-            title = {
-                Text(
-                    "Giao dịch biến động số dư",
-                    fontFamily = montserrat,
-                    color = Color(0xff222222),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp
-                )
-            },
-            text = {
-                Text(
-                    "Có giao dịch từ biến động số dư mới được nhận, bạn có muốn thêm không?",
-                    fontFamily = montserrat,
-                    fontWeight = FontWeight.SemiBold,
-                    color = textColor,
-                    fontSize = 14.sp
-                )
-            },
-            confirmButton = {
-                TextButton(onClick = {
-                    showDialog = false
-                    navController.navigate("transactionNotification")
-                }) {
-                    Text(
-                        "OK",
-                        fontFamily = montserrat,
-                        color = colorPrimary
-                    )
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = {
-                    showDialog = false
-                    // Không cần lưu lại trạng thái "bỏ qua" vì muốn dialog hiển thị lại khi mở lại app
-                }) {
-                    Text(
-                        "Bỏ qua",
-                        color = Color.Gray,
-                        fontFamily = montserrat
-                    )
-                }
-            }
-        )
-    }
+
 }
 
 

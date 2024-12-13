@@ -2,17 +2,16 @@ package com.example.jetpackcompose.app.features.apiService.ReadNotificationTrans
 
 import android.annotation.SuppressLint
 import android.app.Notification
-import android.content.BroadcastReceiver
-import android.content.ComponentCallbacks2
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.content.ServiceConnection
+import android.os.Build
 import android.os.IBinder
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.util.Log
 import androidx.compose.ui.platform.LocalContext
-import com.example.jetpackcompose.R
+import com.example.jetpackcompose.TransactionNotiActivity
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -68,11 +67,17 @@ class ReadTransactionNoti : NotificationListenerService() {
         val transactionData = getTransactionData(packageName, notificationText)
 
         transactionData?.let {
+
             // Thêm giao dịch vào danh sách
             transactionList.add(it)
 
             // Lưu danh sách giao dịch vào bộ nhớ trong
             transactionStorage.saveTransactions(transactionList)
+
+            val sharedPreferences = this.getSharedPreferences("app_preferences", Context.MODE_PRIVATE)
+            sharedPreferences.edit().putBoolean("is_dialog_shown", false).apply()
+
+            showReceivedNotification( if (it.type == "expense") "Expense" else "Income", it.amount.toString() + "VND")
 
             Log.d("NotificationService", "Danh sách giao dịch đã được lưu: $transactionList")
         }
@@ -127,7 +132,40 @@ class ReadTransactionNoti : NotificationListenerService() {
         return null
     }
 
+    @SuppressLint("NewApi", "NotificationPermission")
+    private fun showReceivedNotification(title: String, text: String) {
+        val channelId = "received_notification_channel"
+        val channelName = "Received Notifications"
 
+        // Tạo Intent để mở TransactionNotiActivity
+        val intent = Intent(this, TransactionNotiActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        val pendingIntent = PendingIntent.getActivity(
+            this,
+            0,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val notificationManager = getSystemService(NOTIFICATION_SERVICE) as android.app.NotificationManager
+            val channel = android.app.NotificationChannel(
+                channelId, channelName, android.app.NotificationManager.IMPORTANCE_LOW
+            )
+            notificationManager.createNotificationChannel(channel)
+        }
+
+        val notification = Notification.Builder(this, channelId)
+            .setContentTitle("Đã nhận thông báo")
+            .setContentText("$title: $text")
+            .setSmallIcon(android.R.drawable.ic_dialog_info)
+            .setAutoCancel(true)
+            .setContentIntent(pendingIntent)
+            .build()
+
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as android.app.NotificationManager
+        notificationManager.notify(System.currentTimeMillis().toInt(), notification)
+    }
 
 
     private fun ensureServiceRunning() {

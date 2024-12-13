@@ -42,6 +42,9 @@
             </intent-filter>
         </receiver>
 
+        <!-- NotificationService -->
+        <activity android:name=".TransactionNotiActivity" />
+
         <!-- MainActivity -->
         <activity
             android:name=".MainActivity"

@@ -12,8 +12,24 @@ import android.provider.Settings
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import com.example.jetpackcompose.app.AppQuanLyChiTieu
 import com.example.jetpackcompose.app.features.apiService.ReadNotificationTransaction.ReadTransactionNoti
+import com.example.jetpackcompose.app.features.apiService.ReadNotificationTransaction.TransactionStorage
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
+import com.example.jetpackcompose.app.screens.montserrat
+import com.example.jetpackcompose.ui.theme.colorPrimary
+import com.example.jetpackcompose.ui.theme.textColor
+
 
 class MainActivity : ComponentActivity() {
 
@@ -36,8 +52,11 @@ class MainActivity : ComponentActivity() {
         val serviceIntent = Intent(this, ReadTransactionNoti::class.java)
         startService(serviceIntent)
 
+        // Tạo một TransactionStorage trống
+        val emptyTransactionStorage = TransactionStorage.empty()
+
         setContent {
-            AppQuanLyChiTieu()
+            AppQuanLyChiTieu(emptyTransactionStorage)
         }
     }
 
@@ -141,6 +160,18 @@ class MainActivity : ComponentActivity() {
             setCancelable(false)
             create()
             show()
+        }
+    }
+}
+
+class TransactionNotiActivity : ComponentActivity() {
+    @SuppressLint("NewApi")
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        setContent {
+            // Tích hợp giao diện Jetpack Compose tại đây
+            AppQuanLyChiTieu(transactionStorage = TransactionStorage(this)) // Hoặc thay thế bằng màn hình phù hợp
         }
     }
 }
