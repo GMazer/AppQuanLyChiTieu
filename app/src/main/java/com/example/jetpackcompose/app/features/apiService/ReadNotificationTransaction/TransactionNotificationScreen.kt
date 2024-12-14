@@ -53,7 +53,7 @@ fun TransactionNotificationScreen(navController: NavController) {
     val transactions = transactionStorage.loadTransactions()
 
     // Nhóm các giao dịch theo ngày
-    val groupedTransactions = transactions.groupBy { it.date }
+    val groupedTransactions = transactions.groupBy { it.date }.toSortedMap(reverseOrder())
 
     Log.d("TransactionNotificationScreen", "Danh sách giao dịch đã tải: $transactions")
 

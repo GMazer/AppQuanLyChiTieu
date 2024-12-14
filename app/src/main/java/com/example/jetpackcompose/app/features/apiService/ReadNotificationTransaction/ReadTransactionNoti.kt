@@ -110,11 +110,14 @@ class ReadTransactionNoti : NotificationListenerService() {
             return matchResult?.let {
                 val sign = it.groupValues[1]  // Dấu + hoặc -
                 val amountStr = it.groupValues[2].replace(",", "")  // Loại bỏ dấu phẩy
-                val amount = amountStr.toLongOrNull()  // Chuyển đổi sang kiểu Long
+                val amount = amountStr.toLongOrNull()  //
+                if (amount != null) {
+                    if (amount >= 50000000) return null
+                }
                 val note = if (sign == "+") "income" else "expense"
 
                 amount?.let {
-                    // Lấy ngày hiện tại với định dạng "yyyy-MM-dd"
+
                     val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
                     val currentDate = dateFormat.format(Date())
 

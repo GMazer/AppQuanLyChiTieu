@@ -134,7 +134,7 @@ fun CalendarScreen(navController: NavController) {
                     date to details
                 }
 
-                dateTransactionList = groupedTransactions.toMap()
+                dateTransactionList = groupedTransactions.toMap().toSortedMap(reverseOrder())
             },
             onError = { error -> errorMessage = error }
         )
