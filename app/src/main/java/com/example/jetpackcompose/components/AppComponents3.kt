@@ -235,7 +235,7 @@ fun CategoryIconWithName(
     }
 
     val amountText = buildAnnotatedString {
-        append("${currencyFormatter.format(transactionAmount)}")
+        append(currencyFormatter.format(transactionAmount))
         withStyle(style = SpanStyle(fontSize = 10.sp)) {  // Kích thước nhỏ hơn cho ký tự "₫"
             append("₫")
         }
@@ -407,8 +407,13 @@ fun DayIndex(
         selectedDate
     }
 
-    // Đảo ngược thứ tự các ngày (từ mới nhất đến cũ nhất)
-    val sortedDateTransactionList = dateTransactionList.toSortedMap(reverseOrder())
+    // Sắp xếp các entry theo thứ tự ngày mới nhất và lưu vào mutableMapOf
+    val sortedDateTransactionList = mutableMapOf<String, List<TransactionResponse.TransactionDetail>>()
+    dateTransactionList.entries
+        .sortedByDescending { try { dateFormat.parse(it.key) } catch (e: Exception) { null } }
+        .forEach { (date, transactions) ->
+            sortedDateTransactionList[date] = transactions
+        }
 
     sortedDateTransactionList.forEach { (date, transactions) ->
         if (processedSelectedDate.isEmpty() || date == processedSelectedDate) {
@@ -463,7 +468,7 @@ fun DayIndex(
                                 }
                             }
                     ) {
-                        transaction.transaction_id?.let { id ->
+                        transaction.transaction_id.let {
                             transaction.note?.let {
                                 transaction.type?.let { it1 ->
                                     CategoryIconWithName(
@@ -485,6 +490,9 @@ fun DayIndex(
         }
     }
 }
+
+
+
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -704,7 +712,7 @@ fun <T : Enum<T>> DropdownRepeat(
             onDismissRequest = { showDialog = false },
             title = {
                 Text(
-                    text = "Chọn ${label.toLowerCase()}",
+                    text = "Chọn ${label.toLowerCase(Locale.ROOT)}",
                     fontFamily = montserrat,
                     fontWeight = FontWeight.Bold
                 )
