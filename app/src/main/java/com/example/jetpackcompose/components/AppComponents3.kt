@@ -407,7 +407,10 @@ fun DayIndex(
         selectedDate
     }
 
-    dateTransactionList.forEach { (date, transactions) ->
+    // Đảo ngược thứ tự các ngày (từ mới nhất đến cũ nhất)
+    val sortedDateTransactionList = dateTransactionList.toSortedMap(reverseOrder())
+
+    sortedDateTransactionList.forEach { (date, transactions) ->
         if (processedSelectedDate.isEmpty() || date == processedSelectedDate) {
             Column(
                 modifier = Modifier

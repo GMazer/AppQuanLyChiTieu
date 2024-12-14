@@ -139,7 +139,7 @@ fun PostIncomeNotiTransaction(
 
                 // Tiêu đề "Nhập khoản chi"
                 Text(
-                    text = "Nhập khoản chi",
+                    text = "Nhập khoản thu",
                     fontSize = 16.sp,
                     fontFamily = montserrat,
                     fontWeight = FontWeight.Bold,
