@@ -205,25 +205,41 @@ class ReadTransactionNoti : NotificationListenerService() {
 
     override fun onDestroy() {
         Log.d("NotificationListener", "onDestroy triggered")
-        sendBroadcast(Intent(this, RestartServiceReceiver::class.java))
+        if (!isServiceRunning()) {
+            sendBroadcast(Intent(this, RestartServiceReceiver::class.java))
+        } else {
+            Log.d("NotificationListener", "Service is already running.")
+        }
         super.onDestroy()
     }
 
     override fun onTaskRemoved(rootIntent: Intent?) {
         Log.d("NotificationListener", "onTaskRemoved triggered")
-        sendBroadcast(Intent(this, RestartServiceReceiver::class.java))
+        if (!isServiceRunning()) {
+            sendBroadcast(Intent(this, RestartServiceReceiver::class.java))
+        } else {
+            Log.d("NotificationListener", "Service is already running.")
+        }
         super.onTaskRemoved(rootIntent)
     }
 
     override fun onTrimMemory(level: Int) {
         Log.d("NotificationListener", "onTrimMemory triggered with level $level")
-        sendBroadcast(Intent(this, RestartServiceReceiver::class.java))
+        if (!isServiceRunning()) {
+            sendBroadcast(Intent(this, RestartServiceReceiver::class.java))
+        } else {
+            Log.d("NotificationListener", "Service is already running.")
+        }
         super.onTrimMemory(level)
     }
 
     override fun sendBroadcast(intent: Intent?) {
         Log.d("NotificationListener", "sendBroadcast triggered")
-        startForegroundService()
+        if (!isServiceRunning()) {
+            startForegroundService()
+        } else {
+            Log.d("NotificationListener", "Service is already running.")
+        }
         super.sendBroadcast(intent)
     }
 }

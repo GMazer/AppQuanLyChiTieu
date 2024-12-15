@@ -137,7 +137,7 @@ fun TransactionNotificationScreen(navController: NavController) {
                         }
                         Divider(color = Color.LightGray, thickness = 0.7.dp)
                         // Hiển thị danh sách giao dịch cho ngày này
-                        transactionsForDate.forEach { transaction ->
+                        transactionsForDate.reversed().forEach { transaction ->
                             TransactionRow(
                                 transaction = transaction,
                                 index = transactions.indexOf(transaction),

@@ -132,7 +132,7 @@ fun PostExpenseNotiTransaction(
             "Học tập",
             { painterResource(R.drawable.outline_education) },
             Color(0xFFfc7c1f),
-            0.50f
+            1.00f
         )
     )
 
