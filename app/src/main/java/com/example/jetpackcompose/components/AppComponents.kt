@@ -130,7 +130,6 @@ fun NormalTextComponent(value: String) {
             fontSize = 18.sp,
             fontFamily = montserrat,
             fontWeight = FontWeight.Normal,
-            fontStyle = FontStyle.Normal,
         ),
         color = textColor,
         textAlign = TextAlign.Center,
@@ -340,7 +339,7 @@ fun CheckboxComponent(
             text = text,
             fontFamily = montserrat, // Đảm bảo khai báo `monsterrat`
             fontWeight = FontWeight.Normal,
-            fontSize = 14.sp,
+            fontSize = 12.sp,
             color = Color(0xFF777777),
             modifier = Modifier.weight(1f) // Tự động chiếm không gian còn lại
         )
@@ -551,7 +550,7 @@ fun ClickableTextComponent(value: String, onClick: () -> Unit) {
         color = colorSecondary,
         fontFamily = com.example.jetpackcompose.components.montserrat,
         fontWeight = FontWeight.Light,
-        fontSize = 8.sp,
+        fontSize = 10.sp,
         modifier = Modifier
             .padding(top = 5.dp)
             .clickable(onClick = onClick)

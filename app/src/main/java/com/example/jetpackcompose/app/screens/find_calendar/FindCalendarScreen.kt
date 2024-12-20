@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardActions
@@ -175,6 +176,7 @@ fun FindCalendarScreen(navController: NavController) {
                             modifier = Modifier.padding(horizontal = 24.dp)
                         ) {
                             OutlinedTextField(
+
                                 value = textNote, // Truyền vào TextFieldValue
                                 onValueChange = { newValue ->
                                     textNote = newValue // Cập nhật TextFieldValue
@@ -196,6 +198,7 @@ fun FindCalendarScreen(navController: NavController) {
                                         Icon(
                                             painter = painterResource(id = android.R.drawable.ic_search_category_default), // Icon của bạn
                                             contentDescription = "Tìm kiếm",
+                                            modifier = Modifier.size(24.dp),
                                         )
                                         Spacer(modifier = Modifier.width(8.dp))
                                         Text(

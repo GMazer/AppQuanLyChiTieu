@@ -42,6 +42,8 @@ import com.example.jetpackcompose.app.screens.anual_sceens.AnualScreen
 import com.example.jetpackcompose.app.screens.find_calendar.FindCalendarScreen
 import com.example.jetpackcompose.app.features.apiService.ReadNotificationTransaction.TransactionNotificationScreen
 import com.example.jetpackcompose.app.features.apiService.ReadNotificationTransaction.TransactionStorage
+import com.example.jetpackcompose.app.screens.login_signup.forgot_password.ForgotPasswordScreen
+import com.example.jetpackcompose.app.screens.login_signup.forgot_password.OTPContent
 import com.example.jetpackcompose.app.screens.montserrat
 import com.example.jetpackcompose.ui.theme.colorPrimary
 import com.example.jetpackcompose.ui.theme.textColor
@@ -130,6 +132,8 @@ fun AppQuanLyChiTieu(transactionStorage: TransactionStorage) {
         NavHost(navController = navController, startDestination = "signup") {
             composable("signup") { SignUpScreen(navController) }
             composable("signin") { SignInScreen(navController) }
+            composable("forgotpassword") { ForgotPasswordScreen(navController) }
+            composable("otp") { OTPContent(navController) }
             composable("mainscreen") { MainScreen(navController) }
             composable("anual") { AnualScreen(navController) }
             composable("other") { OtherScreen(navController) }
@@ -191,6 +195,8 @@ fun AppQuanLyChiTieu(transactionStorage: TransactionStorage) {
         NavHost(navController = navController, startDestination = "mainscreen") {
             composable("signup") { SignUpScreen(navController) }
             composable("signin") { SignInScreen(navController) }
+            composable("forgotpassword") { ForgotPasswordScreen(navController) }
+            composable("otp") { OTPContent(navController) }
             composable("mainscreen") { MainScreen(navController) }
             composable("anual") { AnualScreen(navController) }
             composable("other") { OtherScreen(navController) }

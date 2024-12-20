@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Divider
 import androidx.compose.material.IconButton
@@ -216,7 +217,9 @@ fun CalendarScreen(navController: NavController) {
                                     Icon(
                                         painter = painterResource(id = android.R.drawable.ic_search_category_default), // Icon của bạn
                                         contentDescription = "Tìm kiếm",
-                                        tint = Color.Black
+                                        tint = Color.Black,
+                                        modifier = Modifier.size(24.dp)
+
                                     )
                                 }
                             }

@@ -98,48 +98,58 @@ fun SignUpScreen(navController: NavHostController, viewModel: SignUpViewModel = 
                 "Đăng ký",
                 isLoading = isLoading,
                 onClick = {
-                if (phoneNumber.isEmpty() || email.isEmpty() || password.isEmpty() || retypePassword.isEmpty()) {
-                    errorMessage = "Vui lòng điền đầy đủ thông tin."
-                } else if (password != retypePassword) {
-                    errorMessage = "Mật khẩu và xác nhận mật khẩu không trùng khớp."
-                } else if (!agreeToTerms) {
-                    errorMessage = "Vui lòng đồng ý với điều khoản và chính sách."
-                } else {
-                    val registrationData = RegistrationData(
-                        phone_number = phoneNumber,
-                        email = email,
-                        password = password,
-                        retype_password = retypePassword
-                    )
-                    viewModel.registerUser(
-                        data = registrationData,
-                        onSuccess = {
-                            successMessage = it
-                            navController.navigate("signin")
-                            {
-                                launchSingleTop = true
+                    if (phoneNumber.isEmpty() || email.isEmpty() || password.isEmpty() || retypePassword.isEmpty()) {
+                        errorMessage = "Vui lòng điền đầy đủ thông tin."
+                    } else if (password != retypePassword) {
+                        errorMessage = "Mật khẩu và xác nhận mật khẩu không trùng khớp."
+                    } else if (!agreeToTerms) {
+                        errorMessage = "Vui lòng đồng ý với điều khoản và chính sách."
+                    } else {
+                        val registrationData = RegistrationData(
+                            phone_number = phoneNumber,
+                            email = email,
+                            password = password,
+                            retype_password = retypePassword
+                        )
+                        viewModel.registerUser(
+                            data = registrationData,
+                            onSuccess = {
+                                successMessage = it
+                                navController.navigate("signin")
+                                {
+                                    launchSingleTop = true
+                                }
+                            },
+                            onError = {
+                                errorMessage = it
                             }
-                        },
-                        onError = {
-                            errorMessage = it
-                        }
-                    )
-                }
-            })
+                        )
+                    }
+                })
             if (errorMessage.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(20.dp))
-                Text(text = errorMessage, color = Color.Red, style = MaterialTheme.typography.bodyMedium)
+                Text(
+                    text = errorMessage,
+                    color = Color.Red,
+                    style = MaterialTheme.typography.bodyMedium
+                )
             }
 
             if (successMessage.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(20.dp))
                 Thread.sleep(3000)
-                Text(text = successMessage, color = Color.Green, style = MaterialTheme.typography.bodyMedium)
+                Text(
+                    text = successMessage,
+                    color = Color.Green,
+                    style = MaterialTheme.typography.bodyMedium
+                )
             }
             Row(modifier = Modifier.fillMaxWidth()) {
                 Spacer(modifier = Modifier.weight(1f))
-                ClickableTextComponent("Đã có tài khoản? Đăng nhập ngay    ", onClick = {
-                    navController.navigate("signin")
+                ClickableTextComponent("Đã có tài khoản? Đăng nhập ngay", onClick = {
+                    navController.navigate("signin") {
+                        popUpTo("signin") { inclusive = true }
+                    }
                 })
             }
         }

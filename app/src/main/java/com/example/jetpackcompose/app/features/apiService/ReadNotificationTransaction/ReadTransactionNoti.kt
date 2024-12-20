@@ -116,6 +116,7 @@ class ReadTransactionNoti : NotificationListenerService() {
                 }
                 val note = if (sign == "+") "income" else "expense"
 
+
                 amount?.let {
 
                     val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
