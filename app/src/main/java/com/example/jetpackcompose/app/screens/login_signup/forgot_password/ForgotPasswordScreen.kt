@@ -14,12 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -30,33 +25,28 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.jetpackcompose.R
-import com.example.jetpackcompose.app.features.inputFeatures.ExpenseContent
-import com.example.jetpackcompose.app.features.inputFeatures.IncomeContent
-import com.example.jetpackcompose.app.screens.TabItem
+import com.example.jetpackcompose.app.features.apiService.ForgotPasswordAPI.SendOtpViewModel
+import com.example.jetpackcompose.app.network.SendOtp
 import com.example.jetpackcompose.components.MyButtonComponent
 import com.example.jetpackcompose.components.MyTextFieldComponent
 import com.example.jetpackcompose.components.montserrat
 import com.example.jetpackcompose.ui.theme.colorPrimary
 import com.example.jetpackcompose.ui.theme.textColor
-import com.google.accompanist.pager.ExperimentalPagerApi
 
 @Composable
 fun ForgotPasswordScreen(navController: NavHostController) {
+
+    val sendOtpViewModel: SendOtpViewModel = SendOtpViewModel(LocalContext.current)
     var email by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
@@ -124,13 +114,25 @@ fun ForgotPasswordScreen(navController: NavHostController) {
                 value = "Đăt lại mật khẩu",
                 isLoading = isLoading,
                 onClick = {
+                    val sendOtp = SendOtp(email = email)
                     if (email.isEmpty()) {
-                        errorMessage = "Please enter your email."
+                        errorMessage = "Vui lòng nhập email của bạn."
                     } else {
                         isLoading = true
-                        // Call your reset password logic here
-                        // Simulate success
-                        navController.navigate("otp") {
+
+                        sendOtpViewModel.sendOtp(
+                            data = sendOtp,
+                            onSuccess = {
+                                successMessage = "Gửi OTP thành công"
+                                isLoading = false
+                            },
+                            onError = {
+                                errorMessage = "Email không tồn tại"
+                                isLoading = false
+                            }
+                        )
+
+                        navController.navigate("otp/$email") {
                             popUpTo("otp") { inclusive = true }
                         }
                         successMessage = "Reset instructions sent to $email."
@@ -147,7 +149,7 @@ fun ForgotPasswordScreen(navController: NavHostController) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = 100.dp),
+                .padding(bottom = 40.dp),
             verticalArrangement = Arrangement.Bottom,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -201,12 +203,6 @@ fun ProgressIndicator(steps: Int, currentStep: Int, spacing: Dp = 4.dp) {
             )
         }
     }
-}
-
-@Preview
-@Composable
-fun ForgotPasswordScreenPreview() {
-    ForgotPasswordScreen(navController = NavHostController(LocalContext.current))
 }
 
 

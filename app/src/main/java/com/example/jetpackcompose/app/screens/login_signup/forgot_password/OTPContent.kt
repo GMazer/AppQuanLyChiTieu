@@ -1,5 +1,6 @@
 package com.example.jetpackcompose.app.screens.login_signup.forgot_password
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -46,22 +47,40 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.jetpackcompose.R
+import com.example.jetpackcompose.app.features.apiService.ForgotPasswordAPI.SendOtpViewModel
+import com.example.jetpackcompose.app.features.apiService.ForgotPasswordAPI.VerifyOtpViewModel
+import com.example.jetpackcompose.app.network.SendOtp
+import com.example.jetpackcompose.app.network.VerifyOtp
+import com.example.jetpackcompose.components.MessagePopup
 import com.example.jetpackcompose.components.MyButtonComponent
 import com.example.jetpackcompose.components.montserrat
 import com.example.jetpackcompose.ui.theme.colorPrimary
 import com.example.jetpackcompose.ui.theme.textColor
 
 @Composable
-fun OTPContent(navController: NavHostController) {
+fun OTPContent(navController: NavHostController, email: String) {
+
+    val sendOtpViewModel: SendOtpViewModel = SendOtpViewModel(LocalContext.current)
+    val verifyOTP: VerifyOtpViewModel = VerifyOtpViewModel(LocalContext.current)
+
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
     var otpValues by remember { mutableStateOf(List(4) { "" }) }
     val focusRequesters = remember { List(4) { FocusRequester() } }
+    var errorMessage by remember { mutableStateOf("") }
+    var successMessage by remember { mutableStateOf("") }
+    var showPopup by remember { mutableStateOf(false) }
+
+    MessagePopup(
+        successMessage = successMessage,
+        errorMessage = errorMessage,
+        showPopup = showPopup,
+        onDismiss = { showPopup = false }
+    )
 
     Surface(
         modifier = Modifier
@@ -197,11 +216,32 @@ fun OTPContent(navController: NavHostController) {
                 value = "Tiếp tục",
                 isLoading = false,
                 onClick = {
-                    navController.navigate("setPassword")
-                    {
-                        popUpTo("setPassword") {
-                            inclusive = true
-                        }
+                    val otp = otpValues.joinToString("")
+                    val verifyOtpData = VerifyOtp(email = email, otp = otp)
+                    if (otp.length != 4) {
+                        errorMessage = "Vui lòng nhập mã OTP gồm 4 số"
+                        successMessage = ""
+                        showPopup = true
+                        return@MyButtonComponent
+                    } else {
+                        verifyOTP.verifyOtp(
+                            data = verifyOtpData,
+                            onSuccess = {
+                                successMessage = "Xác thực OTP thành công"
+                                errorMessage = ""
+                                showPopup = true
+                                Log.d("OTP", "OTP verified successfully: $verifyOtpData")
+                                navController.navigate("setPassword/$email") {
+                                    popUpTo("setPassword") { inclusive = true }
+                                }
+                            },
+                            onError = {
+                                errorMessage = it
+                                successMessage = ""
+                                showPopup = true
+                                Log.d("OTP", "OTP verification failed: $verifyOtpData")
+                            }
+                        )
                     }
                 }
             )
@@ -229,7 +269,19 @@ fun OTPContent(navController: NavHostController) {
                     fontWeight = FontWeight.Medium,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.clickable {
-                        // Resend OTP logic
+                        val sendOtp = SendOtp(email = email)
+                        sendOtpViewModel.sendOtp(
+                            data = sendOtp,
+                            onSuccess = {
+                                successMessage = "Gửi OTP thành công"
+                                errorMessage = ""
+                            },
+                            onError = {
+                                errorMessage = "Email không tồn tại"
+                                successMessage = ""
+                            }
+                        )
+
                     }
                 )
             }
@@ -241,7 +293,7 @@ fun OTPContent(navController: NavHostController) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = 100.dp),
+                .padding(bottom = 40.dp),
             verticalArrangement = Arrangement.Bottom,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -251,12 +303,3 @@ fun OTPContent(navController: NavHostController) {
 }
 
 
-@Preview
-@Composable
-fun OTPContentPreview() {
-    OTPContent(
-        navController = NavHostController(
-            context = LocalContext.current
-        )
-    )
-}

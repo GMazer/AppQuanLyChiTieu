@@ -1042,7 +1042,7 @@ fun MessagePopup(
 ) {
     if (showPopup) {
         LaunchedEffect(key1 = showPopup) {
-            delay(800)
+            delay(5000)
             onDismiss() //
         }
 

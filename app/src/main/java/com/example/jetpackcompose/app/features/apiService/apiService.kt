@@ -17,7 +17,7 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 object BaseURL {
-    val baseUrl = "https://7288-2401-d800-b059-4fc9-b507-ea4c-9e2f-6226.ngrok-free.app"
+    val baseUrl = "https://6116-113-23-48-156.ngrok-free.app"
 }
 
 
@@ -42,6 +42,22 @@ data class RegistrationResponse(
     val status: String,
     val message: String
 )
+
+data class  SendOtp(
+    val email: String
+)
+
+data class VerifyOtp(
+    val email: String,
+    val otp: String
+)
+
+data class ResetPassword(
+    val email: String,
+    val newPassword: String,
+    val confirmPassword: String
+)
+
 
 data class FindTransactionResponse(
     val categoryName: String,
@@ -113,6 +129,15 @@ interface ApiService {
     /// API cho đăng nhập
     @POST("/api/users/login")
     suspend fun login(@Body LoginData: LoginData): Response<LoginResponse>
+
+    @POST("/api/users/verify-otp")
+    suspend fun verifyOtp(@Body verifyOtp: VerifyOtp): Response<ApiResponse>
+
+    @POST("/api/users/send-otp")
+    suspend fun sendOtp(@Body sendOtp: SendOtp): Response<ApiResponse>
+
+    @POST("/api/users/reset-password")
+    suspend fun resetPassword(@Body resetPassword: ResetPassword): Response<ApiResponse>
 
 
     // API cho giao dịch

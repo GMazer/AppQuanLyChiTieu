@@ -24,24 +24,24 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.jetpackcompose.app.screens.login_signup.SignUpScreen
-import com.example.jetpackcompose.app.screens.login_signup.SignInScreen
-import com.example.jetpackcompose.app.screens.MainScreen
 import com.example.jetpackcompose.app.features.apiService.LogAPI.SignInViewModel
 import com.example.jetpackcompose.app.features.apiService.LogAPI.SignInViewModelFactory
 import com.example.jetpackcompose.app.features.apiService.ReadNotificationTransaction.PostExpenseNotiTransaction
 import com.example.jetpackcompose.app.features.apiService.ReadNotificationTransaction.PostIncomeNotiTransaction
+import com.example.jetpackcompose.app.features.apiService.ReadNotificationTransaction.TransactionNotificationScreen
+import com.example.jetpackcompose.app.features.apiService.ReadNotificationTransaction.TransactionStorage
 import com.example.jetpackcompose.app.features.editFeatures.EditExpenseTransaction
 import com.example.jetpackcompose.app.features.editFeatures.EditFixedExpenseTransaction
 import com.example.jetpackcompose.app.features.editFeatures.EditIncomeExpenseTransaction
 import com.example.jetpackcompose.app.features.editFeatures.EditIncomeTransaction
 import com.example.jetpackcompose.app.screens.CalendarScreen
-import com.example.jetpackcompose.app.screens.anual_sceens.InputFixedTab
+import com.example.jetpackcompose.app.screens.MainScreen
 import com.example.jetpackcompose.app.screens.OtherScreen
 import com.example.jetpackcompose.app.screens.anual_sceens.AnualScreen
+import com.example.jetpackcompose.app.screens.anual_sceens.InputFixedTab
 import com.example.jetpackcompose.app.screens.find_calendar.FindCalendarScreen
-import com.example.jetpackcompose.app.features.apiService.ReadNotificationTransaction.TransactionNotificationScreen
-import com.example.jetpackcompose.app.features.apiService.ReadNotificationTransaction.TransactionStorage
+import com.example.jetpackcompose.app.screens.login_signup.SignInScreen
+import com.example.jetpackcompose.app.screens.login_signup.SignUpScreen
 import com.example.jetpackcompose.app.screens.login_signup.forgot_password.ForgotPasswordScreen
 import com.example.jetpackcompose.app.screens.login_signup.forgot_password.OTPContent
 import com.example.jetpackcompose.app.screens.login_signup.forgot_password.SetPasswordContent
@@ -58,11 +58,19 @@ fun AppQuanLyChiTieu(transactionStorage: TransactionStorage) {
     val signInViewModel: SignInViewModel = viewModel(
         factory = SignInViewModelFactory(context)
     )
-    val transactions = transactionStorage.transactionsState.value // Lấy trạng thái danh sách giao dịch
+    val transactions =
+        transactionStorage.transactionsState.value // Lấy trạng thái danh sách giao dịch
 
     var showDialog by rememberSaveable { mutableStateOf(false) }
     val sharedPreferences = context.getSharedPreferences("app_preferences", Context.MODE_PRIVATE)
-    var isDialogShown by remember { mutableStateOf(sharedPreferences.getBoolean("is_dialog_shown", false)) }
+    var isDialogShown by remember {
+        mutableStateOf(
+            sharedPreferences.getBoolean(
+                "is_dialog_shown",
+                false
+            )
+        )
+    }
 
     LaunchedEffect(transactions, isDialogShown) {
         Log.d("AppQuanLyChiTieu", "Transactions: $transactions")
@@ -134,9 +142,21 @@ fun AppQuanLyChiTieu(transactionStorage: TransactionStorage) {
             composable("signup") { SignUpScreen(navController) }
             composable("signin") { SignInScreen(navController) }
             composable("forgotpassword") { ForgotPasswordScreen(navController) }
-            composable("setPassword") { SetPasswordContent(navController) }
-
-            composable("otp") { OTPContent(navController) }
+            composable(
+                "setPassword/{email}",
+                arguments = listOf(navArgument("email") { type = NavType.StringType })
+            )
+            {
+                val email = it.arguments?.getString("email") ?: ""
+                SetPasswordContent(navController, email)
+            }
+            composable(
+                "otp/{email}",
+                arguments = listOf(navArgument("email") { type = NavType.StringType })
+            ) {
+                val email = it.arguments?.getString("email") ?: ""
+                OTPContent(navController, email)
+            }
             composable("mainscreen") { MainScreen(navController) }
             composable("anual") { AnualScreen(navController) }
             composable("other") { OtherScreen(navController) }
@@ -151,7 +171,10 @@ fun AppQuanLyChiTieu(transactionStorage: TransactionStorage) {
             ) { backStackEntry ->
                 // Lấy transactionId từ NavArgument
                 val transactionId = backStackEntry.arguments?.getInt("transactionId") ?: 0
-                EditExpenseTransaction(navController = navController, fixedTransactionId = transactionId)
+                EditExpenseTransaction(
+                    navController = navController,
+                    fixedTransactionId = transactionId
+                )
             }
 
             composable(
@@ -169,7 +192,10 @@ fun AppQuanLyChiTieu(transactionStorage: TransactionStorage) {
             ) { backStackEntry ->
                 // Lấy transactionId từ NavArgument
                 val fixedTransactionId = backStackEntry.arguments?.getInt("fixedTransactionId") ?: 0
-                EditFixedExpenseTransaction(navController = navController, fixedTransactionId = fixedTransactionId)
+                EditFixedExpenseTransaction(
+                    navController = navController,
+                    fixedTransactionId = fixedTransactionId
+                )
             }
 
             composable(
@@ -178,7 +204,10 @@ fun AppQuanLyChiTieu(transactionStorage: TransactionStorage) {
             ) { backStackEntry ->
                 // Lấy transactionId từ NavArgument
                 val fixedTransactionId = backStackEntry.arguments?.getInt("fixedTransactionId") ?: 0
-                EditIncomeExpenseTransaction(navController = navController, fixedTransactionId = fixedTransactionId)
+                EditIncomeExpenseTransaction(
+                    navController = navController,
+                    fixedTransactionId = fixedTransactionId
+                )
             }
 
             composable("postExpenseNotiTransaction/{amount}/{selectedDate}/{index}") { backStackEntry ->
@@ -199,8 +228,21 @@ fun AppQuanLyChiTieu(transactionStorage: TransactionStorage) {
             composable("signup") { SignUpScreen(navController) }
             composable("signin") { SignInScreen(navController) }
             composable("forgotpassword") { ForgotPasswordScreen(navController) }
-            composable("setPassword") { SetPasswordContent(navController) }
-            composable("otp") { OTPContent(navController) }
+            composable(
+                "setPassword/{email}",
+                arguments = listOf(navArgument("email") { type = NavType.StringType })
+            )
+            {
+                val email = it.arguments?.getString("email") ?: ""
+                SetPasswordContent(navController, email)
+            }
+            composable(
+                "otp/{email}",
+                arguments = listOf(navArgument("email") { type = NavType.StringType })
+            ) {
+                val email = it.arguments?.getString("email") ?: ""
+                OTPContent(navController, email)
+            }
             composable("mainscreen") { MainScreen(navController) }
             composable("anual") { AnualScreen(navController) }
             composable("other") { OtherScreen(navController) }
@@ -217,7 +259,10 @@ fun AppQuanLyChiTieu(transactionStorage: TransactionStorage) {
             ) { backStackEntry ->
                 // Lấy transactionId từ NavArgument
                 val transactionId = backStackEntry.arguments?.getInt("transactionId") ?: 0
-                EditExpenseTransaction(navController = navController, fixedTransactionId = transactionId)
+                EditExpenseTransaction(
+                    navController = navController,
+                    fixedTransactionId = transactionId
+                )
             }
             composable(
                 "editIncome/{transactionId}",
@@ -233,7 +278,10 @@ fun AppQuanLyChiTieu(transactionStorage: TransactionStorage) {
                 arguments = listOf(navArgument("fixedTransactionId") { type = NavType.IntType })
             ) { backStackEntry ->
                 val fixedTransactionId = backStackEntry.arguments?.getInt("fixedTransactionId") ?: 0
-                EditFixedExpenseTransaction(navController = navController, fixedTransactionId = fixedTransactionId)
+                EditFixedExpenseTransaction(
+                    navController = navController,
+                    fixedTransactionId = fixedTransactionId
+                )
             }
 
             composable(
@@ -241,7 +289,10 @@ fun AppQuanLyChiTieu(transactionStorage: TransactionStorage) {
                 arguments = listOf(navArgument("fixedTransactionId") { type = NavType.IntType })
             ) { backStackEntry ->
                 val fixedTransactionId = backStackEntry.arguments?.getInt("fixedTransactionId") ?: 0
-                EditIncomeExpenseTransaction(navController = navController, fixedTransactionId = fixedTransactionId)
+                EditIncomeExpenseTransaction(
+                    navController = navController,
+                    fixedTransactionId = fixedTransactionId
+                )
             }
 
             composable("postExpenseNotiTransaction/{amount}/{selectedDate}/{index}") { backStackEntry ->

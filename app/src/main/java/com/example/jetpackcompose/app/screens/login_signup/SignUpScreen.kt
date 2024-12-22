@@ -1,5 +1,6 @@
 package com.example.jetpackcompose.app.screens.login_signup
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -111,6 +112,7 @@ fun SignUpScreen(navController: NavHostController, viewModel: SignUpViewModel = 
                             password = password,
                             retype_password = retypePassword
                         )
+                        Log.d("SignUpScreen", "Registration Data: $registrationData")
                         viewModel.registerUser(
                             data = registrationData,
                             onSuccess = {

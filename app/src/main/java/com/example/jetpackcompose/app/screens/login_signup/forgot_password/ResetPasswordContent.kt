@@ -1,5 +1,6 @@
 package com.example.jetpackcompose.app.screens.login_signup.forgot_password
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -37,24 +38,40 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.jetpackcompose.R
+import com.example.jetpackcompose.app.features.apiService.ForgotPasswordAPI.ResetPasswordViewModel
+import com.example.jetpackcompose.app.network.ResetPassword
+import com.example.jetpackcompose.components.MessagePopup
 import com.example.jetpackcompose.components.MyButtonComponent
 import com.example.jetpackcompose.components.montserrat
 import com.example.jetpackcompose.ui.theme.colorPrimary
 import com.example.jetpackcompose.ui.theme.textColor
 
 @Composable
-fun SetPasswordContent(navController: NavHostController) {
+fun SetPasswordContent(navController: NavHostController, email: String) {
+
+    val resetPasswordViewModel: ResetPasswordViewModel =
+        ResetPasswordViewModel(LocalContext.current)
+
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
     var isPasswordFocused by remember { mutableStateOf(false) }
     var isConfirmPasswordFocused by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
+    var successMessage by remember { mutableStateOf("") }
+    var showPopup by remember { mutableStateOf(false) }
+
+    MessagePopup(
+        successMessage = successMessage,
+        errorMessage = errorMessage,
+        showPopup = showPopup,
+        onDismiss = { showPopup = false }
+    )
 
     Surface(
         modifier = Modifier
@@ -225,7 +242,46 @@ fun SetPasswordContent(navController: NavHostController) {
                 value = "Đặt lại mật khẩu",
                 isLoading = false,
                 onClick = {
-                    // Handle password reset logic
+                    if (password.length < 8) {
+                        errorMessage = "Mật khẩu phải chứa ít nhất 8 ký tự."
+                        successMessage = ""
+                        showPopup = true
+                    } else if (password != confirmPassword) {
+                        errorMessage = "Mật khẩu không khớp."
+                        successMessage = ""
+                        showPopup = true
+                    } else if (password.isEmpty() || confirmPassword.isEmpty()) {
+                        errorMessage = "Vui lòng nhập mật khẩu."
+                        successMessage = ""
+                        showPopup = true
+                    } else {
+                        val resetPasswordData = ResetPassword(
+                            email = email,
+                            newPassword = password,
+                            confirmPassword = confirmPassword
+                        )
+                        Log.d("ResetPassword", "ResetPasswordData: $resetPasswordData")
+                        resetPasswordViewModel.resetPassword(
+                            data = resetPasswordData,
+                            onSuccess = {
+                                successMessage = "Mật khẩu đã được đặt lại, vui lòng đăng nhập."
+                                errorMessage = ""
+                                showPopup = true
+                                navController.navigate("signin")
+                                {
+                                    popUpTo("signin") {
+                                        inclusive = true
+                                    }
+                                }
+                            },
+                            onError = {
+                                errorMessage = it
+                                successMessage = ""
+                                showPopup = true
+                            }
+                        )
+
+                    }
                 }
             )
 
@@ -236,7 +292,7 @@ fun SetPasswordContent(navController: NavHostController) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = 100.dp),
+                .padding(bottom = 40.dp),
             verticalArrangement = Arrangement.Bottom,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -245,9 +301,4 @@ fun SetPasswordContent(navController: NavHostController) {
     }
 }
 
-@Preview
-@Composable
-fun SetPasswordContentPreview() {
-    SetPasswordContent(navController = NavHostController(LocalContext.current))
-}
 
