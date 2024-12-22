@@ -1,5 +1,11 @@
 package com.example.jetpackcompose.components
 
+//noinspection UsingMaterialAndMaterial3Libraries
+//noinspection UsingMaterialAndMaterial3Libraries
+//noinspection UsingMaterialAndMaterial3Libraries
+//noinspection UsingMaterialAndMaterial3Libraries
+//noinspection UsingMaterialAndMaterial3Libraries
+//noinspection UsingMaterialAndMaterial3Libraries
 import android.annotation.SuppressLint
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
@@ -8,11 +14,13 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -31,26 +39,23 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.Checkbox
-//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.CheckboxDefaults
-//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.Icon
-//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.LocalTextStyle
-//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.OutlinedTextField
-import androidx.compose.material3.Text
-//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -60,31 +65,35 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.text.input.TextFieldValue
 import com.example.jetpackcompose.R
 import com.example.jetpackcompose.app.screens.Category
-import com.example.jetpackcompose.ui.theme.textColor
+import com.example.jetpackcompose.app.screens.DailyTransaction
+import com.example.jetpackcompose.ui.theme.SaturDayColor
+import com.example.jetpackcompose.ui.theme.SundayColor
 import com.example.jetpackcompose.ui.theme.TextColorPrimary
 import com.example.jetpackcompose.ui.theme.bgColor
 import com.example.jetpackcompose.ui.theme.bgItemColor
@@ -92,16 +101,7 @@ import com.example.jetpackcompose.ui.theme.colorPrimary
 import com.example.jetpackcompose.ui.theme.colorSecondary
 import com.example.jetpackcompose.ui.theme.componentShapes
 import com.example.jetpackcompose.ui.theme.highGray
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.layout.onSizeChanged
-import com.example.jetpackcompose.app.screens.DailyTransaction
-import com.example.jetpackcompose.ui.theme.SaturDayColor
-import com.example.jetpackcompose.ui.theme.SundayColor
+import com.example.jetpackcompose.ui.theme.textColor
 import java.lang.StrictMath.PI
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
@@ -347,7 +347,6 @@ fun CheckboxComponent(
 }
 
 
-
 @Composable
 fun DrawBottomLine(height: Dp) {
     Spacer(
@@ -459,7 +458,8 @@ fun CategoryItem(
             val wavePath = Path().apply {
                 moveTo(0f, waveY)
                 for (x in 0..size.width.toInt() step 20) {
-                    val y = waveY + waveHeight * sin(2.0f * PI.toFloat() * (x.toFloat() + offset) / waveLength)
+                    val y =
+                        waveY + waveHeight * sin(2.0f * PI.toFloat() * (x.toFloat() + offset) / waveLength)
                     lineTo(x.toFloat(), y)
                 }
                 lineTo(size.width + 50f, size.height)
@@ -494,7 +494,10 @@ fun CategoryItem(
                     .padding(top = 4.dp, bottom = 2.dp)
                     .size(32.dp)
             ) {
-                androidx.compose.material3.Icon(painter = category.iconPainter(), contentDescription = category.name)
+                androidx.compose.material3.Icon(
+                    painter = category.iconPainter(),
+                    contentDescription = category.name
+                )
             }
 
             // Tên danh mục
@@ -535,7 +538,7 @@ fun MyButtonComponent(value: String, onClick: () -> Unit, isLoading: Boolean) {
                 value,
                 color = Color.White,
                 fontFamily = montserrat,
-                fontWeight = FontWeight.Bold,
+                fontWeight = FontWeight.SemiBold,
                 fontSize = 16.sp
             )
         }
@@ -639,8 +642,7 @@ fun NumberTextField(amountState: String, onValueChange: (String) -> Unit) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NoteTextField(textState: TextFieldValue, onValueChange: (TextFieldValue) -> Unit)
-{
+fun NoteTextField(textState: TextFieldValue, onValueChange: (TextFieldValue) -> Unit) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
     var textNote by remember { mutableStateOf("") }
@@ -654,11 +656,13 @@ fun NoteTextField(textState: TextFieldValue, onValueChange: (TextFieldValue) -> 
             unfocusedBorderColor = Color.Transparent,
             cursorColor = colorPrimary
         ),
-        placeholder = { Text(
-            "Chưa nhập vào",
-            color = Color.LightGray,
-            fontFamily = montserrat,
-        ) },
+        placeholder = {
+            Text(
+                "Chưa nhập vào",
+                color = Color.LightGray,
+                fontFamily = montserrat,
+            )
+        },
         textStyle = TextStyle(
             fontSize = 16.sp,
             fontFamily = montserrat,
@@ -711,7 +715,8 @@ fun MonthPickerButton(onDateSelected: (String) -> Unit) {
                 painter = painterResource(id = R.drawable.outline_arrow_back_ios_24),
                 modifier = Modifier.size(16.dp),
                 contentDescription = "Previous Month",
-                tint = Color(0xFF444444))
+                tint = Color(0xFF444444)
+            )
         }
         Button(
             onClick = { showMonthPicker = true },
@@ -761,7 +766,6 @@ fun MonthPickerButton(onDateSelected: (String) -> Unit) {
 }
 
 
-
 @SuppressLint("UnusedBoxWithConstraintsScope", "DefaultLocale")
 @Composable
 fun CustomCalendar(
@@ -790,7 +794,8 @@ fun CustomCalendar(
 
     // Tính toán số ngày trong tháng và các ngày cần hiển thị
     val daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
-    val firstDayOfWeek = (calendar.get(Calendar.DAY_OF_WEEK) + 5) % 7 // Điều chỉnh ngày đầu tuần để bắt đầu từ Thứ Hai
+    val firstDayOfWeek =
+        (calendar.get(Calendar.DAY_OF_WEEK) + 5) % 7 // Điều chỉnh ngày đầu tuần để bắt đầu từ Thứ Hai
 
     // Tính toán số ngày trong tháng sau
     calendar.add(Calendar.MONTH, 1)
@@ -809,7 +814,8 @@ fun CustomCalendar(
     }
 
     // Thêm ngày của tháng sau vào cuối lịch
-    val trailingEmptyDays = (7 - (days.size % 7)) % 7 // Tính số ô trống cần thêm sau ngày cuối của tháng hiện tại
+    val trailingEmptyDays =
+        (7 - (days.size % 7)) % 7 // Tính số ô trống cần thêm sau ngày cuối của tháng hiện tại
     for (i in 1..trailingEmptyDays) {
         days.add("") // Thêm ô trống cho các ngày của tháng sau
     }
@@ -819,7 +825,8 @@ fun CustomCalendar(
 
     // Tính số hàng của lịch (5 hoặc 6 hàng)
     val rows = days.chunked(7) // Chia thành các hàng, mỗi hàng 7 ngày
-    val calendarHeight = if (rows.size == 6) 230.dp else 200.dp // Nếu có 6 hàng, chiều cao là 230.dp
+    val calendarHeight =
+        if (rows.size == 6) 230.dp else 200.dp // Nếu có 6 hàng, chiều cao là 230.dp
 
     // Trạng thái cho ngày được chọn
     val selectedDate = remember { mutableStateOf("") }
@@ -835,7 +842,10 @@ fun CustomCalendar(
             modifier = Modifier.fillMaxWidth()
         ) {
             // Hàng các ngày trong tuần
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceAround
+            ) {
                 daysOfWeek.forEach { day ->
                     Box(
                         modifier = Modifier
@@ -878,7 +888,7 @@ fun CustomCalendar(
                                 .border(0.25.dp, Color(0xFFd4d4d4))
                                 .clickable {
                                     // Thực hiện hành động khi người dùng chọn ngày
-                                    if(day.isNotEmpty()) {
+                                    if (day.isNotEmpty()) {
                                         val formattedDay = String.format("%02d", day.toInt())
                                         val selectedDay = "$year-${month + 1}-$formattedDay"
                                         selectedDate.value = selectedDay
@@ -909,7 +919,8 @@ fun CustomCalendar(
                                     val transactionDate = "$year-${month + 1}-$formattedDay"
 
                                     // Kiểm tra xem ngày có giao dịch không và hiển thị amountIncome và amountExpense
-                                    val transaction = transactionList.find { it.date == transactionDate }
+                                    val transaction =
+                                        transactionList.find { it.date == transactionDate }
                                     transaction?.let {
                                         // Hiển thị amountIncome nếu không bằng 0
                                         if (it.amountIncome > 0) {

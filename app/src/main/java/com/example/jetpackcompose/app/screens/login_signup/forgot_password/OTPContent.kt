@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
@@ -27,11 +29,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -45,7 +58,10 @@ import com.example.jetpackcompose.ui.theme.textColor
 
 @Composable
 fun OTPContent(navController: NavHostController) {
-    var otpValue by remember { mutableStateOf("") }
+    val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
+    var otpValues by remember { mutableStateOf(List(4) { "" }) }
+    val focusRequesters = remember { List(4) { FocusRequester() } }
 
     Surface(
         modifier = Modifier
@@ -76,7 +92,7 @@ fun OTPContent(navController: NavHostController) {
             Spacer(modifier = Modifier.height(20.dp))
 
             Text(
-                text = "Password reset",
+                text = "Khôi phục mật khẩu",
                 fontFamily = montserrat,
                 color = textColor,
                 fontSize = 24.sp,
@@ -86,7 +102,7 @@ fun OTPContent(navController: NavHostController) {
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "We sent a code to your email",
+                text = "Chúng tôi đã gửi mã xác nhận đến email.",
                 fontFamily = montserrat,
                 color = Color.Gray,
                 fontSize = 14.sp,
@@ -101,33 +117,76 @@ fun OTPContent(navController: NavHostController) {
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                repeat(4) { index ->
+                otpValues.forEachIndexed { index, value ->
                     TextField(
-                        value = if (otpValue.length > index) otpValue[index].toString() else "",
+                        value = value,
                         onValueChange = { newValue ->
-                            if (newValue.length == 1 && otpValue.length <= index) {
-                                otpValue += newValue
+                            if (newValue.length <= 1) {
+                                otpValues = otpValues.toMutableList().apply {
+                                    this[index] = newValue
+                                }
+                                if (newValue.isNotEmpty() && index < 3) {
+                                    focusRequesters[index + 1].requestFocus()
+                                }
                             }
                         },
                         modifier = Modifier
-                            .width(60.dp)
-                            .height(60.dp)
+                            .focusRequester(focusRequesters[index])
+                            .onKeyEvent { event ->
+                                if (event.type == KeyEventType.KeyDown && event.key == Key.Backspace) {
+                                    if (value.isEmpty() && index > 0) {
+                                        otpValues = otpValues
+                                            .toMutableList()
+                                            .apply {
+                                                this[index - 1] = ""
+                                            }
+                                        focusRequesters[index - 1].requestFocus()
+                                    } else if (value.isNotEmpty()) {
+                                        otpValues = otpValues
+                                            .toMutableList()
+                                            .apply {
+                                                this[index] = ""
+                                            }
+                                    }
+                                    true
+                                } else {
+                                    false
+                                }
+                            }
+                            .width(75.dp)
+                            .height(75.dp)
                             .padding(4.dp)
                             .background(Color.White, RoundedCornerShape(8.dp))
-                            .border(0.5.dp, Color.LightGray, RoundedCornerShape(8.dp)),
+                            .border(
+                                2.dp,
+                                if (value.isNotEmpty()) colorPrimary else Color.LightGray,
+                                RoundedCornerShape(8.dp)
+                            ),
                         maxLines = 1,
-                        colors = TextFieldDefaults.textFieldColors(
-                            backgroundColor = Color.White,
-                            focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent
-                        ),
-                        shape = RoundedCornerShape(8.dp),
                         textStyle = TextStyle(
-                            fontSize = 24.sp,
+                            fontSize = 28.sp,
                             fontFamily = montserrat,
-                            fontWeight = FontWeight.Medium,
-                            color = textColor
+                            fontWeight = FontWeight.Bold,
+                            color = textColor,
+                            textAlign = TextAlign.Center,
+                            lineHeight = 70.sp // Ensures text is vertically centered
                         ),
+                        colors = TextFieldDefaults.textFieldColors(
+                            backgroundColor = Color.Transparent,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            cursorColor = colorPrimary
+                        ),
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            keyboardType = KeyboardType.Number,
+                            imeAction = ImeAction.Done
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onDone = {
+                                focusManager.clearFocus()
+                                keyboardController?.hide()
+                            }
+                        )
                     )
                 }
             }
@@ -135,33 +194,62 @@ fun OTPContent(navController: NavHostController) {
             Spacer(modifier = Modifier.height(20.dp))
 
             MyButtonComponent(
-                value = "Continue",
+                value = "Tiếp tục",
                 isLoading = false,
                 onClick = {
-                    // Handle OTP submission
+                    navController.navigate("setPassword")
+                    {
+                        popUpTo("setPassword") {
+                            inclusive = true
+                        }
+                    }
                 }
             )
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            Text(
-                text = "Didn't receive the email? Click to resend",
-                fontFamily = montserrat,
-                color = Color.Blue,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Medium,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.clickable {
-                    // Resend OTP logic
-                }
-            )
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = "Không nhận được mã? ",
+                    fontFamily = montserrat,
+                    color = Color.Gray,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Medium,
+                    textAlign = TextAlign.Center
+                )
+                Text(
+                    text = "Gửi lại",
+                    fontFamily = montserrat,
+                    color = colorPrimary,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Medium,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.clickable {
+                        // Resend OTP logic
+                    }
+                )
+            }
 
             Spacer(modifier = Modifier.height(20.dp))
 
             BackToLogin(navController = navController)
         }
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = 100.dp),
+            verticalArrangement = Arrangement.Bottom,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            ProgressIndicator(steps = 3, currentStep = 2, spacing = 8.dp)
+        }
     }
 }
+
 
 @Preview
 @Composable

@@ -31,10 +31,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -45,6 +51,7 @@ import com.example.jetpackcompose.app.screens.TabItem
 import com.example.jetpackcompose.components.MyButtonComponent
 import com.example.jetpackcompose.components.MyTextFieldComponent
 import com.example.jetpackcompose.components.montserrat
+import com.example.jetpackcompose.ui.theme.colorPrimary
 import com.example.jetpackcompose.ui.theme.textColor
 import com.google.accompanist.pager.ExperimentalPagerApi
 
@@ -54,6 +61,7 @@ fun ForgotPasswordScreen(navController: NavHostController) {
     var isLoading by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
     var successMessage by remember { mutableStateOf("") }
+
 
     Surface(
         modifier = Modifier
@@ -135,6 +143,16 @@ fun ForgotPasswordScreen(navController: NavHostController) {
 
             BackToLogin(navController)
         }
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = 100.dp),
+            verticalArrangement = Arrangement.Bottom,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            ProgressIndicator(steps = 3, currentStep = 1, spacing = 8.dp)
+        }
     }
 }
 
@@ -164,4 +182,32 @@ fun BackToLogin(navController: NavHostController) {
         )
     }
 }
+
+@Composable
+fun ProgressIndicator(steps: Int, currentStep: Int, spacing: Dp = 4.dp) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(spacing)
+    ) {
+        repeat(steps) { step ->
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .height(4.dp)
+                    .background(
+                        color = if (step < currentStep) colorPrimary else Color.LightGray,
+                        shape = RoundedCornerShape(2.dp)
+                    )
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+fun ForgotPasswordScreenPreview() {
+    ForgotPasswordScreen(navController = NavHostController(LocalContext.current))
+}
+
+
 

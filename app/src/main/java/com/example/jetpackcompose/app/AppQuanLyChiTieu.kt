@@ -44,6 +44,7 @@ import com.example.jetpackcompose.app.features.apiService.ReadNotificationTransa
 import com.example.jetpackcompose.app.features.apiService.ReadNotificationTransaction.TransactionStorage
 import com.example.jetpackcompose.app.screens.login_signup.forgot_password.ForgotPasswordScreen
 import com.example.jetpackcompose.app.screens.login_signup.forgot_password.OTPContent
+import com.example.jetpackcompose.app.screens.login_signup.forgot_password.SetPasswordContent
 import com.example.jetpackcompose.app.screens.montserrat
 import com.example.jetpackcompose.ui.theme.colorPrimary
 import com.example.jetpackcompose.ui.theme.textColor
@@ -133,6 +134,8 @@ fun AppQuanLyChiTieu(transactionStorage: TransactionStorage) {
             composable("signup") { SignUpScreen(navController) }
             composable("signin") { SignInScreen(navController) }
             composable("forgotpassword") { ForgotPasswordScreen(navController) }
+            composable("setPassword") { SetPasswordContent(navController) }
+
             composable("otp") { OTPContent(navController) }
             composable("mainscreen") { MainScreen(navController) }
             composable("anual") { AnualScreen(navController) }
@@ -196,6 +199,7 @@ fun AppQuanLyChiTieu(transactionStorage: TransactionStorage) {
             composable("signup") { SignUpScreen(navController) }
             composable("signin") { SignInScreen(navController) }
             composable("forgotpassword") { ForgotPasswordScreen(navController) }
+            composable("setPassword") { SetPasswordContent(navController) }
             composable("otp") { OTPContent(navController) }
             composable("mainscreen") { MainScreen(navController) }
             composable("anual") { AnualScreen(navController) }
