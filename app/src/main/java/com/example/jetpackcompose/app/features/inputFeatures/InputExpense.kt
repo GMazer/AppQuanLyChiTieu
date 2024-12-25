@@ -54,11 +54,11 @@ fun ExpenseContent(
     // State cho các dữ liệu nhập vào và thông báo
     var categoryLimits by remember {
         mutableStateOf(listOf(
-            RemainLimit.CategoryLimit(categoryId = 1, percentLimit = 0, remainingPercent = 1.00),
-            RemainLimit.CategoryLimit(categoryId = 2, percentLimit = 0, remainingPercent = 1.00),
-            RemainLimit.CategoryLimit(categoryId = 3, percentLimit = 0, remainingPercent = 1.00),
-            RemainLimit.CategoryLimit(categoryId = 4, percentLimit = 0, remainingPercent = 1.00),
-            RemainLimit.CategoryLimit(categoryId = 5, percentLimit = 0, remainingPercent = 1.00)
+            RemainLimit.CategoryLimit(categoryId = 1, limitExpense = 0, remainingPercent = 1.00),
+            RemainLimit.CategoryLimit(categoryId = 2, limitExpense = 0, remainingPercent = 1.00),
+            RemainLimit.CategoryLimit(categoryId = 3, limitExpense = 0, remainingPercent = 1.00),
+            RemainLimit.CategoryLimit(categoryId = 4, limitExpense = 0, remainingPercent = 1.00),
+            RemainLimit.CategoryLimit(categoryId = 5, limitExpense = 0, remainingPercent = 1.00)
         ))
     }
 

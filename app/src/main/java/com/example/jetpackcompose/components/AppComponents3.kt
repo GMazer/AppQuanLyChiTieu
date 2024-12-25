@@ -212,9 +212,9 @@ fun ClickableText(
         fontWeight = FontWeight.Normal,
         modifier = Modifier
             .clickable {
-                onBack() // Gọi hàm xử lý khi text được nhấn
+                onBack()
             }
-            .padding(8.dp), // Tùy chỉnh khoảng cách xung quanh text
+            .padding(8.dp),
     )
 }
 
@@ -1042,7 +1042,7 @@ fun MessagePopup(
 ) {
     if (showPopup) {
         LaunchedEffect(key1 = showPopup) {
-            delay(5000)
+            delay(1000)
             onDismiss() //
         }
 
@@ -1213,9 +1213,6 @@ fun CustomTabRow(
     val inactiveColor = Color(0xFFe1e1e1)  // Màu cho tab không chọn
     val inactiveTextColor = Color(0xFFF35E17)  // Màu văn bản cho tab không chọn
 
-
-
-
     Column {
         Row(
             modifier = modifier
@@ -1223,7 +1220,7 @@ fun CustomTabRow(
                 .fillMaxWidth()
                 .background(topBarColor),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center // Căn giữa TabRow
+            horizontalArrangement = Arrangement.SpaceBetween // Đẩy các phần tử ra hai đầu
         ) {
             // Nút ảo
             IconButton(
@@ -1237,7 +1234,7 @@ fun CustomTabRow(
                 selectedTabIndex = tabIndex,
                 modifier = Modifier
                     .background(topBarColor)
-                    .width(200.dp),
+                    .weight(1f), // Sử dụng weight để TabRow chiếm khoảng trống giữa
                 indicator = {
                 },  // Không có chỉ báo
                 divider = {}  // Không có dòng phân cách
@@ -1257,10 +1254,6 @@ fun CustomTabRow(
                         titles.lastIndex -> RoundedCornerShape(topEnd = 8.dp, bottomEnd = 8.dp)
                         else -> RoundedCornerShape(8.dp)
                     }
-                    val tabWidth by animateDpAsState(
-                        targetValue = if (isSelected) 100.dp else 200.dp,
-                        animationSpec = tween(durationMillis = 500)
-                    )
                     Box(
                         modifier = Modifier
                             .width(200.dp)
@@ -1303,30 +1296,31 @@ fun CustomTabRow(
                 onClick = { isDialogOpen = true }
             ) {
                 androidx.compose.material3.Icon(
-                    painter = painterResource(id = R.drawable.edit_value_dialog), // Icon mặc định, bạn có thể thay đổi thành icon khác
+                    painter = painterResource(id = R.drawable.budget), // Icon mặc định, bạn có thể thay đổi thành icon khác
                     contentDescription = "Mở Pop-up Form",
                     tint = colorPrimary
                 )
             }
+        }
 
-            // Hiển thị PopUpSetValueDialog khi isDialogOpen là true
-            if (isDialogOpen) {
-                PopUpSetValueDialog(
-                    onDismiss = { isDialogOpen = false } ,
-                    onConfirm = { newLimitTransaction ->
-                        onLimitTransactionUpdated(newLimitTransaction)
-                        isDialogOpen = false // Đóng dialog sau khi nhận giá trị
-                    }
-
-                )
-            }
+        // Hiển thị PopUpSetValueDialog khi isDialogOpen là true
+        if (isDialogOpen) {
+            PopUpSetValueDialog(
+                onDismiss = { isDialogOpen = false },
+                onConfirm = { newLimitTransaction ->
+                    onLimitTransactionUpdated(newLimitTransaction)
+                    isDialogOpen = false // Đóng dialog sau khi nhận giá trị
+                }
+            )
         }
     }
+
     Divider(
         color = Color.LightGray,
         thickness = 1.dp
     )
 }
+
 
 
 

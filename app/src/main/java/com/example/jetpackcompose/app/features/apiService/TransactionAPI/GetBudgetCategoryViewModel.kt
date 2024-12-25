@@ -4,15 +4,15 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.jetpackcompose.app.screens.LimitTransaction
 import com.example.jetpackcompose.app.network.ApiService
 import com.example.jetpackcompose.app.network.BaseURL
+import com.example.jetpackcompose.app.screens.RemainLimit
 import com.google.gson.GsonBuilder
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class PostLimitTransactionViewModel(private val context: Context) : ViewModel() {
+class GetBudgetCategoryViewModel(private val context: Context) : ViewModel() {
 
     private val sharedPreferences = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
 
@@ -35,9 +35,8 @@ class PostLimitTransactionViewModel(private val context: Context) : ViewModel() 
     }
 
     // Hàm thêm giới hạn danh mục
-    fun addLimitTransaction(
-        data: List<LimitTransaction. CategoryLimit>,
-        onSuccess: (String) -> Unit,
+    fun getLimitTransaction(
+        onSuccess: (List<RemainLimit.CategoryLimit>) -> Unit,
         onError: (String) -> Unit
     ) {
         val token = getToken()
@@ -51,16 +50,14 @@ class PostLimitTransactionViewModel(private val context: Context) : ViewModel() 
         viewModelScope.launch {
             try {
                 Log.d("LimitTransactionViewModel", "Token: $token")
-                Log.d("LimitTransactionViewModel", "Limit Transaction Data: $data")
 
-                val response = api.addLimitTransaction("Bearer $token", data)
+                val response = api.getLimitTransaction("Bearer $token")
                 Log.d("LimitTransactionViewModel", "Response Code: ${response.code()}")
 
                 if (response.isSuccessful) {
                     val responseBody = response.body()
                     if (responseBody != null) {
-                        limitTransactionStatus = "Limit transaction added successfully"
-                        onSuccess(limitTransactionStatus)
+                        onSuccess(responseBody)
                     } else {
                         limitTransactionStatus = "Error: Empty response from server"
                         onError(limitTransactionStatus)

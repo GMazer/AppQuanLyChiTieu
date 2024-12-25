@@ -57,7 +57,14 @@ import com.example.jetpackcompose.ui.theme.colorPrimary
 import java.util.Calendar
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -66,10 +73,11 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.IntSize
-import com.example.jetpackcompose.app.features.apiService.TransactionAPI.GetLimitTransactionViewModel
+import com.example.jetpackcompose.app.features.apiService.TransactionAPI.GetBudgetCategoryViewModel
 import com.example.jetpackcompose.app.screens.LimitTransaction
 import com.example.jetpackcompose.app.screens.montserrat
 import com.example.jetpackcompose.ui.theme.highGray
@@ -77,8 +85,6 @@ import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.Locale
 import kotlin.math.atan2
-import kotlin.math.cos
-import kotlin.math.sin
 
 @Composable
 fun DonutChartWithProgress(
@@ -87,15 +93,21 @@ fun DonutChartWithProgress(
     labels: List<String>,
     progresses: List<Float> // Tỉ lệ hoàn thành (0.0 đến 1.0) cho từng phần
 ) {
+    if (values.isEmpty() || colors.isEmpty() || labels.isEmpty() || progresses.isEmpty()) {
+        Text(
+            text = "No data available",
+            color = Color.Gray,
+            fontSize = 16.sp,
+            textAlign = TextAlign.Center,
+        )
+        return
+    }
+
     val totalValue = values.sum()
     val proportions = values.map { it.toFloat() / totalValue }
     val angles = proportions.map { it * 360f }
 
     var selectedSegment by remember { mutableStateOf(-1) } // Lưu trữ mảnh được chọn
-
-    var progressWidth by remember { mutableStateOf(0f) }
-    var progressRadius by remember { mutableStateOf(0f) }
-
 
     Box(
         modifier = Modifier
@@ -108,156 +120,77 @@ fun DonutChartWithProgress(
                 .size(200.dp)
                 .pointerInput(Unit) {
                     detectTapGestures { offset ->
-                        // Xử lý chạm
+                        // Xử lý chạm để chọn mảnh
                         val clickedAngle = calculateAngleFromCenter(offset, size)
                         val segmentIndex = findSegmentIndex(clickedAngle, angles)
                         selectedSegment = segmentIndex
                     }
                 }
         ) {
-            val maxStrokeWidth = 150f
+            val maxStrokeWidth = 40f
             val radius = size.minDimension / 2
             var startAngle = -90f
 
             // Vẽ các mảnh donut chart
             angles.forEachIndexed { index, sweepAngle ->
-
-                // Kiểm tra xem mảnh hiện tại có phải là mảnh được chọn không
                 val isSelected = selectedSegment == index
-                val segmentRadius = if (isSelected) radius + 20f else radius // Tăng bán kính nếu được chọn
-                val segmentStrokeWidth = if (isSelected) maxStrokeWidth + 10f else maxStrokeWidth // Tăng độ rộng nét nếu được chọn
+                val segmentRadius = if (isSelected) radius + 10f else radius
+                val segmentStrokeWidth = if (isSelected) maxStrokeWidth + 10f else maxStrokeWidth
 
-                // Vẽ phần chính của donut chart
-                drawArc(
-                    color = colors[index].copy(alpha = 0.2f),
-                    startAngle = startAngle,
-                    sweepAngle = sweepAngle,
-                    useCenter = false,
-                    style = Stroke(width = segmentStrokeWidth, cap = StrokeCap.Butt),
-                    topLeft = Offset(center.x - segmentRadius, center.y - segmentRadius),
-                    size = Size(segmentRadius * 2, segmentRadius * 2) // Điều chỉnh kích thước
-                )
-
-                // Tương tự, điều chỉnh các phần khác như progress và inner circle cho mảnh được chọn
-                if (progresses[index] >= 1) {
-                    progressWidth = maxStrokeWidth // Tỷ lệ chiều rộng mực nước
-                } else {
-                    progressWidth = maxStrokeWidth * progresses[index] // Tỷ lệ chiều rộng mực nước
-                }
-                // Vẽ "mực nước" (progress)
-                progressRadius = if (isSelected) segmentRadius - (maxStrokeWidth - progressWidth) / 2 else radius - (maxStrokeWidth - progressWidth) / 2
+                // Vẽ mảnh donut
                 drawArc(
                     color = colors[index].copy(alpha = 0.8f),
                     startAngle = startAngle,
                     sweepAngle = sweepAngle,
                     useCenter = false,
-                    style = Stroke(
-                        width = progressWidth,
-                        cap = StrokeCap.Butt
-                    ),
-                    topLeft = Offset(center.x - progressRadius, center.y - progressRadius),
-                    size = Size(progressRadius * 2, progressRadius * 2)
+                    style = Stroke(width = segmentStrokeWidth, cap = StrokeCap.Round),
+                    topLeft = Offset(center.x - segmentRadius, center.y - segmentRadius),
+                    size = Size(segmentRadius * 2, segmentRadius * 2)
                 )
 
-                // Chiều rộng vòng trong
-                val innerWidth = maxStrokeWidth * 0.2f // Tỷ lệ chiều rộng mực nước
-
-                // Bán kính vòng trong
-                val innerRadius = if (isSelected) segmentRadius - (maxStrokeWidth - innerWidth) / 2 - innerWidth - 0.25f else radius - (maxStrokeWidth - innerWidth) / 2 - innerWidth
-
-                // Vòng trong
+                // Vẽ phần tiến độ (progress)
+                val progressSweepAngle = sweepAngle * progresses[index]
                 drawArc(
-                    color = colors[index].copy(alpha = 0.6f), // Làm nhạt màu
+                    color = colors[index],
                     startAngle = startAngle,
-                    sweepAngle = sweepAngle, // Giữ nguyên góc
+                    sweepAngle = progressSweepAngle,
                     useCenter = false,
-                    style = Stroke(
-                        width = innerWidth, // Chiều rộng mực nước theo tỷ lệ
-                        cap = StrokeCap.Butt
-                    ),
-                    topLeft = Offset(center.x - innerRadius, center.y - innerRadius),
-                    size = Size(innerRadius * 2, innerRadius * 2) // Sử dụng bán kính trong để vẽ mực nước
-                )
-
-                if (progresses[index] >= 1) {
-                    val outerWidth = maxStrokeWidth * 0.2f // Tỷ lệ chiều rộng mực nước
-                    val outerRadius = if (isSelected) segmentRadius + (maxStrokeWidth - outerWidth) / 2 + 2.5f else radius + (maxStrokeWidth - outerWidth) / 2
-
-                    // Vòng ngoài
-                    drawArc(
-                        color = colors[index],
-                        startAngle = startAngle,
-                        sweepAngle = sweepAngle, // Giữ nguyên góc
-                        useCenter = false,
-                        style = Stroke(
-                            width = outerWidth, // Chiều rộng mực nước theo tỷ lệ
-                            cap = StrokeCap.Butt
-                        ),
-                        topLeft = Offset(center.x - outerRadius, center.y - outerRadius),
-                        size = Size(outerRadius * 2, outerRadius * 2) // Sử dụng bán kính trong để vẽ mực nước
-                    )
-                }
-
-                startAngle += sweepAngle
-            }
-            startAngle = -90f
-            angles.forEach { sweepAngle ->
-                val angleInRadians = Math.toRadians(startAngle.toDouble())
-                val extendedOffset = maxStrokeWidth * 0.2f  // Tăng chiều dài đường ngăn thêm giá trị này
-
-                // Điều chỉnh bán kính để tăng chiều dài đường ngăn
-                val lineStart = Offset(
-                    x = center.x + (radius - maxStrokeWidth / 2 - extendedOffset) * cos(angleInRadians).toFloat(),
-                    y = center.y + (radius - maxStrokeWidth / 2 - extendedOffset) * sin(angleInRadians).toFloat()
-                )
-                val lineEnd = Offset(
-                    x = center.x + (radius + maxStrokeWidth / 2 + extendedOffset) * cos(angleInRadians).toFloat(),
-                    y = center.y + (radius + maxStrokeWidth / 2 + extendedOffset) * sin(angleInRadians).toFloat()
-                )
-
-                // Vẽ đường ngăn
-                drawLine(
-                    color = Color.White,
-                    start = lineStart,
-                    end = lineEnd,
-                    strokeWidth = 15f // Độ rộng của đường ngăn
+                    style = Stroke(width = segmentStrokeWidth, cap = StrokeCap.Round),
+                    topLeft = Offset(center.x - segmentRadius, center.y - segmentRadius),
+                    size = Size(segmentRadius * 2, segmentRadius * 2)
                 )
 
                 startAngle += sweepAngle
             }
         }
 
-        // Hiển thị thông tin khi click vào mảnh
+        // Hiển thị thông tin mảnh được chọn
         if (selectedSegment != -1) {
-            Column {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.align(Alignment.Center)
+            ) {
                 Text(
-                    text = "${labels[selectedSegment]}",
-                    modifier = Modifier.align(Alignment.CenterHorizontally),
-                    fontFamily = montserrat,
+                    text = labels[selectedSegment],
                     fontWeight = FontWeight.Bold,
-                    color = colors[selectedSegment],
-                    fontSize = 12.sp
+                    fontSize = 14.sp,
+                    color = colors[selectedSegment]
                 )
                 Text(
                     text = "Phân bổ: ${values[selectedSegment]}%",
-                    modifier = Modifier.align(Alignment.CenterHorizontally),
-                    fontFamily = montserrat,
-                    fontWeight = FontWeight.Normal,
-                    color = colors[selectedSegment],
-                    fontSize = 12.sp
+                    fontSize = 12.sp,
+                    color = colors[selectedSegment]
                 )
                 Text(
-                    text = "Chi tiêu: ${(progresses[selectedSegment] * 100).toInt()}%",
-                    modifier = Modifier.align(Alignment.CenterHorizontally),
-                    fontFamily = montserrat,
-                    fontWeight = FontWeight.Normal,
-                    color = colors[selectedSegment],
-                    fontSize = 12.sp
+                    text = "Hoàn thành: ${(progresses[selectedSegment] * 100).toInt()}%",
+                    fontSize = 12.sp,
+                    color = colors[selectedSegment]
                 )
             }
         }
     }
 }
+
 
 // Tính góc từ tâm dựa trên tọa độ
 private fun calculateAngleFromCenter(tapOffset: Offset, canvasSize: IntSize): Float {
@@ -313,7 +246,7 @@ fun MonthPickerDialog(
                 ) {
                     IconButton(onClick = { selectedYear.value-- }) {
                         Icon(
-                            imageVector = Icons.Default.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Previous Year",
                             tint = textColor
                         )
@@ -328,7 +261,7 @@ fun MonthPickerDialog(
                     )
                     IconButton(onClick = { selectedYear.value++ }) {
                         Icon(
-                            imageVector = Icons.Default.ArrowForward,
+                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                             contentDescription = "Next Year"
                         )
                     }
@@ -489,7 +422,8 @@ fun PopUpSetValueDialog(
     onConfirm: (LimitTransaction) -> Unit // Hàm callback nhận LimitTransaction
 ) {
 
-    val viewModel: GetLimitTransactionViewModel = GetLimitTransactionViewModel(LocalContext.current)
+    LocalSoftwareKeyboardController.current
+    val viewModel: GetBudgetCategoryViewModel = GetBudgetCategoryViewModel(LocalContext.current)
     var isLoading by remember { mutableStateOf(false) } // Trạng thái loading
 
     var houseValue by remember { mutableStateOf(TextFieldValue()) }
@@ -518,97 +452,18 @@ fun PopUpSetValueDialog(
             isLoading = false
         },
         onSuccess = {
-            houseValue = TextFieldValue(it[0].percentLimit.toString())
-            foodValue = TextFieldValue(it[1].percentLimit.toString())
-            shoppingValue = TextFieldValue(it[2].percentLimit.toString())
-            movingValue = TextFieldValue(it[3].percentLimit.toString())
-            cosmeticValue = TextFieldValue(it[4].percentLimit.toString())
-            exchangingValue = TextFieldValue(it[5].percentLimit.toString())
-            medicalValue = TextFieldValue(it[6].percentLimit.toString())
-            educatingValue = TextFieldValue(it[7].percentLimit.toString())
-            saveValue = TextFieldValue(it[8].percentLimit.toString())
+            houseValue = TextFieldValue(it[0].limitExpense.toString())
+            foodValue = TextFieldValue(it[1].limitExpense.toString())
+            shoppingValue = TextFieldValue(it[2].limitExpense.toString())
+            movingValue = TextFieldValue(it[3].limitExpense.toString())
+            cosmeticValue = TextFieldValue(it[4].limitExpense.toString())
+            exchangingValue = TextFieldValue(it[5].limitExpense.toString())
+            medicalValue = TextFieldValue(it[6].limitExpense.toString())
+            educatingValue = TextFieldValue(it[7].limitExpense.toString())
+            saveValue = TextFieldValue(it[8].limitExpense.toString())
             isLoading = true
         }
     )
-
-    // Hàm để tính giá trị còn lại và kiểm tra giới hạn 100%
-    fun calculateRemainingValue() {
-        val food = foodValue.text.toIntOrNull()
-        val shopping = shoppingValue.text.toIntOrNull()
-        val moving = movingValue.text.toIntOrNull()
-        val house = houseValue.text.toIntOrNull()
-        val cosmetic = cosmeticValue.text.toIntOrNull()
-        val exchanging = exchangingValue.text.toIntOrNull()
-        val medical = medicalValue.text.toIntOrNull()
-        val educating = educatingValue.text.toIntOrNull()
-        val save = saveValue.text.toIntOrNull()
-
-        // Kiểm tra nếu giá trị nhập vào vượt quá 100%
-        if ((food ?: 0) > 100 || (shopping ?: 0) > 100 || (moving ?: 0) > 100 || (house ?: 0) > 100 || (save ?: 0) > 100 || (cosmetic ?: 0) > 100 || (exchanging ?: 0) > 100 || (medical ?: 0) > 100 || (educating ?: 0) > 100) {
-            errorMessage = "Giá trị không được vượt quá 100%"
-            return
-        } else {
-            errorMessage = ""
-        }
-
-        // Tính tổng giá trị đã nhập
-        val enteredValues = listOf(food, shopping, moving, house, cosmetic, exchanging, medical, educating)
-        val totalEntered = enteredValues.filterNotNull().sum()
-
-        // Kiểm tra nếu tổng vượt quá 100%
-        if (totalEntered > 100) {
-            errorMessage = "Tổng không được vượt quá 100%"
-            return
-        }
-
-        // Đếm số trường nhập liệu trống
-        val emptyFields = listOf(
-            foodValue.text.isBlank(),
-            shoppingValue.text.isBlank(),
-            movingValue.text.isBlank(),
-            houseValue.text.isBlank(),
-            cosmeticValue.text.isBlank(),
-            exchangingValue.text.isBlank(),
-            medicalValue.text.isBlank(),
-            educatingValue.text.isBlank(),
-            saveValue.text.isBlank()
-        ).count { it }
-
-        // Nếu có 1 trường trống, tính toán giá trị còn lại
-        if (emptyFields != 0) {
-            val remainingValue = (100 - totalEntered) / emptyFields
-            when {
-                foodValue.text.isBlank() -> {
-                    foodValue = TextFieldValue(remainingValue.toString())
-                }
-                shoppingValue.text.isBlank() -> {
-                    shoppingValue = TextFieldValue(remainingValue.toString())
-                }
-                movingValue.text.isBlank() -> {
-                    movingValue = TextFieldValue(remainingValue.toString())
-                }
-                houseValue.text.isBlank() -> {
-                    houseValue = TextFieldValue(remainingValue.toString())
-                }
-                cosmeticValue.text.isBlank() -> {
-                    cosmeticValue = TextFieldValue(remainingValue.toString())
-                }
-                exchangingValue.text.isBlank() -> {
-                    exchangingValue = TextFieldValue(remainingValue.toString())
-                }
-                medicalValue.text.isBlank() -> {
-                    medicalValue = TextFieldValue(remainingValue.toString())
-                }
-                educatingValue.text.isBlank() -> {
-                    educatingValue = TextFieldValue(remainingValue.toString())
-                }
-            }
-        } else {
-            val remainingValue = (100 - totalEntered)
-            saveValue = TextFieldValue(remainingValue.toString())
-        }
-
-    }
 
     if (isLoading) {
         Dialog(onDismissRequest = { onDismiss() }) {
@@ -616,464 +471,116 @@ fun PopUpSetValueDialog(
                 shape = RoundedCornerShape(16.dp),
                 color = Color.White
             ) {
-                Column(
+                BoxWithConstraints(
                     modifier = Modifier
+                        .fillMaxWidth()
                         .padding(16.dp)
-                        .fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    errorMessage?.let {
-                        Text(
-                            text = it,
-                            color = Color.Red,
-                            fontSize = 12.sp,
-                            modifier = Modifier.padding(bottom = 8.dp)
-                        )
-                    }
-                    Text(
-                        text = "Phân bổ ngân sách",
-                        fontFamily = montserrat,
-                        color = colorPrimary,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(bottom = 16.dp)
-                    )
-                    // Ô thứ nhất
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
+                    val maxHeight = this.maxHeight
+                    Column(
                         modifier = Modifier
-                            .padding(bottom = 8.dp)
                             .fillMaxWidth()
+                            .verticalScroll(rememberScrollState())
+                            .heightIn(max = maxHeight),
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(
-                            text = "Chi phí nhà ở",
-                            fontFamily = montserrat,
-                            color = textColor,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Normal,
-                            modifier = Modifier.weight(2f)
-                        )
-                        Box(modifier = Modifier.weight(5.5f)) {
-                            PercentTextField(
-                                amountState = houseValue.text,
-                                onValueChange = { newValue ->
-                                    houseValue = TextFieldValue(newValue)
-                                },
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Number, // Chỉ hiển thị bàn phím số
-                                    imeAction = ImeAction.Next, // Hiển thị nút "Done" hoặc "Tiếp tục"
-                                ),
-                                keyboardActions = KeyboardActions(
-                                    onNext = {
-                                        calculateRemainingValue() // Gọi logic tính toán
-                                        defaultKeyboardAction(ImeAction.Next) // Gọi hành động Next mặc định
-                                    }
-                                ),
-                                colorPercent = Color.Black
+                        errorMessage.let {
+                            Text(
+                                text = it,
+                                color = Color.Red,
+                                fontSize = 12.sp,
+                                modifier = Modifier.padding(bottom = 8.dp)
                             )
                         }
-
                         Text(
-                            text = " %",
+                            text = "Phân bổ ngân sách",
                             fontFamily = montserrat,
-                            color = textColor,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Normal,
-                            modifier = Modifier.weight(0.5f),
-                            textAlign = TextAlign.Start
-                        )
-                    }
-
-                    // Ô thứ hai
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .padding(bottom = 8.dp)
-                            .fillMaxWidth()
-                    ) {
-                        Text(
-                            text = "Chi phí ăn uống",
-                            fontFamily = montserrat,
-                            color = textColor,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Normal,
-                            modifier = Modifier.weight(2f)
-                        )
-                        Box(modifier = Modifier.weight(5.5f)) {
-                            PercentTextField(
-                                amountState = foodValue.text,
-                                onValueChange = { newValue ->
-                                    foodValue = TextFieldValue(newValue)
-                                },
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Number, // Chỉ hiển thị bàn phím số
-                                    imeAction = ImeAction.Next, // Hiển thị nút "Done" hoặc "Tiếp tục"
-                                ),
-                                keyboardActions = KeyboardActions(
-                                    onNext = {
-                                        calculateRemainingValue() // Gọi logic tính toán
-                                        defaultKeyboardAction(ImeAction.Next) // Gọi hành động Next mặc định
-                                    }
-                                ),
-                                colorPercent = Color.Black
-                            )
-                        }
-
-                        Text(
-                            text = " %",
-                            fontFamily = montserrat,
-                            color = textColor,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Normal,
-                            modifier = Modifier.weight(0.5f),
-                            textAlign = TextAlign.Start
-                        )
-                    }
-
-                    // Ô thứ ba
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .padding(bottom = 8.dp)
-                            .fillMaxWidth()
-                    ) {
-                        Text(
-                            text = "Mua sắm quần áo",
-                            fontFamily = montserrat,
-                            color = textColor,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Normal,
-                            modifier = Modifier.weight(2f)
-                        )
-                        Box(modifier = Modifier.weight(5.5f)) {
-                            PercentTextField(
-                                amountState = shoppingValue.text,
-                                onValueChange = { newValue ->
-                                    shoppingValue = TextFieldValue(newValue)
-                                },
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Number, // Chỉ hiển thị bàn phím số
-                                    imeAction = ImeAction.Next, // Hiển thị nút "Done" hoặc "Tiếp tục"
-                                ),
-                                keyboardActions = KeyboardActions(
-                                    onNext = {
-                                        calculateRemainingValue() // Gọi logic tính toán
-                                        defaultKeyboardAction(ImeAction.Next) // Gọi hành động Next mặc định
-                                    }
-                                ),
-                                colorPercent = Color.Black
-                            )
-                        }
-
-                        Text(
-                            text = " %",
-                            fontFamily = montserrat,
-                            color = textColor,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Normal,
-                            modifier = Modifier.weight(0.5f),
-                            textAlign = TextAlign.Start
-                        )
-                    }
-
-                    // Ô thứ tư
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .padding(bottom = 8.dp)
-                            .fillMaxWidth()
-                    ) {
-                        Text(
-                            text = "Đi lại",
-                            fontFamily = montserrat,
-                            color = textColor,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Normal,
-                            modifier = Modifier.weight(2f)
-                        )
-                        Box(modifier = Modifier.weight(5.5f)) {
-                            PercentTextField(
-                                amountState = movingValue.text,
-                                onValueChange = { newValue ->
-                                    movingValue = TextFieldValue(newValue)
-                                },
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Number, // Chỉ hiển thị bàn phím số
-                                    imeAction = ImeAction.Next, // Hiển thị nút "Done" hoặc "Tiếp tục"
-                                ),
-                                keyboardActions = KeyboardActions(
-                                    onNext = {
-                                        calculateRemainingValue() // Gọi logic tính toán
-                                        defaultKeyboardAction(ImeAction.Next) // Gọi hành động Next mặc định
-                                    }
-                                ),
-                                colorPercent = Color.Black
-                            )
-                        }
-
-                        Text(
-                            text = " %",
-                            fontFamily = montserrat,
-                            color = textColor,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Normal,
-                            modifier = Modifier.weight(0.5f),
-                            textAlign = TextAlign.Start
-                        )
-                    }
-
-                    // Ô thứ năm
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .padding(bottom = 8.dp)
-                            .fillMaxWidth()
-                    ) {
-                        Text(
-                            text = "Chăm sóc sắc đẹp",
-                            fontFamily = montserrat,
-                            color = textColor,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Normal,
-                            modifier = Modifier.weight(2f)
-                        )
-                        Box(modifier = Modifier.weight(5.5f)) {
-                            PercentTextField(
-                                amountState = cosmeticValue.text,
-                                onValueChange = { newValue ->
-                                    cosmeticValue = TextFieldValue(newValue)
-                                },
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Number, // Chỉ hiển thị bàn phím số
-                                    imeAction = ImeAction.Next, // Hiển thị nút "Done" hoặc "Tiếp tục"
-                                ),
-                                keyboardActions = KeyboardActions(
-                                    onNext = {
-                                        calculateRemainingValue() // Gọi logic tính toán
-                                        defaultKeyboardAction(ImeAction.Next) // Gọi hành động Next mặc định
-                                    }
-                                ),
-                                colorPercent = Color.Black
-                            )
-                        }
-
-                        Text(
-                            text = " %",
-                            fontFamily = montserrat,
-                            color = textColor,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Normal,
-                            modifier = Modifier.weight(0.5f),
-                            textAlign = TextAlign.Start
-                        )
-                    }
-
-                    // Ô thứ sáu
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .padding(bottom = 8.dp)
-                            .fillMaxWidth()
-                    ) {
-                        Text(
-                            text = "Giao lưu",
-                            fontFamily = montserrat,
-                            color = textColor,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Normal,
-                            modifier = Modifier.weight(2f)
-                        )
-                        Box(modifier = Modifier.weight(5.5f)) {
-                            PercentTextField(
-                                amountState = exchangingValue.text,
-                                onValueChange = { newValue ->
-                                    exchangingValue = TextFieldValue(newValue)
-                                },
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Number, // Chỉ hiển thị bàn phím số
-                                    imeAction = ImeAction.Next, // Hiển thị nút "Done" hoặc "Tiếp tục"
-                                ),
-                                keyboardActions = KeyboardActions(
-                                    onNext = {
-                                        calculateRemainingValue() // Gọi logic tính toán
-                                        defaultKeyboardAction(ImeAction.Next) // Gọi hành động Next mặc định
-                                    }
-                                ),
-                                colorPercent = Color.Black
-                            )
-                        }
-
-                        Text(
-                            text = " %",
-                            fontFamily = montserrat,
-                            color = textColor,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Normal,
-                            modifier = Modifier.weight(0.5f),
-                            textAlign = TextAlign.Start
-                        )
-                    }
-
-                    // Ô thứ bảy
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .padding(bottom = 8.dp)
-                            .fillMaxWidth()
-                    ) {
-                        Text(
-                            text = "Y tế",
-                            fontFamily = montserrat,
-                            color = textColor,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Normal,
-                            modifier = Modifier.weight(2f)
-                        )
-                        Box(modifier = Modifier.weight(5.5f)) {
-                            PercentTextField(
-                                amountState = medicalValue.text,
-                                onValueChange = { newValue ->
-                                    medicalValue = TextFieldValue(newValue)
-                                },
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Number, // Chỉ hiển thị bàn phím số
-                                    imeAction = ImeAction.Next, // Hiển thị nút "Done" hoặc "Tiếp tục"
-                                ),
-                                keyboardActions = KeyboardActions(
-                                    onNext = {
-                                        calculateRemainingValue() // Gọi logic tính toán
-                                        defaultKeyboardAction(ImeAction.Next) // Gọi hành động Next mặc định
-                                    }
-                                ),
-                                colorPercent = Color.Black
-                            )
-                        }
-
-                        Text(
-                            text = " %",
-                            fontFamily = montserrat,
-                            color = textColor,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Normal,
-                            modifier = Modifier.weight(0.5f),
-                            textAlign = TextAlign.Start
-                        )
-                    }
-
-                    // Ô thứ tám với KeyboardActions
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .padding(bottom = 8.dp)
-                            .fillMaxWidth()
-                    ) {
-                        Text(
-                            text = "Học tập",
-                            fontFamily = montserrat,
-                            color = textColor,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Normal,
-                            modifier = Modifier.weight(2f)
-                        )
-                        Box(modifier = Modifier.weight(5.5f)) {
-                            PercentTextField(
-                                amountState = educatingValue.text,
-                                onValueChange = { newValue ->
-                                    educatingValue = TextFieldValue(newValue)
-                                },
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Number, // Chỉ hiển thị bàn phím số
-                                    imeAction = ImeAction.Next, // Hiển thị nút "Done" hoặc "Tiếp tục"
-                                ),
-                                keyboardActions = KeyboardActions(
-                                    onNext = {
-                                        calculateRemainingValue() // Gọi logic tính toán
-                                        defaultKeyboardAction(ImeAction.Next) // Gọi hành động Next mặc định
-                                    }
-                                ),
-                                colorPercent = Color.Black
-                            )
-                        }
-
-                        Text(
-                            text = " %",
-                            fontFamily = montserrat,
-                            color = textColor,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Normal,
-                            modifier = Modifier.weight(0.5f),
-                            textAlign = TextAlign.Start
-                        )
-                    }
-
-                    // Ô thứ chín (sẽ được tự động điền)
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .padding(bottom = 16.dp)
-                            .fillMaxWidth()
-                    ) {
-                        Text(
-                            text = "Khoản tiết kiệm",
-                            fontFamily = montserrat,
-                            color = textColor,
-                            fontSize = 12.sp,
+                            color = colorPrimary,
+                            fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
-                            modifier = Modifier.weight(2f)
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(bottom = 16.dp)
                         )
-                        Box(modifier = Modifier.weight(5.5f)) {
-                            PercentTextField(
+
+                        listOf(
+                            "Chi phí nhà ở" to houseValue,
+                            "Chi phí ăn uống" to foodValue,
+                            "Mua sắm quần áo" to shoppingValue,
+                            "Đi lại" to movingValue,
+                            "Chăm sóc sắc đẹp" to cosmeticValue,
+                            "Giao lưu" to exchangingValue,
+                            "Y tế" to medicalValue,
+                            "Học tập" to educatingValue,
+                            "Khoản tiết kiệm" to saveValue
+                        ).forEach { (label, value) ->
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier
-                                    .border(
-                                        width = 2.dp, // Độ dày của viền
-                                        color = highGray, // Màu sắc của viền
-                                        shape = RoundedCornerShape(8.dp) // Bo tròn các góc nếu cần
-                                    ),
-                                amountState = saveValue.text,
-                                onValueChange = { newValue ->
-                                    saveValue = TextFieldValue(newValue)
-                                },
-                                enabled = false, // Không cho phép người dùng nhập vào ô này
-                                colorPercent = colorPrimary
-                            )
+                                    .padding(bottom = 8.dp)
+                                    .fillMaxWidth()
+                            ) {
+                                Text(
+                                    text = label,
+                                    fontFamily = montserrat,
+                                    color = textColor,
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Normal,
+                                    modifier = Modifier.weight(2f)
+                                )
+                                Box(modifier = Modifier.weight(7f)) {
+                                    BudgetTextField(
+                                        amountState = value.text,
+                                        onValueChange = { newValue ->
+                                            when (label) {
+                                                "Chi phí nhà ở" -> houseValue = TextFieldValue(newValue)
+                                                "Chi phí ăn uống" -> foodValue = TextFieldValue(newValue)
+                                                "Mua sắm quần áo" -> shoppingValue = TextFieldValue(newValue)
+                                                "Đi lại" -> movingValue = TextFieldValue(newValue)
+                                                "Chăm sóc sắc đẹp" -> cosmeticValue = TextFieldValue(newValue)
+                                                "Giao lưu" -> exchangingValue = TextFieldValue(newValue)
+                                                "Y tế" -> medicalValue = TextFieldValue(newValue)
+                                                "Học tập" -> educatingValue = TextFieldValue(newValue)
+                                                "Khoản tiết kiệm" -> saveValue = TextFieldValue(newValue)
+                                            }
+                                        },
+                                        colorPercent = Color.Black
+                                    )
+                                }
+                                Text(
+                                    text = "₫",
+                                    fontFamily = montserrat,
+                                    color = textColor,
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.Normal,
+                                    modifier = Modifier.padding(start = 4.dp)
+                                )
+                            }
                         }
 
-                        Text(
-                            text = " %",
-                            color = textColor,
-                            fontFamily = montserrat,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Normal,
-                            modifier = Modifier.weight(0.5f),
-                            textAlign = TextAlign.Start
-                        )
-                    }
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        TextButton(onClick = { onDismiss() }) {
-                            Text(text = "Huỷ bỏ", fontFamily = montserrat, color = textColor)
-                        }
-                        TextButton(onClick = {
-                            // Lấy dữ liệu và gửi qua callback
-                            val categoryLimits = listOf(
-                                LimitTransaction.CategoryLimit(1, houseValue.text.toIntOrNull() ?: 0),
-                                LimitTransaction.CategoryLimit(2, foodValue.text.toIntOrNull() ?: 0),
-                                LimitTransaction.CategoryLimit(3, shoppingValue.text.toIntOrNull() ?: 0),
-                                LimitTransaction.CategoryLimit(4, movingValue.text.toIntOrNull() ?: 0),
-                                LimitTransaction.CategoryLimit(5, cosmeticValue.text.toIntOrNull() ?: 0),
-                                LimitTransaction.CategoryLimit(6, exchangingValue.text.toIntOrNull() ?: 0),
-                                LimitTransaction.CategoryLimit(7, medicalValue.text.toIntOrNull() ?: 0),
-                                LimitTransaction.CategoryLimit(8, educatingValue.text.toIntOrNull() ?: 0),
-                                LimitTransaction.CategoryLimit(9, saveValue.text.toIntOrNull() ?: 0)
-                            )
-                            onConfirm(LimitTransaction(categoryLimits))
-                            onDismiss()
-                        }) {
-                            Text(text = "OK", fontFamily = montserrat, color = colorPrimary)
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            TextButton(onClick = { onDismiss() }) {
+                                Text(text = "Huỷ bỏ", fontFamily = montserrat, color = textColor)
+                            }
+                            TextButton(onClick = {
+                                val categoryLimits = listOf(
+                                    LimitTransaction.CategoryLimit(1, houseValue.text.toLongOrNull() ?: 0L),
+                                    LimitTransaction.CategoryLimit(2, foodValue.text.toLongOrNull() ?: 0L),
+                                    LimitTransaction.CategoryLimit(3, shoppingValue.text.toLongOrNull() ?: 0L),
+                                    LimitTransaction.CategoryLimit(4, movingValue.text.toLongOrNull() ?: 0L),
+                                    LimitTransaction.CategoryLimit(5, cosmeticValue.text.toLongOrNull() ?: 0L),
+                                    LimitTransaction.CategoryLimit(6, exchangingValue.text.toLongOrNull() ?: 0L),
+                                    LimitTransaction.CategoryLimit(7, medicalValue.text.toLongOrNull() ?: 0L),
+                                    LimitTransaction.CategoryLimit(8, educatingValue.text.toLongOrNull() ?: 0L),
+                                    LimitTransaction.CategoryLimit(9, saveValue.text.toLongOrNull() ?: 0L)
+                                )
+                                onConfirm(LimitTransaction(categoryLimits))
+                                onDismiss()
+                            }) {
+                                Text(text = "OK", fontFamily = montserrat, color = colorPrimary)
+                            }
                         }
                     }
                 }
@@ -1083,46 +590,30 @@ fun PopUpSetValueDialog(
         showPopup = true
         successMessage = "Đang tải dữ liệu..."
     }
-
-
 }
 
-
-
-
 @Composable
-fun PercentTextField(
+fun BudgetTextField(
     amountState: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy(
-        keyboardType = KeyboardType.Number,
-        imeAction = ImeAction.Next // Mặc định là "Next", có thể tùy chỉnh
-    ),
-    keyboardActions: KeyboardActions = KeyboardActions.Default,
     colorPercent: Color
 ) {
-    val keyboardController = LocalSoftwareKeyboardController.current
+
     val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
     var isFocused by remember { mutableStateOf(false) }
 
     BasicTextField(
-        value = amountState,
+        value = formatNumber(amountState), // Định dạng số với dấu phẩy
         onValueChange = { newInput ->
-            if (newInput == "0" && amountState.isEmpty()) {
+            val unformattedInput = newInput.replace(",", "") // Loại bỏ dấu phẩy trước khi xử lý
+            if (unformattedInput == "0" && amountState.isEmpty()) {
                 // Không làm gì để chặn '0' đầu tiên
             } else {
-                val filteredInput = newInput.filter { it.isDigit() }
-                onValueChange(
-                    if (filteredInput.isNotEmpty() && filteredInput != "0") {
-                        filteredInput
-                    } else if (filteredInput == "0" && amountState.isNotEmpty()) {
-                        filteredInput
-                    } else {
-                        ""
-                    }
-                )
+                val filteredInput = unformattedInput.filter { it.isDigit() }
+                onValueChange(filteredInput)
             }
         },
         singleLine = true,
@@ -1147,8 +638,16 @@ fun PercentTextField(
             fontWeight = FontWeight.Bold,
             color = colorPercent,
         ),
-        keyboardOptions = keyboardOptions,
-        keyboardActions = keyboardActions,
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Number,
+            imeAction = ImeAction.Done
+        ),
+        keyboardActions = KeyboardActions(
+            onDone = {
+                focusManager.clearFocus()
+                keyboardController?.hide() // Ẩn bàn phím khi nhấn Done
+            }
+        ),
         decorationBox = { innerTextField ->
             Box(
                 modifier = Modifier
@@ -1171,6 +670,11 @@ fun PercentTextField(
     )
 }
 
+private fun formatNumber(input: String): String {
+    return input.replace(",", "").toLongOrNull()?.let {
+        String.format(Locale.US, "%,d", it) // Sử dụng Locale.US để đảm bảo định dạng đúng
+    } ?: ""
+}
 
 
 @Composable

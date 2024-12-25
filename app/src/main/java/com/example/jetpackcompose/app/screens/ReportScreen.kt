@@ -1,15 +1,27 @@
 package com.example.jetpackcompose.app.screens
 
 import android.util.Log
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -17,18 +29,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.jetpackcompose.ui.theme.topBarColor
-import androidx.compose.foundation.background
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.platform.LocalContext
 import com.example.jetpackcompose.app.features.apiService.ReportAPI.GetReportViewModel
 import com.example.jetpackcompose.components.CategoryIconWithName
 import com.example.jetpackcompose.components.DonutChartWithProgress
@@ -36,6 +43,7 @@ import com.example.jetpackcompose.components.MessagePopup
 import com.example.jetpackcompose.components.MonthPickerButton
 import com.example.jetpackcompose.components.ReportTable
 import com.example.jetpackcompose.components.montserrat
+import com.example.jetpackcompose.ui.theme.topBarColor
 import java.util.Calendar
 
 data class ReportData(
@@ -45,7 +53,7 @@ data class ReportData(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ReportScreen(viewModel: GetReportViewModel = GetReportViewModel(LocalContext.current)) {
+fun ReportScreen(reportViewModel: GetReportViewModel = GetReportViewModel(LocalContext.current)) {
 
     var showPopup by remember { mutableStateOf(false) }
 
@@ -86,7 +94,7 @@ fun ReportScreen(viewModel: GetReportViewModel = GetReportViewModel(LocalContext
         // Lấy tháng và năm từ selectedMonthYear
         val (month, year) = selectedMonthYear.split("/").map { it.toInt() }.let { it[0] to it[1] }
 
-        viewModel.getReport(
+        reportViewModel.getReport(
             month = month,
             year = year,
             onSuccess = { report ->
@@ -99,7 +107,8 @@ fun ReportScreen(viewModel: GetReportViewModel = GetReportViewModel(LocalContext
                 totalIncome = report.totalIncome
                 totalExpense = report.totalExpense
                 netAmount = report.netAmount
-                listReport = report.categoryReports.map { ReportData(it.categoryName, it.spentAmount) }
+                listReport =
+                    report.categoryReports.map { ReportData(it.categoryName, it.spentAmount) }
 
                 // Màu sắc cho biểu đồ (có thể mở rộng theo số lượng danh mục)
                 colors = listOf(
@@ -120,145 +129,132 @@ fun ReportScreen(viewModel: GetReportViewModel = GetReportViewModel(LocalContext
         )
     }
 
-    val customTypography = Typography(
-        bodyLarge = TextStyle(fontFamily = com.example.jetpackcompose.app.screens.montserrat),
-        bodyMedium = TextStyle(fontFamily = com.example.jetpackcompose.app.screens.montserrat),
-        bodySmall = TextStyle(fontFamily = com.example.jetpackcompose.app.screens.montserrat),
-        titleLarge = TextStyle(fontFamily = com.example.jetpackcompose.app.screens.montserrat),
-        titleMedium = TextStyle(fontFamily = com.example.jetpackcompose.app.screens.montserrat),
-        titleSmall = TextStyle(fontFamily = com.example.jetpackcompose.app.screens.montserrat),
-        labelLarge = TextStyle(fontFamily = com.example.jetpackcompose.app.screens.montserrat),
-        labelMedium = TextStyle(fontFamily = com.example.jetpackcompose.app.screens.montserrat),
-        labelSmall = TextStyle(fontFamily = com.example.jetpackcompose.app.screens.montserrat),
-        headlineLarge = TextStyle(fontFamily = com.example.jetpackcompose.app.screens.montserrat),
-        headlineMedium = TextStyle(fontFamily = com.example.jetpackcompose.app.screens.montserrat),
-        headlineSmall = TextStyle(fontFamily = com.example.jetpackcompose.app.screens.montserrat)
-    )
-
-    MaterialTheme(typography = customTypography) {
-        Scaffold(
-            topBar = {
-                Column {
-                    TopAppBar(
-                        title = {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .height(50.dp)
-                                    .padding(start = 16.dp, end = 32.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    text = "Báo cáo",
-                                    style = TextStyle(
-                                        fontWeight = FontWeight.Bold,
-                                        fontFamily = montserrat,
-                                        fontSize = 16.sp,
-                                    ),
-                                    textAlign = TextAlign.Center,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                )
-                            }
-                        },
-                        navigationIcon = {},
-                        actions = {},
-                        colors = TopAppBarDefaults.smallTopAppBarColors(
-                            containerColor = topBarColor
-                        ),
-                        modifier = Modifier
-                            .height(50.dp)
-                    )
-                    Divider(
-                        color = Color.LightGray,
-                        thickness = 1.dp
-                    )
-                }
-            }
-        ) { paddingValues ->
-
-            // Sử dụng LazyColumn để có thể cuộn được
-            LazyColumn(
-                modifier = Modifier
-                    .padding(paddingValues)
-                    .fillMaxHeight()
-                    .background(Color(0xFFF5F5F5))
-            ) {
-                item {
-                    // Phần header
-                    Column(
-                        modifier = Modifier
-                            .background(color = Color.White)
-                    ) {
-                        // Spacer giữa TopAppBar và biểu đồ
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        MonthPickerButton(onDateSelected = { month ->
-                            selectedMonthYear = month
-                        })
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                    }
-                }
-
-                item{
-                    Spacer(modifier = Modifier.height(24.dp))
-                }
-
-                item{
-                    ReportTable(totalIncome, totalExpense, netAmount)
-                }
-
-                item{
-                    Spacer(modifier = Modifier.height(24.dp))
-                }
-
-                item {
-                    Column(
-                        modifier = Modifier
-                            .background(color = Color.White)
-                            .fillMaxWidth()
-                    ){
-                        Spacer(modifier = Modifier.height(8.dp))
-                        // Hiển thị biểu đồ nếu đã có dữ liệu
-                        if (percentLimit.isNotEmpty() && percentSpent.isNotEmpty() && labels.isNotEmpty()) {
-                            DonutChartWithProgress(percentLimit, colors, labels, percentSpent)
-                        } else {
+    Scaffold(
+        topBar = {
+            Column {
+                TopAppBar(
+                    title = {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .height(50.dp)
+                                .padding(start = 16.dp, end = 32.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
                             Text(
-                                text = "Loading data...",
-                                modifier = Modifier.align(Alignment.CenterHorizontally),
-                                color = Color.Gray,
-                                fontSize = 16.sp
-                            )
-                        }
-                        Spacer(modifier = Modifier.height(8.dp))
-                    }
-                }
-
-
-                item{
-                    Divider(modifier = Modifier.fillMaxWidth().height(1.dp))
-                }
-
-                for (item in listReport) {
-                    if (item.name != "Tiết kiệm") {
-                        item {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Start,
+                                text = "Báo cáo",
+                                style = TextStyle(
+                                    fontWeight = FontWeight.Bold,
+                                    fontFamily = montserrat,
+                                    fontSize = 16.sp,
+                                ),
+                                textAlign = TextAlign.Center,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .background(color = Color.White)
-                                    .height(50.dp)
-                                    .padding(horizontal = 16.dp)
-                            ) {
-                                CategoryIconWithName(item.name, "", item.amount, "expense")
-                            }
+                            )
                         }
-                        item {
-                            Divider(modifier = Modifier.fillMaxWidth().height(1.dp))
+                    },
+                    navigationIcon = {},
+                    actions = {},
+                    colors = TopAppBarDefaults.smallTopAppBarColors(
+                        containerColor = topBarColor
+                    ),
+                    modifier = Modifier
+                        .height(50.dp)
+                )
+                Divider(
+                    color = Color.LightGray,
+                    thickness = 1.dp
+                )
+            }
+        }
+    ) { paddingValues ->
+
+        // Sử dụng LazyColumn để có thể cuộn được
+        LazyColumn(
+            modifier = Modifier
+                .padding(paddingValues)
+                .fillMaxHeight()
+                .background(Color(0xFFF5F5F5))
+        ) {
+            item {
+                // Phần header
+                Column(
+                    modifier = Modifier
+                        .background(color = Color.White)
+                ) {
+                    // Spacer giữa TopAppBar và biểu đồ
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    MonthPickerButton(onDateSelected = { month ->
+                        selectedMonthYear = month
+                    })
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                }
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(24.dp))
+            }
+
+            item {
+                ReportTable(totalIncome, totalExpense, netAmount)
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(24.dp))
+            }
+
+            item {
+                Column(
+                    modifier = Modifier
+                        .background(color = Color.White)
+                        .fillMaxWidth()
+                ) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    // Hiển thị biểu đồ nếu đã có dữ liệu
+                    if (percentLimit.isNotEmpty() && percentSpent.isNotEmpty() && labels.isNotEmpty()) {
+                        DonutChartWithProgress(percentLimit, colors, labels, percentSpent)
+                    } else {
+                        Text(
+                            text = "Loading data...",
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            color = Color.Gray,
+                            fontSize = 16.sp
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+            }
+
+
+            item {
+                Divider(modifier = Modifier
+                    .fillMaxWidth()
+                    .height(1.dp))
+            }
+
+            for (item in listReport) {
+                if (item.name != "Tiết kiệm") {
+                    item {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Start,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(color = Color.White)
+                                .height(50.dp)
+                                .padding(horizontal = 16.dp)
+                        ) {
+                            CategoryIconWithName(item.name, "", item.amount, "expense")
                         }
+                    }
+                    item {
+                        Divider(modifier = Modifier
+                            .fillMaxWidth()
+                            .height(1.dp))
                     }
                 }
             }

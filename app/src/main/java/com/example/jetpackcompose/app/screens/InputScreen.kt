@@ -1,6 +1,5 @@
 package com.example.jetpackcompose.app.screens
 
-import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -11,15 +10,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
@@ -34,16 +30,12 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.jetpackcompose.R
-import com.example.jetpackcompose.app.features.apiService.ReadNotificationTransaction.TransactionStorage
-import com.example.jetpackcompose.app.features.apiService.TransactionAPI.PostLimitTransactionViewModel
+import com.example.jetpackcompose.app.features.apiService.TransactionAPI.PutLimitTransactionViewModel
 import com.example.jetpackcompose.app.features.inputFeatures.ExpenseContent
 import com.example.jetpackcompose.app.features.inputFeatures.IncomeContent
 import com.example.jetpackcompose.components.CustomTabRow
-import com.example.jetpackcompose.ui.theme.colorPrimary
-import com.example.jetpackcompose.ui.theme.textColor
 
 
 class MainActivity : ComponentActivity() {
@@ -61,7 +53,7 @@ data class LimitTransaction(
 ) {
     data class CategoryLimit(
         val categoryId: Int,
-        val percentLimit: Int
+        val limitExpense: Long
     )
 }
 
@@ -70,7 +62,7 @@ data class RemainLimit(
 ) {
     data class CategoryLimit(
         val categoryId: Int,
-        val percentLimit: Int,
+        val limitExpense: Int,
         val remainingPercent: Double
     )
 }
@@ -105,7 +97,7 @@ data class Transaction(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InputScreen(navController: NavController) {
-    val viewModel: PostLimitTransactionViewModel = PostLimitTransactionViewModel(LocalContext.current)
+    val viewModel: PutLimitTransactionViewModel = PutLimitTransactionViewModel(LocalContext.current)
     val tabs = listOf(
         TabItem("Expense", icon = Icons.Default.ArrowBack) {
             ExpenseContent()
@@ -150,9 +142,6 @@ fun InputScreen(navController: NavController) {
             }
         }
     }
-
-    // Hiển thị dialog nếu có giao dịch và chưa hiển thị
-
 }
 
 

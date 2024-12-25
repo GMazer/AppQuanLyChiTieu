@@ -17,7 +17,7 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 object BaseURL {
-    val baseUrl = "https://6116-113-23-48-156.ngrok-free.app"
+    val baseUrl = "https://f550-42-114-32-250.ngrok-free.app"
 }
 
 
@@ -190,6 +190,11 @@ interface ApiService {
 
     @GET("/api/category-limits/remaining")
     suspend fun getLimitTransaction(
+        @Header("Authorization") token: String
+    ): Response<List<RemainLimit.CategoryLimit>>
+
+    @GET("/api/category-limits/current")
+    suspend fun getBudgetCategory(
         @Header("Authorization") token: String
     ): Response<List<RemainLimit.CategoryLimit>>
 
