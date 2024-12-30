@@ -35,7 +35,7 @@ class GetBudgetCategoryViewModel(private val context: Context) : ViewModel() {
     }
 
     // Hàm thêm giới hạn danh mục
-    fun getLimitTransaction(
+    fun getBudgetTransaction(
         onSuccess: (List<RemainLimit.CategoryLimit>) -> Unit,
         onError: (String) -> Unit
     ) {
@@ -51,7 +51,7 @@ class GetBudgetCategoryViewModel(private val context: Context) : ViewModel() {
             try {
                 Log.d("LimitTransactionViewModel", "Token: $token")
 
-                val response = api.getLimitTransaction("Bearer $token")
+                val response = api.getBudgetCategory("Bearer $token")
                 Log.d("LimitTransactionViewModel", "Response Code: ${response.code()}")
 
                 if (response.isSuccessful) {
@@ -69,7 +69,7 @@ class GetBudgetCategoryViewModel(private val context: Context) : ViewModel() {
                 }
             } catch (e: Exception) {
                 limitTransactionStatus = "Error: ${e.localizedMessage}"
-                Log.e("LimitTransactionViewModel", "Error adding limit transaction: ${e.localizedMessage}", e)
+                Log.e("LimitTransactionViewModel", "Error adding budge category: ${e.localizedMessage}", e)
                 onError(limitTransactionStatus)
             }
         }

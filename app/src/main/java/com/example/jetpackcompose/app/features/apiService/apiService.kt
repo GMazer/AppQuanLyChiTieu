@@ -17,7 +17,7 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 object BaseURL {
-    val baseUrl = "https://f550-42-114-32-250.ngrok-free.app"
+    val baseUrl = "https://7a76-14-191-147-152.ngrok-free.app"
 }
 
 
@@ -82,18 +82,32 @@ data class ApiResponse(
     val message: String
 )
 
-data class ReportResponse(
+data class ReportExpenseResponse(
     val totalIncome: Long,
     val totalExpense: Long,
     val netAmount: Long,
-    val categoryReports: List<CategoryReport>
+    val categoryExpenseReports: List<CategoryExpenseReport>
 ){
-    data class CategoryReport(
+    data class CategoryExpenseReport(
         val categoryId: Int,
         val categoryName: String,
         val spentAmount: Long,
         val percentSpent: Double,
         val percentLimit: Double
+    )
+}
+
+data class ReportIncomeResponse(
+    val totalIncome: Long,
+    val totalExpense: Long,
+    val netAmount: Long,
+    val categoryIncomeReports: List<CategoryIncomeReport>
+){
+    data class CategoryIncomeReport(
+        val categoryId: Int,
+        val categoryName: String,
+        val categoryIncome: Long,
+        val percentIncome: Double
     )
 }
 
@@ -211,12 +225,19 @@ interface ApiService {
         @Path("transactionId") transactionId: Int,  // Tham số này sẽ thay thế {transactionId} trong URL
     ): Response<TransactionResponse>
 
-    @GET("/api/report/monthly")
-    suspend fun getReport(
+    @GET("/api/report/monthly_expense")
+    suspend fun getReportExpense(
         @Header("Authorization") token: String,
         @Query("month") month: Int,
         @Query("year") year: Int
-    ): Response<ReportResponse>
+    ): Response<ReportExpenseResponse>
+
+    @GET("/api/report/monthly_income")
+    suspend fun getReportIncome(
+        @Header("Authorization") token: String,
+        @Query("month") month: Int,
+        @Query("year") year: Int
+    ): Response<ReportIncomeResponse>
 
     @GET("/api/transactions/search")
     suspend fun findTransactions(

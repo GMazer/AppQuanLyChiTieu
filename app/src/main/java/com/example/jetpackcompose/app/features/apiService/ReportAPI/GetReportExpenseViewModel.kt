@@ -6,13 +6,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.jetpackcompose.app.network.ApiService
 import com.example.jetpackcompose.app.network.BaseURL
-import com.example.jetpackcompose.app.network.ReportResponse
+import com.example.jetpackcompose.app.network.ReportExpenseResponse
 import com.google.gson.GsonBuilder
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class GetReportViewModel(private val context: Context) : ViewModel() {
+class GetReportExpenseViewModel(private val context: Context) : ViewModel() {
 
     private val sharedPreferences = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
 
@@ -26,7 +26,7 @@ class GetReportViewModel(private val context: Context) : ViewModel() {
         .build()
         .create(ApiService::class.java)
 
-    var reportData: ReportResponse? = null
+    var reportData: ReportExpenseResponse? = null
         private set
 
     var reportStatus: String = ""
@@ -38,10 +38,10 @@ class GetReportViewModel(private val context: Context) : ViewModel() {
     }
 
     // Hàm lấy báo cáo
-    fun getReport(
+    fun getExpenseReport(
         month: Int,
         year: Int,
-        onSuccess: (ReportResponse) -> Unit,
+        onSuccess: (ReportExpenseResponse) -> Unit,
         onError: (String) -> Unit
     ) {
         val token = getToken()
@@ -56,7 +56,7 @@ class GetReportViewModel(private val context: Context) : ViewModel() {
             try {
                 Log.d("GetReportViewModel", "Token: $token")
 
-                val response = api.getReport("Bearer $token", month, year)
+                val response = api.getReportExpense("Bearer $token", month, year)
                 Log.d("GetReportViewModel", "Response Code: ${response.code()}")
                 Log.d("GetReportViewModel", "Response Code: ${response.body()}")
                 Log.d("GetReportViewModel", "Response Error Body: ${response.errorBody()?.string()}")

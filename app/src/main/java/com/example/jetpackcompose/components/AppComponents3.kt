@@ -5,7 +5,6 @@ import android.app.DatePickerDialog
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -1305,7 +1304,7 @@ fun CustomTabRow(
 
         // Hiển thị PopUpSetValueDialog khi isDialogOpen là true
         if (isDialogOpen) {
-            PopUpSetValueDialog(
+            PopupSetBudgetDialog(
                 onDismiss = { isDialogOpen = false },
                 onConfirm = { newLimitTransaction ->
                     onLimitTransactionUpdated(newLimitTransaction)
