@@ -1,6 +1,5 @@
 package com.example.jetpackcompose.app.screens
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -39,12 +38,9 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import com.example.jetpackcompose.R
 import com.example.jetpackcompose.app.features.apiService.TransactionAPI.GetTransactionViewModel
 import com.example.jetpackcompose.app.network.TransactionResponse
 import com.example.jetpackcompose.components.CustomCalendar
@@ -53,7 +49,7 @@ import com.example.jetpackcompose.components.MessagePopup
 import com.example.jetpackcompose.components.MonthPickerButton
 import com.example.jetpackcompose.components.montserrat
 import com.example.jetpackcompose.ui.theme.textColor
-import com.example.jetpackcompose.ui.theme.colorPrimary
+import com.example.jetpackcompose.ui.theme.primaryColor
 import com.example.jetpackcompose.ui.theme.highGray
 import com.example.jetpackcompose.ui.theme.topBarColor
 import java.text.DecimalFormat
@@ -94,6 +90,7 @@ fun CalendarScreen(navController: NavController) {
     var errorMessage by remember { mutableStateOf("") }
     var successMessage by remember { mutableStateOf("") }
     var showPopup by remember { mutableStateOf(false) }
+    val monthYear = selectedMonthYear.substring(0, 6)
 
     MessagePopup(
         showPopup = showPopup,
@@ -106,7 +103,7 @@ fun CalendarScreen(navController: NavController) {
     LaunchedEffect(selectedMonthYear) {
         successMessage = "Đang tải dữ liệu..."
         showPopup = true
-        val (month, year) = selectedMonthYear.split("/").map { it.toInt() }
+        val (month, year) = monthYear.split("/").map { it.toInt() }
         selectedDate = ""
         viewModel.getTransactions(
             month = month,
@@ -151,7 +148,7 @@ fun CalendarScreen(navController: NavController) {
             if (totalBalance >= 0) {
                 "+${currencyFormatter.format(totalBalance)}"
             } else {
-                "${currencyFormatter.format(totalBalance)}"
+                currencyFormatter.format(totalBalance)
             }
         )
         withStyle(style = SpanStyle(fontSize = 12.sp)) {  // Kích thước nhỏ hơn cho ký tự "₫"
@@ -160,14 +157,14 @@ fun CalendarScreen(navController: NavController) {
     }
 
     val formattedTotalExpense = buildAnnotatedString {
-        append("${currencyFormatter.format(totalExpense)}")
+        append(currencyFormatter.format(totalExpense))
         withStyle(style = SpanStyle(fontSize = 12.sp)) {  // Kích thước nhỏ hơn cho ký tự "₫"
             append("₫")
         }
     }
 
     val formattedTotalIncome = buildAnnotatedString {
-        append("${currencyFormatter.format(totalIncome)}")
+        append(currencyFormatter.format(totalIncome))
         withStyle(style = SpanStyle(fontSize = 12.sp)) {  // Kích thước nhỏ hơn cho ký tự "₫"
             append("₫")
         }
@@ -254,7 +251,7 @@ fun CalendarScreen(navController: NavController) {
                 Spacer(modifier = Modifier.height(16.dp))
 
                 CustomCalendar(
-                    selectedMonthYear = selectedMonthYear,
+                    selectedMonthYear = monthYear,
                     transactionList,
                     onDateSelected = { dateSelected ->
                         selectedDate = dateSelected
@@ -308,7 +305,7 @@ fun CalendarScreen(navController: NavController) {
                                 fontSize = 16.sp,
                                 fontFamily = montserrat,
                             ),
-                            color = colorPrimary,
+                            color = primaryColor,
                             textAlign = TextAlign.Center,
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -334,7 +331,7 @@ fun CalendarScreen(navController: NavController) {
                                 fontFamily = montserrat,
                                 fontSize = 16.sp,
                             ),
-                            color = if (totalBalance >= 0) Color(0xff37c8ec) else colorPrimary,
+                            color = if (totalBalance >= 0) Color(0xff37c8ec) else primaryColor,
                             textAlign = TextAlign.Center,
                             modifier = Modifier
                                 .fillMaxWidth()

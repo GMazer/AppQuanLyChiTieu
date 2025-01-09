@@ -46,7 +46,7 @@ import com.example.jetpackcompose.app.screens.login_signup.forgot_password.Forgo
 import com.example.jetpackcompose.app.screens.login_signup.forgot_password.OTPContent
 import com.example.jetpackcompose.app.screens.login_signup.forgot_password.SetPasswordContent
 import com.example.jetpackcompose.app.screens.montserrat
-import com.example.jetpackcompose.ui.theme.colorPrimary
+import com.example.jetpackcompose.ui.theme.primaryColor
 import com.example.jetpackcompose.ui.theme.textColor
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -117,7 +117,7 @@ fun AppQuanLyChiTieu(transactionStorage: TransactionStorage) {
                     Text(
                         "OK",
                         fontFamily = montserrat,
-                        color = colorPrimary
+                        color = primaryColor
                     )
                 }
             },

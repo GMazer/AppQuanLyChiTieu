@@ -2,6 +2,7 @@ package com.example.jetpackcompose.navigation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -33,7 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.jetpackcompose.R
 import com.example.jetpackcompose.components.montserrat
-import com.example.jetpackcompose.ui.theme.colorPrimary
+import com.example.jetpackcompose.ui.theme.primaryColor
 import com.example.jetpackcompose.ui.theme.textColor
 import com.example.jetpackcompose.ui.theme.topBarColor
 import kotlinx.coroutines.CoroutineScope
@@ -42,7 +44,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun CustomBottomAppBar(pagerState: PagerState, coroutineScope: CoroutineScope) {
     var selectedPage by rememberSaveable { mutableStateOf(0) }
-
 
     Box(
         modifier = Modifier
@@ -58,10 +59,10 @@ fun CustomBottomAppBar(pagerState: PagerState, coroutineScope: CoroutineScope) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            // Các mục
+            // Báo cáo
             BottomBarItem(
-                title = "Nhập vào",
-                iconRes = R.drawable.edit,
+                title = "Báo cáo",
+                iconRes = R.drawable.chart,
                 isSelected = selectedPage == 0,
                 onClick = {
                     selectedPage = 0
@@ -69,6 +70,7 @@ fun CustomBottomAppBar(pagerState: PagerState, coroutineScope: CoroutineScope) {
                 }
             )
 
+            // Lịch
             BottomBarItem(
                 title = "Lịch",
                 iconRes = R.drawable.outline_calendar_month_24,
@@ -79,19 +81,40 @@ fun CustomBottomAppBar(pagerState: PagerState, coroutineScope: CoroutineScope) {
                 }
             )
 
+            // Dấu "+" trong hình tròn
+            Box(
+                modifier = Modifier
+                    .size(50.dp)
+                    .background(primaryColor, shape = CircleShape)
+                    .clickable {
+                        selectedPage = 2
+                        coroutineScope.launch { pagerState.scrollToPage(2) }
+                    },
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.baseline_add_24),
+                    contentDescription = "Nhập vào",
+                    tint = Color.White,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+
+            // Ngân sách
             BottomBarItem(
-                title = "Báo cáo",
-                iconRes = R.drawable.chart,
-                isSelected = selectedPage == 2,
+                title = "Ngân sách",
+                iconRes = R.drawable.budget,
+                isSelected = selectedPage == 4,
                 onClick = {
-                    selectedPage = 2
-                    coroutineScope.launch { pagerState.scrollToPage(2) }
+                    selectedPage = 4
+                    coroutineScope.launch { pagerState.scrollToPage(4) }
                 }
             )
 
+            // Khác
             BottomBarItem(
                 title = "Khác",
-                iconRes = R.drawable.baseline_more_horiz_24, // Giả sử bạn có icon cho mục "Khác"
+                iconRes = R.drawable.baseline_more_horiz_24,
                 isSelected = selectedPage == 3,
                 onClick = {
                     selectedPage = 3
@@ -109,35 +132,39 @@ fun BottomBarItem(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-
-
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center // Đảm bảo các thành phần căn chỉnh đều ở giữa
+        verticalArrangement = Arrangement.Center
     ) {
         IconButton(
             onClick = onClick,
             colors = IconButtonDefaults.iconButtonColors(contentColor = Color.Transparent),
-            modifier = Modifier.padding(0.dp)
-                .size(30.dp)// Giảm khoảng cách giữa icon và text
+            modifier = Modifier.size(40.dp)
         ) {
             Icon(
                 painter = painterResource(id = iconRes),
                 contentDescription = title,
-                tint = if (isSelected) colorPrimary else textColor,
+                tint = if (isSelected) primaryColor else textColor,
                 modifier = Modifier.size(20.dp)
-                        .padding(0.dp)
             )
         }
-        // Nothing
         Text(
             text = title,
-            color = if (isSelected) colorPrimary else textColor,
+            color = if (isSelected) primaryColor else textColor,
             fontFamily = montserrat,
-            fontSize = 8.sp,
-            modifier = Modifier.padding(top = 0.dp) // Giảm khoảng cách giữa text và icon
+            fontSize = 8.sp
         )
     }
+}
+
+@Preview
+@Composable
+fun CustomBottomAppBarPreview() {
+    val pagerState = rememberPagerState(
+        pageCount = { 5 }
+    )
+    val coroutineScope = rememberCoroutineScope()
+    CustomBottomAppBar(pagerState, coroutineScope)
 }
 
 

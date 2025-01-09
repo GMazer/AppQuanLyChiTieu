@@ -11,6 +11,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,6 +24,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -30,6 +32,7 @@ import androidx.compose.material.AlertDialog
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -43,6 +46,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -71,7 +75,7 @@ import com.example.jetpackcompose.R
 import com.example.jetpackcompose.app.screens.Category
 import com.example.jetpackcompose.app.screens.LimitTransaction
 import com.example.jetpackcompose.app.network.TransactionResponse
-import com.example.jetpackcompose.ui.theme.colorPrimary
+import com.example.jetpackcompose.ui.theme.primaryColor
 import com.example.jetpackcompose.ui.theme.componentShapes
 import com.example.jetpackcompose.ui.theme.errorColor
 import com.example.jetpackcompose.ui.theme.highGray
@@ -131,7 +135,7 @@ fun FixedTabRow(
                 titles.forEachIndexed { index, title ->
                     val isSelected = tabIndex == index
                     val tabColor by animateColorAsState(
-                        if (isSelected) colorPrimary else inactiveColor,
+                        if (isSelected) primaryColor else inactiveColor,
                         animationSpec = tween(500), label = ""
                     )
                     val textColor by animateColorAsState(
@@ -205,7 +209,7 @@ fun ClickableText(
     Text(
         text = text,
         fontFamily = montserrat,
-        color = colorPrimary,
+        color = primaryColor,
         fontSize = 12.sp,
         textAlign = TextAlign.Start,
         fontWeight = FontWeight.Normal,
@@ -525,7 +529,7 @@ fun RowTextField(
             colors = androidx.compose.material3.TextFieldDefaults.outlinedTextFieldColors(
                 unfocusedBorderColor = Color.Transparent,
                 focusedBorderColor = Color.Transparent,
-                cursorColor = colorPrimary
+                cursorColor = primaryColor
             ),
             placeholder = {
                 Text(
@@ -597,7 +601,7 @@ fun DropdownRow(
 
         // Icon mũi tên
         Icon(
-            imageVector = Icons.Default.KeyboardArrowRight,
+            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
             contentDescription = null,
             tint = Color.Gray,
             modifier = Modifier.size(24.dp)
@@ -711,7 +715,7 @@ fun <T : Enum<T>> DropdownRepeat(
             onDismissRequest = { showDialog = false },
             title = {
                 Text(
-                    text = "Chọn ${label.toLowerCase(Locale.ROOT)}",
+                    text = "Chọn ${label.lowercase(Locale.ROOT)}",
                     fontFamily = montserrat,
                     fontWeight = FontWeight.Bold
                 )
@@ -876,7 +880,7 @@ fun RowNumberField(
             colors = androidx.compose.material3.TextFieldDefaults.outlinedTextFieldColors(
                 unfocusedBorderColor = Color.Transparent,
                 focusedBorderColor = Color.Transparent,
-                cursorColor = colorPrimary
+                cursorColor = primaryColor
             ),
             placeholder = {
                 Text(
@@ -907,7 +911,6 @@ fun RowNumberField(
 
 
 @RequiresApi(Build.VERSION_CODES.O)
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EndDateRow(
     label: String = "Kết thúc",
@@ -955,7 +958,7 @@ fun EndDateRow(
 
         // Icon mũi tên
         Icon(
-            imageVector = Icons.Default.KeyboardArrowRight,
+            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
             contentDescription = null,
             tint = Color.Gray,
             modifier = Modifier.size(24.dp)
@@ -968,7 +971,7 @@ fun EndDateRow(
             onDismissRequest = { showDialog = false },
             title = {
                 Text(
-                    text = "Chọn ${label.toLowerCase()}",
+                    text = "Chọn ${label.lowercase(Locale.ROOT)}",
                     fontFamily = montserrat,
                     fontWeight = FontWeight.Bold
                 )
@@ -1100,18 +1103,6 @@ fun MessagePopup(
     }
 }
 
-@Preview
-@Composable
-fun PreviewMessagePopup() {
-    MessagePopup(
-        showPopup = true,
-        successMessage = "Gửi giao dịch thành công!",
-        errorMessage = "",
-        onDismiss = {}
-    )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DatePickerButton(onDateSelected: (String) -> Unit) {
     var dateText by remember { mutableStateOf("") }
@@ -1137,19 +1128,22 @@ fun DatePickerButton(onDateSelected: (String) -> Unit) {
             },
             modifier = Modifier
                 .weight(1f)
-                .size(20.dp)
+                .size(14.dp)
         ) {
             androidx.compose.material3.Icon(
                 painter = painterResource(id = R.drawable.outline_arrow_back_ios_24),
                 contentDescription = "Lùi lịch",
-                tint = Color(0xFF444444)
+                tint = Color(0xFF444444),
             )
         }
 
         // Nút chọn ngày
         Button(
-            modifier = Modifier.weight(8f),
-            shape = componentShapes.medium,
+            modifier = Modifier
+                .height(30.dp)
+                .weight(8f),
+            contentPadding = PaddingValues(horizontal = 8.dp),
+                    shape = componentShapes.small,
             onClick = {
                 val datePickerDialog = DatePickerDialog(
                     context,
@@ -1166,12 +1160,12 @@ fun DatePickerButton(onDateSelected: (String) -> Unit) {
                 )
                 datePickerDialog.show()
             },
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFe1e1e1))
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFe7e7e7))
         ) {
             Text(
                 dateText,
                 color = Color(0xFF444444),
-                fontWeight = FontWeight.Bold,
+                fontWeight = FontWeight.SemiBold,
                 fontSize = 16.sp
             )
         }
@@ -1185,7 +1179,7 @@ fun DatePickerButton(onDateSelected: (String) -> Unit) {
             },
             modifier = Modifier
                 .weight(1f)
-                .size(20.dp)
+                .size(14.dp)
         ) {
             androidx.compose.material3.Icon(
                 painter = painterResource(id = R.drawable.outline_arrow_forward_ios_24),
@@ -1205,12 +1199,10 @@ fun CustomTabRow(
     titles: List<String>,
     pagerStatement: PagerState,
     coroutineScoper: CoroutineScope,
-    onLimitTransactionUpdated: (LimitTransaction) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var isDialogOpen by remember { mutableStateOf(false) }
     val inactiveColor = Color(0xFFe1e1e1)  // Màu cho tab không chọn
-    val inactiveTextColor = Color(0xFFF35E17)  // Màu văn bản cho tab không chọn
+    val inactiveTextColor = primaryColor  // Màu văn bản cho tab không chọn
 
     Column {
         Row(
@@ -1221,7 +1213,7 @@ fun CustomTabRow(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween // Đẩy các phần tử ra hai đầu
         ) {
-            // Nút ảo
+            // Nút ảo (nếu cần không hiển thị gì, bạn có thể bỏ phần này)
             IconButton(
                 onClick = {},
                 enabled = false // Đặt enabled = false để không thể nhấn được
@@ -1241,7 +1233,7 @@ fun CustomTabRow(
                 titles.forEachIndexed { index, title ->
                     val isSelected = tabIndex == index
                     val tabColor by animateColorAsState(
-                        if (isSelected) colorPrimary else inactiveColor,
+                        if (isSelected) primaryColor else inactiveColor,
                         animationSpec = tween(500)
                     )
                     val textColor by animateColorAsState(
@@ -1255,7 +1247,7 @@ fun CustomTabRow(
                     }
                     Box(
                         modifier = Modifier
-                            .width(200.dp)
+                            .width(100.dp)
                             .height(36.dp)
                             .background(topBarColor)
                             .background(inactiveColor, shape = shape)
@@ -1264,7 +1256,7 @@ fun CustomTabRow(
                     ) {
                         Tab(
                             modifier = if (isSelected) Modifier
-                                .width(100.dp)
+                                .width(150.dp)
                                 .height(32.dp)
                                 .padding(horizontal = 2.dp)
                                 .background(tabColor, shape = componentShapes.medium)
@@ -1281,8 +1273,8 @@ fun CustomTabRow(
                                 Text(
                                     title,
                                     color = textColor,
-                                    fontSize = 10.sp,
-                                    fontWeight = FontWeight.Normal,
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.SemiBold,
                                     modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp)
                                 )
                             }
@@ -1291,34 +1283,30 @@ fun CustomTabRow(
                 }
             }
 
+            // Nút ảo ở bên phải để giữ bố cục cân bằng (nếu cần)
             IconButton(
-                onClick = { isDialogOpen = true }
+                onClick = {},
+                enabled = false // Đặt enabled = false để không thể nhấn được
             ) {
-                androidx.compose.material3.Icon(
-                    painter = painterResource(id = R.drawable.budget), // Icon mặc định, bạn có thể thay đổi thành icon khác
-                    contentDescription = "Mở Pop-up Form",
-                    tint = colorPrimary
-                )
+                // Không thêm Icon hoặc Text nào
             }
         }
 
-        // Hiển thị PopUpSetValueDialog khi isDialogOpen là true
-        if (isDialogOpen) {
-            PopupSetBudgetDialog(
-                onDismiss = { isDialogOpen = false },
-                onConfirm = { newLimitTransaction ->
-                    onLimitTransactionUpdated(newLimitTransaction)
-                    isDialogOpen = false // Đóng dialog sau khi nhận giá trị
-                }
-            )
-        }
+        Divider(
+            color = Color.LightGray,
+            thickness = 1.dp
+        )
     }
-
-    Divider(
-        color = Color.LightGray,
-        thickness = 1.dp
-    )
 }
+
+
+@Preview
+@Composable
+fun PreviewDatePickerButton() {
+    DatePickerButton(onDateSelected = {})
+}
+
+
 
 
 

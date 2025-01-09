@@ -50,7 +50,7 @@ import com.example.jetpackcompose.components.MessagePopup
 import com.example.jetpackcompose.components.MonthPickerButton
 import com.example.jetpackcompose.components.ReportTable
 import com.example.jetpackcompose.components.montserrat
-import com.example.jetpackcompose.ui.theme.colorPrimary
+import com.example.jetpackcompose.ui.theme.primaryColor
 import com.example.jetpackcompose.ui.theme.textColor
 import com.example.jetpackcompose.ui.theme.topBarColor
 import java.util.Calendar
@@ -82,7 +82,6 @@ fun ReportScreen() {
     var percentSpent by remember { mutableStateOf(listOf<Float>()) }
     var percentIncome by remember { mutableStateOf(listOf<Float>()) }
     var percentLimit by remember { mutableStateOf(listOf<Int>()) }
-    var percentZero by remember { mutableStateOf(listOf<Int>(0, 0, 0, 0)) }
     var expense by remember { mutableStateOf(listOf<String>()) }
     var income by remember { mutableStateOf(listOf<String>()) }
     var colorExpense by remember { mutableStateOf(listOf<Color>()) }
@@ -114,8 +113,9 @@ fun ReportScreen() {
 
         successMessage = "Đang tải dữ liệu..."
         showPopup = true
-
-        val (month, year) = selectedMonthYear.split("/").map { it.toInt() }.let { it[0] to it[1] }
+        val monthYear = selectedMonthYear.substring(0, 6)
+        Log.d("MainActivity", "Selected month year: $monthYear")
+        val (month, year) = monthYear.split("/").map { it.toInt() }.let { it[0] to it[1] }
 
         reportExpenseViewModel.getExpenseReport(
             month = month,
@@ -224,7 +224,7 @@ fun ReportScreen() {
             modifier = Modifier
                 .padding(paddingValues)
                 .fillMaxSize()
-                .background(Color(0xFFF5F5F5))
+                .background(Color.White)
         ) {
             item {
                 // Phần header
@@ -233,7 +233,7 @@ fun ReportScreen() {
                         .background(color = Color.White)
                 ) {
                     // Spacer giữa TopAppBar và biểu đồ
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
                     MonthPickerButton(onDateSelected = { month ->
                         selectedMonthYear = month
@@ -244,27 +244,29 @@ fun ReportScreen() {
                 }
             }
 
-            item {
-                Spacer(modifier = Modifier.height(24.dp))
-            }
+//            item {
+//                Spacer(modifier = Modifier.height(24.dp))
+//            }
 
             item {
                 ReportTable(totalIncome, totalExpense, netAmount)
             }
 
-            item {
-                Spacer(modifier = Modifier.height(24.dp))
-            }
+//            item {
+//                Spacer(modifier = Modifier.height(24.dp))
+//            }
             item {
                 // Tabs
                 val tabs = listOf("Chi tiêu", "Thu nhập")
                 ScrollableTabRow(
                     selectedTabIndex = selectedTabIndex,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .background(color = Color.White)
+                        .fillMaxWidth(),
                     indicator = { tabPositions ->
                         TabRowDefaults.Indicator(
                             Modifier.tabIndicatorOffset(tabPositions[selectedTabIndex]),
-                            color = colorPrimary
+                            color = primaryColor
                         )
                     }
                 ) {
@@ -284,7 +286,7 @@ fun ReportScreen() {
                                         fontFamily = montserrat,
                                         fontWeight = FontWeight.SemiBold,
                                         fontSize = 14.sp,
-                                        color = if (selectedTabIndex == index) colorPrimary else textColor,
+                                        color = if (selectedTabIndex == index) primaryColor else textColor,
                                         textAlign = TextAlign.Center
                                     )
                                 }

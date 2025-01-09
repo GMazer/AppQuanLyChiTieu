@@ -42,8 +42,6 @@ import com.example.jetpackcompose.components.MyTextFieldComponent
 import com.example.jetpackcompose.components.NormalTextComponent
 import com.example.jetpackcompose.components.PasswordTextFieldComponent
 import com.example.jetpackcompose.components.montserrat
-import com.example.jetpackcompose.ui.theme.colorPrimary
-import com.example.jetpackcompose.ui.theme.textColor
 
 @Composable
 fun SignInScreen(navController: NavHostController) {

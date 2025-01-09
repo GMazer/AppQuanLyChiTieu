@@ -54,7 +54,7 @@ import com.example.jetpackcompose.app.features.apiService.FixedTransactionAPI.Ge
 import com.example.jetpackcompose.app.screens.Category
 import com.example.jetpackcompose.components.MessagePopup
 import com.example.jetpackcompose.components.montserrat
-import com.example.jetpackcompose.ui.theme.colorPrimary
+import com.example.jetpackcompose.ui.theme.primaryColor
 import com.example.jetpackcompose.ui.theme.componentShapes
 import com.example.jetpackcompose.ui.theme.textColor
 import java.text.DecimalFormat
@@ -120,7 +120,7 @@ fun AnualScreen(navController: NavHostController) {
                     Icon(
                         painter = painterResource(id = R.drawable.outline_arrow_back_ios_24),
                         contentDescription = "Back",
-                        tint = colorPrimary,
+                        tint = primaryColor,
                         modifier = Modifier
                             .size(24.dp)
                     )
@@ -149,7 +149,7 @@ fun AnualScreen(navController: NavHostController) {
                     fontSize = 12.sp,
                     fontFamily = montserrat,
                     fontWeight = FontWeight.Normal,
-                    color = colorPrimary,
+                    color = primaryColor,
                     modifier = Modifier
                         .clickable(onClick = {
                             isEditing = !isEditing
@@ -165,7 +165,7 @@ fun AnualScreen(navController: NavHostController) {
                     Icon(
                         imageVector = Icons.Default.Add,
                         contentDescription = "Add",
-                        tint = colorPrimary,
+                        tint = primaryColor,
                         modifier = Modifier
                             .size(24.dp)
                     )
@@ -468,7 +468,7 @@ fun FixedTransactionRow(
                         Text(
                             "Xoá",
                             fontFamily = montserrat,
-                            color = colorPrimary,
+                            color = primaryColor,
                         )
                     }
                 } else {

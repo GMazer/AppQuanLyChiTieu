@@ -17,7 +17,7 @@ import com.example.jetpackcompose.navigation.CustomBottomAppBar
 @Composable
 fun MainScreen(navController: NavHostController) {
     val pagerState = rememberPagerState(
-        pageCount = { 4 }
+        pageCount = { 5 }
     )
     val coroutineScope = rememberCoroutineScope()
 
@@ -37,13 +37,12 @@ fun MainScreen(navController: NavHostController) {
             reverseLayout = false
         ) { page ->
             when (page) {
-                0 -> InputScreen(navController)
+                0 -> ReportScreen()
                 1 -> CalendarScreen(navController)
-                2 -> ReportScreen()
+                2 -> InputScreen(navController)
                 3 -> OtherScreen(navController)
+                4 -> BudgetScreen()
             }
         }
-
-
     }
 }

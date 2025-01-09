@@ -47,7 +47,7 @@ import com.example.jetpackcompose.app.network.ResetPassword
 import com.example.jetpackcompose.components.MessagePopup
 import com.example.jetpackcompose.components.MyButtonComponent
 import com.example.jetpackcompose.components.montserrat
-import com.example.jetpackcompose.ui.theme.colorPrimary
+import com.example.jetpackcompose.ui.theme.primaryColor
 import com.example.jetpackcompose.ui.theme.textColor
 
 @Composable
@@ -151,7 +151,7 @@ fun SetPasswordContent(navController: NavHostController, email: String) {
                     .fillMaxWidth()
                     .border(
                         1.dp,
-                        if (isPasswordFocused) colorPrimary else Color.LightGray,
+                        if (isPasswordFocused) primaryColor else Color.LightGray,
                         RoundedCornerShape(8.dp)
                     )
                     .background(Color.Transparent)
@@ -164,7 +164,7 @@ fun SetPasswordContent(navController: NavHostController, email: String) {
                     backgroundColor = Color.Transparent,
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
-                    cursorColor = colorPrimary
+                    cursorColor = primaryColor
                 ),
                 keyboardOptions = KeyboardOptions.Default.copy(
                     imeAction = ImeAction.Done
@@ -209,7 +209,7 @@ fun SetPasswordContent(navController: NavHostController, email: String) {
                     .fillMaxWidth()
                     .border(
                         1.dp,
-                        if (isConfirmPasswordFocused) colorPrimary else Color.LightGray,
+                        if (isConfirmPasswordFocused) primaryColor else Color.LightGray,
                         RoundedCornerShape(8.dp)
                     )
                     .background(Color.Transparent)
@@ -222,7 +222,7 @@ fun SetPasswordContent(navController: NavHostController, email: String) {
                     backgroundColor = Color.Transparent,
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
-                    cursorColor = colorPrimary
+                    cursorColor = primaryColor
                 ),
                 keyboardOptions = KeyboardOptions.Default.copy(
                     imeAction = ImeAction.Done

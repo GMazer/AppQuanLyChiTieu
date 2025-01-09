@@ -51,7 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.example.jetpackcompose.ui.theme.textColor
-import com.example.jetpackcompose.ui.theme.colorPrimary
+import com.example.jetpackcompose.ui.theme.primaryColor
 import java.util.Calendar
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -65,6 +65,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
@@ -72,10 +73,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntSize
 import com.example.jetpackcompose.app.features.apiService.TransactionAPI.GetBudgetCategoryViewModel
 import com.example.jetpackcompose.app.screens.LimitTransaction
 import com.example.jetpackcompose.app.screens.montserrat
+import com.example.jetpackcompose.ui.theme.componentShapes
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.Locale
@@ -441,7 +444,7 @@ fun MonthPickerDialog(
                                 color = if (isSelected) Color.White else textColor,
                                 modifier = Modifier
                                     .background(
-                                        color = if (isSelected) colorPrimary else Color.Transparent,
+                                        color = if (isSelected) primaryColor else Color.Transparent,
                                         shape = CircleShape
                                     )
                                     .padding(8.dp)
@@ -468,7 +471,7 @@ fun MonthPickerDialog(
                         onMonthYearSelected(selectedMonth.value, selectedYear.value)
                         onDismiss()
                     }) {
-                        Text(text = "Ok", fontFamily = montserrat, color = colorPrimary)
+                        Text(text = "Ok", fontFamily = montserrat, color = primaryColor)
                     }
                 }
             }
@@ -531,7 +534,7 @@ fun YearPickerDialog(
                                 fontSize = 18.sp,
                                 fontFamily = montserrat,
                                 fontWeight = if (year == selectedYear) FontWeight.Bold else FontWeight.Normal,
-                                color = if (year == selectedYear) colorPrimary else textColor,
+                                color = if (year == selectedYear) primaryColor else textColor,
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(8.dp)
@@ -556,7 +559,7 @@ fun YearPickerDialog(
                         onYearSelected(selectedYear)
                         onDismiss()
                     }) {
-                        Text(text = "Ok", fontFamily = montserrat, color = colorPrimary)
+                        Text(text = "Ok", fontFamily = montserrat, color = primaryColor)
                     }
                 }
             }
@@ -643,7 +646,7 @@ fun PopupSetBudgetDialog(
                         Text(
                             text = "Phân bổ ngân sách",
                             fontFamily = montserrat,
-                            color = colorPrimary,
+                            color = primaryColor,
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
                             textAlign = TextAlign.Center,
@@ -727,7 +730,7 @@ fun PopupSetBudgetDialog(
                                 onConfirm(LimitTransaction(categoryLimits))
                                 onDismiss()
                             }) {
-                                Text(text = "OK", fontFamily = montserrat, color = colorPrimary)
+                                Text(text = "OK", fontFamily = montserrat, color = primaryColor)
                             }
                         }
                     }
@@ -770,15 +773,15 @@ fun BudgetTextField(
             .onFocusChanged { focusState ->
                 isFocused = focusState.isFocused
             }
-            .height(45.dp)
+            .height(30.dp)
             .fillMaxWidth()
-            .background(Color(0xFFe1e1e1), shape = RoundedCornerShape(8.dp))
+            .background(Color(0xFFe7e7e7), componentShapes.small)
             .border(
                 1.dp,
-                if (isFocused) colorPrimary else Color.Transparent,
-                RoundedCornerShape(8.dp)
+                if (isFocused) primaryColor else Color.Transparent,
+                componentShapes.small
             )
-            .padding(horizontal = 16.dp),
+            .padding(horizontal = 8.dp),
         textStyle = TextStyle(
             textAlign = TextAlign.Start,
             fontSize = 20.sp,
@@ -800,13 +803,14 @@ fun BudgetTextField(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 10.dp)
+                    .padding(vertical = 4.dp),
+                contentAlignment = Alignment.CenterStart
             ) {
                 if (amountState.isEmpty()) {
                     Text(
                         text = if (isFocused) "" else "0",
                         color = textColor,
-                        fontWeight = FontWeight.Bold,
+                        fontWeight = FontWeight.SemiBold,
                         fontFamily = montserrat,
                         fontSize = 20.sp,
                         style = LocalTextStyle.current
@@ -859,7 +863,7 @@ fun OtherFunction(
                     Icon(
                         painter = painters[index], // Sử dụng painter tương ứng với index
                         contentDescription = "Icon",
-                        tint = colorPrimary,
+                        tint = primaryColor,
                         modifier = Modifier.size(24.dp)
                     )
                     Spacer(modifier = Modifier.width(16.dp))
@@ -883,11 +887,6 @@ fun OtherFunction(
         }
     }
 }
-
-
-
-
-
 
 @Composable
 fun ReportTable(income: Long, expense: Long, net: Long) {
@@ -933,7 +932,14 @@ fun ReportTable(income: Long, expense: Long, net: Long) {
             .padding(horizontal = 20.dp)
             .clip(RoundedCornerShape(16.dp))
             .height(120.dp)
-            .background(Color.White),
+            .background(
+                Brush.linearGradient(
+                    colors = listOf(Color(0xFFA8E063), Color(0xFF4EB644)), // Đậm đến nhạt
+                    start = Offset(0f, 0f),
+                    end = Offset(1000f, 0f) // Hướng gradient ngang
+                )
+
+            ),
     ) {
         Column(
             modifier = Modifier
@@ -957,7 +963,7 @@ fun ReportTable(income: Long, expense: Long, net: Long) {
                     Text(
                         text = "Thu nhập",
                         fontFamily = montserrat,
-                        color = textColor,
+                        color = Color.White,
                         fontWeight = FontWeight.Bold,
                         fontSize = 16.sp,
                     )
@@ -965,7 +971,7 @@ fun ReportTable(income: Long, expense: Long, net: Long) {
                     Text(
                         text = formattedIncome,
                         fontFamily = montserrat,
-                        color = Color(0xff1d9fca),
+                        color = Color(0xff5B86E5),
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 14.sp
                     )
@@ -976,7 +982,7 @@ fun ReportTable(income: Long, expense: Long, net: Long) {
                     modifier = Modifier
                         .height(40.dp)
                         .width(1.dp) // Chiều rộng của divider
-                        .background(Color.LightGray) // Màu của divider
+                        .background(Color.White) // Màu của divider
                 )
 
                 // Tổng chi tiêu
@@ -990,7 +996,7 @@ fun ReportTable(income: Long, expense: Long, net: Long) {
                     Text(
                         text = "Chi tiêu",
                         fontFamily = montserrat,
-                        color = textColor,
+                        color = Color.White,
                         fontWeight = FontWeight.Bold,
                         fontSize = 14.sp
                     )
@@ -998,14 +1004,16 @@ fun ReportTable(income: Long, expense: Long, net: Long) {
                     Text(
                         text = formattedExpense,
                         fontFamily = montserrat,
-                        color = Color(0xffff6561),
+                        color = Color(0xffFF7F50),
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 16.sp
                     )
                 }
             }
 
-            Divider(Modifier.fillMaxWidth(0.8f))
+            Divider(Modifier
+                .background(Color.White)
+                .fillMaxWidth(0.8f))
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,  // Căn giữa theo chiều dọc
@@ -1017,14 +1025,14 @@ fun ReportTable(income: Long, expense: Long, net: Long) {
                 Text(
                     text = "Số dư",
                     fontFamily = montserrat,
-                    color = textColor,
+                    color = Color.White,
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp,
                 )
                 Text(
                     text = formattedBalance,
                     fontFamily = montserrat,
-                    color = textColor,
+                    color = Color.White,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 16.sp,
                 )
@@ -1032,5 +1040,18 @@ fun ReportTable(income: Long, expense: Long, net: Long) {
 
         }
     }
+}
+
+@Preview
+@Composable
+fun BudgetTextField() {
+    var amountState by remember { mutableStateOf("0") }
+    BudgetTextField(
+        amountState = amountState,
+        onValueChange = { amountState = it },
+        modifier = Modifier.fillMaxWidth(),
+        enabled = true,
+        colorPercent = Color.Black
+    )
 }
 

@@ -17,7 +17,7 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 object BaseURL {
-    val baseUrl = "https://7a76-14-191-147-152.ngrok-free.app"
+    val baseUrl = "https://aeb5-2405-4802-1d3c-9890-5c1a-dc5a-35ae-5c82.ngrok-free.app"
 }
 
 

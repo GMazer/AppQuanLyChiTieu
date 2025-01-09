@@ -51,7 +51,7 @@ import com.example.jetpackcompose.components.DrawBottomLine
 import com.example.jetpackcompose.components.MessagePopup
 import com.example.jetpackcompose.components.NoteTextField
 import com.example.jetpackcompose.components.NumberTextField
-import com.example.jetpackcompose.ui.theme.colorPrimary
+import com.example.jetpackcompose.ui.theme.primaryColor
 import com.example.jetpackcompose.ui.theme.componentShapes
 import com.example.jetpackcompose.ui.theme.textColor
 import java.text.DecimalFormat
@@ -396,7 +396,7 @@ fun EditIncomeTransaction(
                         }) {
                             Text(
                                 "Xoá",
-                                color = colorPrimary,
+                                color = primaryColor,
                                 fontFamily = montserrat,
                             )
                         }

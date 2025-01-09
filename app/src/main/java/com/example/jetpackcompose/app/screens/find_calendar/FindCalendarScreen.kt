@@ -53,7 +53,7 @@ import com.example.jetpackcompose.app.network.FindTransactionResponse
 import com.example.jetpackcompose.app.network.TransactionResponse
 import com.example.jetpackcompose.components.DayIndex
 import com.example.jetpackcompose.components.montserrat
-import com.example.jetpackcompose.ui.theme.colorPrimary
+import com.example.jetpackcompose.ui.theme.primaryColor
 import com.example.jetpackcompose.ui.theme.componentShapes
 import com.example.jetpackcompose.ui.theme.textColor
 import com.example.jetpackcompose.ui.theme.topBarColor
@@ -210,11 +210,11 @@ fun FindCalendarScreen(navController: NavController) {
                                 shape = componentShapes.medium,
                                 modifier = Modifier.fillMaxWidth(),
                                 colors = TextFieldDefaults.outlinedTextFieldColors(
-                                    focusedBorderColor = colorPrimary,
+                                    focusedBorderColor = primaryColor,
                                     unfocusedBorderColor = Color(0xffB0B0B0),
                                     disabledBorderColor = Color.LightGray,
                                     errorBorderColor = Color.Red,
-                                    focusedLabelColor = colorPrimary,
+                                    focusedLabelColor = primaryColor,
                                     unfocusedLabelColor = Color(0xffB0B0B0),
                                 ),
                                 keyboardOptions = KeyboardOptions.Default.copy(

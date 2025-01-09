@@ -11,13 +11,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -94,15 +93,13 @@ data class Transaction(
 
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InputScreen(navController: NavController) {
-    val viewModel: PutLimitTransactionViewModel = PutLimitTransactionViewModel(LocalContext.current)
     val tabs = listOf(
-        TabItem("Expense", icon = Icons.Default.ArrowBack) {
+        TabItem("Expense", icon = Icons.AutoMirrored.Filled.ArrowBack) {
             ExpenseContent()
         },
-        TabItem("Income", icon = Icons.Default.ArrowForward) {
+        TabItem("Income", icon = Icons.AutoMirrored.Filled.ArrowForward) {
             IncomeContent()
         }
     )
@@ -112,7 +109,7 @@ fun InputScreen(navController: NavController) {
 
     // Nội dung chính của màn hình
     MaterialTheme {
-        var tabIndex by rememberSaveable { mutableStateOf(0) }
+        var tabIndex by rememberSaveable { mutableIntStateOf(0) }
         val tabTitles = listOf("Tiền chi", "Tiền thu")
 
         Column(modifier = Modifier
@@ -125,15 +122,6 @@ fun InputScreen(navController: NavController) {
                 titles = tabTitles,
                 pagerStatement = pagerState,
                 coroutineScoper = coroutineScope,
-                onLimitTransactionUpdated = { newLimitTransaction ->
-                    val limitTransaction: LimitTransaction = newLimitTransaction
-                    viewModel.addLimitTransaction(
-                        limitTransaction.limits,
-                        onSuccess = {},
-                        onError = {}
-                    )
-                    Log.i("limitTransaction", "$limitTransaction")
-                },
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
 

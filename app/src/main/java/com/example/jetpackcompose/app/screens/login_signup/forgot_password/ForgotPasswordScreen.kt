@@ -40,7 +40,7 @@ import com.example.jetpackcompose.app.network.SendOtp
 import com.example.jetpackcompose.components.MyButtonComponent
 import com.example.jetpackcompose.components.MyTextFieldComponent
 import com.example.jetpackcompose.components.montserrat
-import com.example.jetpackcompose.ui.theme.colorPrimary
+import com.example.jetpackcompose.ui.theme.primaryColor
 import com.example.jetpackcompose.ui.theme.textColor
 
 @Composable
@@ -197,7 +197,7 @@ fun ProgressIndicator(steps: Int, currentStep: Int, spacing: Dp = 4.dp) {
                     .weight(1f)
                     .height(4.dp)
                     .background(
-                        color = if (step < currentStep) colorPrimary else Color.LightGray,
+                        color = if (step < currentStep) primaryColor else Color.LightGray,
                         shape = RoundedCornerShape(2.dp)
                     )
             )

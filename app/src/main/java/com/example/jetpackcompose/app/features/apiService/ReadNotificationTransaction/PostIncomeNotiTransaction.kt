@@ -46,7 +46,7 @@ import com.example.jetpackcompose.components.MessagePopup
 import com.example.jetpackcompose.components.MyButtonComponent
 import com.example.jetpackcompose.components.NoteTextField
 import com.example.jetpackcompose.components.NumberTextField
-import com.example.jetpackcompose.ui.theme.colorPrimary
+import com.example.jetpackcompose.ui.theme.primaryColor
 import com.example.jetpackcompose.ui.theme.textColor
 
 @Composable
@@ -152,7 +152,7 @@ fun PostIncomeNotiTransaction(
                 Text(
                     text = "Xoá",
                     fontSize = 16.sp,
-                    color = colorPrimary,
+                    color = primaryColor,
                     fontFamily = montserrat,
                     modifier = Modifier.clickable {
                         showDeleteDialog = true

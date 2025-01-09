@@ -44,8 +44,8 @@ import com.example.jetpackcompose.components.DrawBottomLine
 import com.example.jetpackcompose.components.MessagePopup
 import com.example.jetpackcompose.components.NoteTextField
 import com.example.jetpackcompose.components.NumberTextField
+import com.example.jetpackcompose.ui.theme.primaryColor
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExpenseContent(
     postViewModel: PostTransactionViewModel = PostTransactionViewModel(LocalContext.current),
@@ -147,7 +147,7 @@ fun ExpenseContent(
                     // Tiền chi
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text("Tiền chi ", color = Color.DarkGray, fontWeight = FontWeight.Bold)
-                        Spacer(Modifier.width(8.dp))
+                        Spacer(Modifier.width(16.dp))
                         NumberTextField(amountState = amountValue.text, onValueChange = { newValue -> amountValue = TextFieldValue(newValue) })
                         Spacer(Modifier.width(8.dp))
                         Text("₫", color = Color.DarkGray)
@@ -213,7 +213,7 @@ fun ExpenseContent(
                                 selectedCategory = null
                             },
                             modifier = Modifier.width(248.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = buttonColor)
+                            colors = ButtonDefaults.buttonColors(containerColor = primaryColor)
                         ) {
                             Text("Nhập khoản chi", color = Color.White, fontWeight = FontWeight.Bold)
                         }

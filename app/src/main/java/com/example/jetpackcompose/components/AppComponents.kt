@@ -86,19 +86,20 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.jetpackcompose.R
 import com.example.jetpackcompose.app.screens.Category
 import com.example.jetpackcompose.app.screens.DailyTransaction
-import com.example.jetpackcompose.ui.theme.SaturDayColor
-import com.example.jetpackcompose.ui.theme.SundayColor
-import com.example.jetpackcompose.ui.theme.TextColorPrimary
+import com.example.jetpackcompose.ui.theme.saturdayColor
+import com.example.jetpackcompose.ui.theme.sundayColor
+import com.example.jetpackcompose.ui.theme.textColorPrimary
 import com.example.jetpackcompose.ui.theme.bgColor
 import com.example.jetpackcompose.ui.theme.bgItemColor
-import com.example.jetpackcompose.ui.theme.colorPrimary
-import com.example.jetpackcompose.ui.theme.colorSecondary
+import com.example.jetpackcompose.ui.theme.primaryColor
+import com.example.jetpackcompose.ui.theme.secondaryColor
 import com.example.jetpackcompose.ui.theme.componentShapes
 import com.example.jetpackcompose.ui.theme.highGray
 import com.example.jetpackcompose.ui.theme.textColor
@@ -149,7 +150,7 @@ fun HeadingTextComponent(value: String) {
             fontWeight = FontWeight.Bold,
             fontStyle = FontStyle.Normal,
         ),
-        color = TextColorPrimary,
+        color = textColorPrimary,
         textAlign = TextAlign.Center,
     )
 }
@@ -183,18 +184,18 @@ fun MyTextFieldComponent(
                 fontFamily = montserrat,
                 fontWeight = FontWeight.Normal,
                 fontSize = 12.sp,
-                color = if (isFocused.value) colorPrimary else Color.LightGray
+                color = if (isFocused.value) primaryColor else Color.LightGray
             )
         },
         value = value,
         onValueChange = onValueChange,
         visualTransformation = if (isPassword && !isPasswordVisible.value) PasswordVisualTransformation() else VisualTransformation.None,
         colors = TextFieldDefaults.outlinedTextFieldColors(
-            focusedBorderColor = colorPrimary,
-            focusedLabelColor = colorPrimary,
+            focusedBorderColor = primaryColor,
+            focusedLabelColor = primaryColor,
             unfocusedLabelColor = Color.LightGray,
             unfocusedBorderColor = Color.Transparent,
-            cursorColor = colorPrimary,
+            cursorColor = primaryColor,
             textColor = textColor,
             backgroundColor = bgColor
         ),
@@ -258,18 +259,18 @@ fun PasswordTextFieldComponent(
                 fontFamily = montserrat,
                 fontWeight = FontWeight.Normal,
                 fontSize = 12.sp,
-                color = if (isFocused.value) colorPrimary else Color.LightGray
+                color = if (isFocused.value) primaryColor else Color.LightGray
             )
         },
         value = value,
         onValueChange = onValueChange,
         visualTransformation = if (passwordVisibility.value) VisualTransformation.None else PasswordVisualTransformation(),
         colors = TextFieldDefaults.outlinedTextFieldColors(
-            focusedBorderColor = colorPrimary,
-            focusedLabelColor = colorPrimary,
+            focusedBorderColor = primaryColor,
+            focusedLabelColor = primaryColor,
             unfocusedLabelColor = Color.LightGray,
             unfocusedBorderColor = Color.Transparent,
-            cursorColor = colorPrimary,
+            cursorColor = primaryColor,
             textColor = textColor,
             backgroundColor = bgColor
         ),
@@ -329,7 +330,7 @@ fun CheckboxComponent(
             checked = checked,
             onCheckedChange = onCheckedChange,
             colors = CheckboxDefaults.colors(
-                checkedColor = colorPrimary,
+                checkedColor = primaryColor,
                 uncheckedColor = Color.Gray,
                 checkmarkColor = Color.White
             )
@@ -519,7 +520,7 @@ fun CategoryItem(
 fun MyButtonComponent(value: String, onClick: () -> Unit, isLoading: Boolean) {
     Button(
         onClick = onClick,
-        colors = ButtonDefaults.buttonColors(containerColor = colorPrimary),
+        colors = ButtonDefaults.buttonColors(containerColor = primaryColor),
         modifier = Modifier
             .fillMaxWidth()
             .height(56.dp)
@@ -550,7 +551,7 @@ fun MyButtonComponent(value: String, onClick: () -> Unit, isLoading: Boolean) {
 fun ClickableTextComponent(value: String, onClick: () -> Unit) {
     Text(
         value,
-        color = colorSecondary,
+        color = secondaryColor,
         fontFamily = com.example.jetpackcompose.components.montserrat,
         fontWeight = FontWeight.Light,
         fontSize = 10.sp,
@@ -560,6 +561,11 @@ fun ClickableTextComponent(value: String, onClick: () -> Unit) {
     )
 }
 
+private fun formatNumber(input: String): String {
+    return input.replace(",", "").toLongOrNull()?.let {
+        String.format(Locale.US, "%,d", it) // Sử dụng Locale.US để đảm bảo định dạng đúng
+    } ?: ""
+}
 
 @Composable
 fun NumberTextField(amountState: String, onValueChange: (String) -> Unit) {
@@ -569,7 +575,7 @@ fun NumberTextField(amountState: String, onValueChange: (String) -> Unit) {
     var isFocused by remember { mutableStateOf(false) }
 
     BasicTextField(
-        value = amountState,
+        value = formatNumber(amountState),
         onValueChange = { newInput ->
             if (newInput == "0" && amountState.isEmpty()) {
                 // do nothing to block the first '0'
@@ -586,21 +592,21 @@ fun NumberTextField(amountState: String, onValueChange: (String) -> Unit) {
                 )
             }
         },
-        singleLine = true,
+                singleLine = true,
         modifier = Modifier
             .focusRequester(focusRequester)
             .onFocusChanged { focusState ->
                 isFocused = focusState.isFocused
             }
-            .height(45.dp)
-            .width(250.dp)
-            .background(Color(0xFFe1e1e1), shape = RoundedCornerShape(8.dp))
+            .height(30.dp)
+            .width(220.dp)
+            .background(Color(0xFFe7e7e7), shape = componentShapes.small)
             .border(
                 1.dp,
-                if (isFocused) colorPrimary else Color.Transparent,
-                RoundedCornerShape(8.dp)
+                if (isFocused) primaryColor else Color.Transparent,
+                componentShapes.small,
             )
-            .padding(horizontal = 16.dp),
+            .padding(horizontal = 8.dp),
         textStyle = TextStyle(
             textAlign = TextAlign.Start,
             fontSize = 20.sp,
@@ -622,13 +628,14 @@ fun NumberTextField(amountState: String, onValueChange: (String) -> Unit) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 10.dp)
+                    .padding(vertical = 2.dp),
+                contentAlignment = Alignment.CenterStart
             ) {
                 if (amountState.isEmpty()) {
                     Text(
                         if (isFocused) "" else "0",
                         color = Color.Black,
-                        fontWeight = FontWeight.Bold,
+                        fontWeight = FontWeight.SemiBold,
                         fontFamily = montserrat,
                         fontSize = 20.sp,
                         style = LocalTextStyle.current
@@ -636,8 +643,14 @@ fun NumberTextField(amountState: String, onValueChange: (String) -> Unit) {
                 }
                 innerTextField()
             }
-        }
+        },
     )
+}
+
+@Preview
+@Composable
+fun PreviewNumberTextField() {
+    NumberTextField(amountState = "", onValueChange = {})
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -652,9 +665,9 @@ fun NoteTextField(textState: TextFieldValue, onValueChange: (TextFieldValue) -> 
         value = textState,
         onValueChange = onValueChange,
         colors = androidx.compose.material3.TextFieldDefaults.outlinedTextFieldColors(
-            focusedBorderColor = colorPrimary,
+            focusedBorderColor = primaryColor,
             unfocusedBorderColor = Color.Transparent,
-            cursorColor = colorPrimary
+            cursorColor = primaryColor
         ),
         placeholder = {
             Text(
@@ -687,6 +700,7 @@ fun NoteTextField(textState: TextFieldValue, onValueChange: (TextFieldValue) -> 
 @Composable
 fun MonthPickerButton(onDateSelected: (String) -> Unit) {
     var dateText by remember { mutableStateOf("") }
+    var dateRangeText by remember { mutableStateOf("") }
     var showMonthPicker by remember { mutableStateOf(false) }
     val calendar = remember { mutableStateOf(Calendar.getInstance()) }
 
@@ -694,7 +708,18 @@ fun MonthPickerButton(onDateSelected: (String) -> Unit) {
 
     fun updateDateText() {
         dateText = monthYearFormat.format(calendar.value.time)
-        onDateSelected(dateText)
+
+        // Lấy ngày đầu tháng và cuối tháng
+        val firstDay = calendar.value.clone() as Calendar
+        val lastDay = calendar.value.clone() as Calendar
+        firstDay.set(Calendar.DAY_OF_MONTH, 1)
+        lastDay.set(Calendar.DAY_OF_MONTH, calendar.value.getActualMaximum(Calendar.DAY_OF_MONTH))
+
+        // Format khoảng ngày
+        val dayMonthFormat = SimpleDateFormat("d/M", Locale("vi", "VN"))
+        dateRangeText = "(${dayMonthFormat.format(firstDay.time)} - ${dayMonthFormat.format(lastDay.time)})"
+
+        onDateSelected("$dateText $dateRangeText")
     }
 
     LaunchedEffect(key1 = Unit) {
@@ -713,24 +738,41 @@ fun MonthPickerButton(onDateSelected: (String) -> Unit) {
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.outline_arrow_back_ios_24),
-                modifier = Modifier.size(16.dp),
+                modifier = Modifier.size(14.dp),
                 contentDescription = "Previous Month",
                 tint = Color(0xFF444444)
             )
         }
         Button(
             onClick = { showMonthPicker = true },
-            shape = componentShapes.medium,
-            modifier = Modifier.weight(8f),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFe1e1e1))
+            shape = componentShapes.small,
+            modifier = Modifier
+                .height(30.dp)
+                .weight(8f),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE7E7E7)),
+            contentPadding = PaddingValues(horizontal = 8.dp)
         ) {
-            Text(
-                dateText,
-                fontWeight = FontWeight.Bold,
-                fontFamily = montserrat,
-                fontSize = 18.sp,
-                color = Color(0xFF444444)
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = dateText,
+                    fontWeight = FontWeight.SemiBold,
+                    fontFamily = montserrat,
+                    fontSize = 16.sp,
+                    color = textColor,
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = dateRangeText,
+                    fontWeight = FontWeight.Light,
+                    fontFamily = montserrat,
+                    fontSize = 12.sp,
+                    color = textColor
+                )
+            }
         }
         IconButton(
             onClick = {
@@ -744,7 +786,7 @@ fun MonthPickerButton(onDateSelected: (String) -> Unit) {
             Icon(
                 painter = painterResource(id = R.drawable.outline_arrow_forward_ios_24),
                 contentDescription = "Next Month",
-                modifier = Modifier.size(16.dp),
+                modifier = Modifier.size(14.dp),
                 tint = Color(0xFF444444)
             )
         }
@@ -763,6 +805,13 @@ fun MonthPickerButton(onDateSelected: (String) -> Unit) {
             }
         )
     }
+}
+
+
+@Preview
+@Composable
+fun PreviewMonthPickerButton() {
+    MonthPickerButton(onDateSelected = {})
 }
 
 
@@ -860,7 +909,7 @@ fun CustomCalendar(
                             fontWeight = FontWeight.Normal,
                             fontSize = 8.sp,
                             fontFamily = montserrat,
-                            color = if (day == "CN") SundayColor else if (day == "T7") SaturDayColor else textColor,
+                            color = if (day == "CN") sundayColor else if (day == "T7") saturdayColor else textColor,
                             textAlign = TextAlign.Center
                         )
                     }
@@ -905,8 +954,8 @@ fun CustomCalendar(
                                     Text(
                                         text = day,
                                         color = when (columnIndex) {
-                                            6 -> SundayColor // Chủ nhật
-                                            5 -> SaturDayColor // Thứ 7
+                                            6 -> sundayColor // Chủ nhật
+                                            5 -> saturdayColor // Thứ 7
                                             else -> Color.Black // Các ngày trong tuần
                                         },
                                         fontFamily = montserrat,
@@ -945,7 +994,7 @@ fun CustomCalendar(
                                             ) {
                                                 Text(
                                                     text = currencyFormatter.format(it.amountExpense),
-                                                    color = colorPrimary,
+                                                    color = primaryColor,
                                                     fontSize = 7.sp,
                                                     textAlign = TextAlign.End,
                                                     fontFamily = montserrat

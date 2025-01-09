@@ -58,7 +58,7 @@ import com.example.jetpackcompose.app.network.VerifyOtp
 import com.example.jetpackcompose.components.MessagePopup
 import com.example.jetpackcompose.components.MyButtonComponent
 import com.example.jetpackcompose.components.montserrat
-import com.example.jetpackcompose.ui.theme.colorPrimary
+import com.example.jetpackcompose.ui.theme.primaryColor
 import com.example.jetpackcompose.ui.theme.textColor
 
 @Composable
@@ -178,7 +178,7 @@ fun OTPContent(navController: NavHostController, email: String) {
                             .background(Color.White, RoundedCornerShape(8.dp))
                             .border(
                                 2.dp,
-                                if (value.isNotEmpty()) colorPrimary else Color.LightGray,
+                                if (value.isNotEmpty()) primaryColor else Color.LightGray,
                                 RoundedCornerShape(8.dp)
                             ),
                         maxLines = 1,
@@ -194,7 +194,7 @@ fun OTPContent(navController: NavHostController, email: String) {
                             backgroundColor = Color.Transparent,
                             focusedIndicatorColor = Color.Transparent,
                             unfocusedIndicatorColor = Color.Transparent,
-                            cursorColor = colorPrimary
+                            cursorColor = primaryColor
                         ),
                         keyboardOptions = KeyboardOptions.Default.copy(
                             keyboardType = KeyboardType.Number,
@@ -264,7 +264,7 @@ fun OTPContent(navController: NavHostController, email: String) {
                 Text(
                     text = "Gửi lại",
                     fontFamily = montserrat,
-                    color = colorPrimary,
+                    color = primaryColor,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Medium,
                     textAlign = TextAlign.Center,
