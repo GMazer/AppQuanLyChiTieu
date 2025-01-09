@@ -1,5 +1,6 @@
 package com.example.jetpackcompose.app.screens
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -90,7 +91,7 @@ fun CalendarScreen(navController: NavController) {
     var errorMessage by remember { mutableStateOf("") }
     var successMessage by remember { mutableStateOf("") }
     var showPopup by remember { mutableStateOf(false) }
-    val monthYear = selectedMonthYear.substring(0, 6)
+    val monthYear = selectedMonthYear.substring(0, 7)
 
     MessagePopup(
         showPopup = showPopup,
@@ -104,6 +105,7 @@ fun CalendarScreen(navController: NavController) {
         successMessage = "Đang tải dữ liệu..."
         showPopup = true
         val (month, year) = monthYear.split("/").map { it.toInt() }
+        Log.d("CalendarScreen", "month: $month, year: $year")
         selectedDate = ""
         viewModel.getTransactions(
             month = month,
@@ -137,6 +139,7 @@ fun CalendarScreen(navController: NavController) {
             onError = { error -> errorMessage = error }
         )
     }
+
 
     val totalExpense = transactionList.sumOf { it.amountExpense }
     val totalIncome = transactionList.sumOf { it.amountIncome }
@@ -245,11 +248,12 @@ fun CalendarScreen(navController: NavController) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     MonthPickerButton(onDateSelected = { month ->
                         selectedMonthYear = month
+                        Log.d("CalendarScreen", "selectedMonthYear: $selectedMonthYear")
                     })
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
-
+                Log.d("CalendarScreen", "selectedMonthYear: $transactionList")
                 CustomCalendar(
                     selectedMonthYear = monthYear,
                     transactionList,

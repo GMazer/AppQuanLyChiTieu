@@ -113,7 +113,7 @@ fun ReportScreen() {
 
         successMessage = "Đang tải dữ liệu..."
         showPopup = true
-        val monthYear = selectedMonthYear.substring(0, 6)
+        val monthYear = selectedMonthYear.substring(0, 7)
         Log.d("MainActivity", "Selected month year: $monthYear")
         val (month, year) = monthYear.split("/").map { it.toInt() }.let { it[0] to it[1] }
 
