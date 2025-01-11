@@ -45,13 +45,13 @@ import com.example.jetpackcompose.app.features.apiService.TransactionAPI.GetTran
 import com.example.jetpackcompose.app.features.apiService.TransactionAPI.PutTransactionViewModel
 import com.example.jetpackcompose.app.screens.Category
 import com.example.jetpackcompose.app.screens.Transaction
-import com.example.jetpackcompose.app.screens.montserrat
 import com.example.jetpackcompose.components.CategoriesGrid
 import com.example.jetpackcompose.components.DatePickerButton
 import com.example.jetpackcompose.components.DrawBottomLine
 import com.example.jetpackcompose.components.MessagePopup
 import com.example.jetpackcompose.components.NoteTextField
 import com.example.jetpackcompose.components.NumberTextField
+import com.example.jetpackcompose.components.montserrat
 import com.example.jetpackcompose.ui.theme.primaryColor
 import com.example.jetpackcompose.ui.theme.componentShapes
 import com.example.jetpackcompose.ui.theme.textColor

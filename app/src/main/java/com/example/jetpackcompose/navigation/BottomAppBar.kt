@@ -73,7 +73,7 @@ fun CustomBottomAppBar(pagerState: PagerState, coroutineScope: CoroutineScope) {
             // Lịch
             BottomBarItem(
                 title = "Lịch",
-                iconRes = R.drawable.outline_calendar_month_24,
+                iconRes = R.drawable.calendar,
                 isSelected = selectedPage == 1,
                 onClick = {
                     selectedPage = 1
@@ -103,7 +103,7 @@ fun CustomBottomAppBar(pagerState: PagerState, coroutineScope: CoroutineScope) {
             // Ngân sách
             BottomBarItem(
                 title = "Ngân sách",
-                iconRes = R.drawable.budget,
+                iconRes = R.drawable.budget__2_,
                 isSelected = selectedPage == 4,
                 onClick = {
                     selectedPage = 4

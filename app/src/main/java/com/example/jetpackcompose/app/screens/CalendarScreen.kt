@@ -1,6 +1,7 @@
 package com.example.jetpackcompose.app.screens
 
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -190,38 +191,25 @@ fun CalendarScreen(navController: NavController) {
                         title = {
                             Box(
                                 modifier = Modifier
-                                    .fillMaxWidth(),
+                                    .background(color = Color(0xfff5f5f5))
+                                    .height(50.dp)
+                                    .fillMaxSize()
+                                    .padding(start = 16.dp, end = 32.dp),
+                                contentAlignment = Alignment.Center
                             ) {
 
                                 // Text "Lịch" căn giữa
-                                Text(
+                                androidx.compose.material3.Text(
                                     text = "Lịch",
+                                    fontFamily = montserrat,
                                     style = TextStyle(
                                         fontWeight = FontWeight.Bold,
-                                        fontFamily = montserrat,
                                         fontSize = 16.sp,
                                     ),
                                     textAlign = TextAlign.Center,
                                     modifier = Modifier
-                                        .align(Alignment.Center)
-                                        .offset(x = (-8).dp)
+                                        .fillMaxWidth()
                                 )
-
-                                // IconButton căn phải
-                                IconButton(
-                                    onClick = {
-                                        navController.navigate("findtransaction")
-                                    },
-                                    modifier = Modifier.align(Alignment.CenterEnd) // Căn phải trong Box
-                                ) {
-                                    Icon(
-                                        painter = painterResource(id = android.R.drawable.ic_search_category_default), // Icon của bạn
-                                        contentDescription = "Tìm kiếm",
-                                        tint = Color.Black,
-                                        modifier = Modifier.size(24.dp)
-
-                                    )
-                                }
                             }
                         },
                         colors = TopAppBarDefaults.smallTopAppBarColors(

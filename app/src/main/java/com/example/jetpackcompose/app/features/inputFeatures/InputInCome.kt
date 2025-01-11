@@ -34,13 +34,14 @@ import com.example.jetpackcompose.R
 import com.example.jetpackcompose.app.features.apiService.TransactionAPI.PostTransactionViewModel
 import com.example.jetpackcompose.app.screens.Category
 import com.example.jetpackcompose.app.screens.Transaction
-import com.example.jetpackcompose.app.screens.montserrat
 import com.example.jetpackcompose.components.CategoriesGrid
 import com.example.jetpackcompose.components.DatePickerButton
 import com.example.jetpackcompose.components.DrawBottomLine
 import com.example.jetpackcompose.components.MessagePopup
 import com.example.jetpackcompose.components.NoteTextField
 import com.example.jetpackcompose.components.NumberTextField
+import com.example.jetpackcompose.components.montserrat
+import com.example.jetpackcompose.ui.theme.primaryColor
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -55,7 +56,6 @@ fun IncomeContent(postViewModel: PostTransactionViewModel = PostTransactionViewM
     var successMessage by remember { mutableStateOf("") }
 
     var showPopup by remember { mutableStateOf(false) }  // Trạng thái popup
-    val buttonColor = Color(0xFFF35E17)
 
     val categories = listOf(
         Category(
@@ -138,7 +138,7 @@ fun IncomeContent(postViewModel: PostTransactionViewModel = PostTransactionViewM
                     // Gọi danh mục chi tiêu và truyền callback
                     CategoriesGrid(
                         categories = categories,
-                        buttonColor = buttonColor,
+                        buttonColor = primaryColor,
                         selectedCategory = selectedCategory,
                         column = 2,
                         onCategorySelected = { category -> selectedCategory = category }
@@ -182,7 +182,7 @@ fun IncomeContent(postViewModel: PostTransactionViewModel = PostTransactionViewM
                                 selectedCategory = null
                             },
                             modifier = Modifier.width(248.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = buttonColor)
+                            colors = ButtonDefaults.buttonColors(containerColor = primaryColor)
                         ) {
                             Text("Nhập khoản thu", color = Color.White, fontWeight = FontWeight.Bold)
                         }

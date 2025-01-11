@@ -45,7 +45,7 @@ import com.example.jetpackcompose.app.screens.login_signup.SignUpScreen
 import com.example.jetpackcompose.app.screens.login_signup.forgot_password.ForgotPasswordScreen
 import com.example.jetpackcompose.app.screens.login_signup.forgot_password.OTPContent
 import com.example.jetpackcompose.app.screens.login_signup.forgot_password.SetPasswordContent
-import com.example.jetpackcompose.app.screens.montserrat
+import com.example.jetpackcompose.components.montserrat
 import com.example.jetpackcompose.ui.theme.primaryColor
 import com.example.jetpackcompose.ui.theme.textColor
 

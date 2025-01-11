@@ -37,13 +37,13 @@ import com.example.jetpackcompose.app.features.apiService.TransactionAPI.PostTra
 import com.example.jetpackcompose.app.screens.Category
 import com.example.jetpackcompose.app.screens.RemainLimit
 import com.example.jetpackcompose.app.screens.Transaction
-import com.example.jetpackcompose.app.screens.montserrat
 import com.example.jetpackcompose.components.CategoriesGrid
 import com.example.jetpackcompose.components.DatePickerButton
 import com.example.jetpackcompose.components.DrawBottomLine
 import com.example.jetpackcompose.components.MessagePopup
 import com.example.jetpackcompose.components.NoteTextField
 import com.example.jetpackcompose.components.NumberTextField
+import com.example.jetpackcompose.components.montserrat
 import com.example.jetpackcompose.ui.theme.primaryColor
 
 @Composable
@@ -71,7 +71,6 @@ fun ExpenseContent(
     var successMessage by remember { mutableStateOf("") }
 
     var showPopup by remember { mutableStateOf(false) }  // Trạng thái popup
-    var buttonColor = Color(0xFFF35E17)
 
     // Cập nhật lại danh sách categories
     var categories by remember { mutableStateOf(
@@ -128,7 +127,7 @@ fun ExpenseContent(
                         Text(
                             "Ngày ",
                             color = Color.DarkGray,
-                            fontWeight = FontWeight.Bold,
+                            fontWeight = FontWeight.SemiBold,
                             fontFamily = montserrat
                         )
                         DatePickerButton(onDateSelected = { date -> selectedDate = date })
@@ -162,7 +161,7 @@ fun ExpenseContent(
                     // Gọi danh mục chi tiêu và truyền callback
                     CategoriesGrid(
                         categories = categories,
-                        buttonColor = buttonColor,
+                        buttonColor = primaryColor,
                         selectedCategory = selectedCategory,
                         column = 3,
                         onCategorySelected = { category -> selectedCategory = category }

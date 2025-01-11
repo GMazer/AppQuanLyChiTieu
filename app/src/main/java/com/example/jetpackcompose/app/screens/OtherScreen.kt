@@ -45,6 +45,7 @@ fun OtherScreen(navController: NavHostController) {
     val icons = listOf(
         painterResource(id = R.drawable.preodic),
         painterResource(id = R.drawable.notibalance),
+        painterResource(id = R.drawable.search),
         painterResource(id = R.drawable.logout)
     )
 
@@ -107,6 +108,10 @@ fun OtherScreen(navController: NavHostController) {
                             "Danh sách giao dịch ngân hàng" to {
                                 navController.navigate("transactionNotification")
                             },
+                            "Tìm kiếm giao dịch" to {
+                                navController.navigate("findTransaction")
+                            },
+
 
                             "Đăng xuất" to {
                                 // Gọi clearToken từ SignInViewModel khi người dùng đăng xuất
@@ -134,7 +139,8 @@ fun OtherScreen(navController: NavHostController) {
 @Preview
 @Composable
 fun OtherScreenPreview() {
-    OtherScreen(navController = NavHostController(LocalContext.current))
+    val context = LocalContext.current
+    OtherScreen(navController = NavHostController(context))
 }
 
 

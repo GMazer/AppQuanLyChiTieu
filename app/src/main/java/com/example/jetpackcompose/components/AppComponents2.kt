@@ -1,26 +1,33 @@
 package com.example.jetpackcompose.components
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.LocalTextStyle
@@ -28,6 +35,8 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -36,51 +45,42 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
-import com.example.jetpackcompose.ui.theme.textColor
-import com.example.jetpackcompose.ui.theme.primaryColor
-import java.util.Calendar
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Divider
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import com.example.jetpackcompose.app.features.apiService.TransactionAPI.GetBudgetCategoryViewModel
 import com.example.jetpackcompose.app.screens.LimitTransaction
-import com.example.jetpackcompose.app.screens.montserrat
 import com.example.jetpackcompose.ui.theme.componentShapes
+import com.example.jetpackcompose.ui.theme.primaryColor
+import com.example.jetpackcompose.ui.theme.textColor
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
+import java.util.Calendar
 import java.util.Locale
 import kotlin.math.atan2
 import kotlin.math.cos
@@ -130,8 +130,10 @@ fun DonutChartWithProgress(
 
                 // Kiểm tra xem mảnh hiện tại có phải là mảnh được chọn không
                 val isSelected = selectedSegment == index
-                val segmentRadius = if (isSelected) radius + 20f else radius // Tăng bán kính nếu được chọn
-                val segmentStrokeWidth = if (isSelected) maxStrokeWidth + 10f else maxStrokeWidth // Tăng độ rộng nét nếu được chọn
+                val segmentRadius =
+                    if (isSelected) radius + 20f else radius // Tăng bán kính nếu được chọn
+                val segmentStrokeWidth =
+                    if (isSelected) maxStrokeWidth + 10f else maxStrokeWidth // Tăng độ rộng nét nếu được chọn
 
                 // Vẽ phần chính của donut chart
                 drawArc(
@@ -151,7 +153,8 @@ fun DonutChartWithProgress(
                     progressWidth = maxStrokeWidth * progresses[index] // Tỷ lệ chiều rộng mực nước
                 }
                 // Vẽ "mực nước" (progress)
-                progressRadius = if (isSelected) segmentRadius - (maxStrokeWidth - progressWidth) / 2 else radius - (maxStrokeWidth - progressWidth) / 2
+                progressRadius =
+                    if (isSelected) segmentRadius - (maxStrokeWidth - progressWidth) / 2 else radius - (maxStrokeWidth - progressWidth) / 2
                 drawArc(
                     color = colors[index].copy(alpha = 0.8f),
                     startAngle = startAngle,
@@ -169,7 +172,8 @@ fun DonutChartWithProgress(
                 val innerWidth = maxStrokeWidth * 0.2f // Tỷ lệ chiều rộng mực nước
 
                 // Bán kính vòng trong
-                val innerRadius = if (isSelected) segmentRadius - (maxStrokeWidth - innerWidth) / 2 - innerWidth - 0.25f else radius - (maxStrokeWidth - innerWidth) / 2 - innerWidth
+                val innerRadius =
+                    if (isSelected) segmentRadius - (maxStrokeWidth - innerWidth) / 2 - innerWidth - 0.25f else radius - (maxStrokeWidth - innerWidth) / 2 - innerWidth
 
                 // Vòng trong
                 drawArc(
@@ -182,12 +186,16 @@ fun DonutChartWithProgress(
                         cap = StrokeCap.Butt
                     ),
                     topLeft = Offset(center.x - innerRadius, center.y - innerRadius),
-                    size = Size(innerRadius * 2, innerRadius * 2) // Sử dụng bán kính trong để vẽ mực nước
+                    size = Size(
+                        innerRadius * 2,
+                        innerRadius * 2
+                    ) // Sử dụng bán kính trong để vẽ mực nước
                 )
 
                 if (progresses[index] >= 1) {
                     val outerWidth = maxStrokeWidth * 0.2f // Tỷ lệ chiều rộng mực nước
-                    val outerRadius = if (isSelected) segmentRadius + (maxStrokeWidth - outerWidth) / 2 + 2.5f else radius + (maxStrokeWidth - outerWidth) / 2
+                    val outerRadius =
+                        if (isSelected) segmentRadius + (maxStrokeWidth - outerWidth) / 2 + 2.5f else radius + (maxStrokeWidth - outerWidth) / 2
 
                     // Vòng ngoài
                     drawArc(
@@ -200,7 +208,10 @@ fun DonutChartWithProgress(
                             cap = StrokeCap.Butt
                         ),
                         topLeft = Offset(center.x - outerRadius, center.y - outerRadius),
-                        size = Size(outerRadius * 2, outerRadius * 2) // Sử dụng bán kính trong để vẽ mực nước
+                        size = Size(
+                            outerRadius * 2,
+                            outerRadius * 2
+                        ) // Sử dụng bán kính trong để vẽ mực nước
                     )
                 }
 
@@ -209,16 +220,25 @@ fun DonutChartWithProgress(
             startAngle = -90f
             angles.forEach { sweepAngle ->
                 val angleInRadians = Math.toRadians(startAngle.toDouble())
-                val extendedOffset = maxStrokeWidth * 0.2f  // Tăng chiều dài đường ngăn thêm giá trị này
+                val extendedOffset =
+                    maxStrokeWidth * 0.2f  // Tăng chiều dài đường ngăn thêm giá trị này
 
                 // Điều chỉnh bán kính để tăng chiều dài đường ngăn
                 val lineStart = Offset(
-                    x = center.x + (radius - maxStrokeWidth / 2 - extendedOffset) * cos(angleInRadians).toFloat(),
-                    y = center.y + (radius - maxStrokeWidth / 2 - extendedOffset) * sin(angleInRadians).toFloat()
+                    x = center.x + (radius - maxStrokeWidth / 2 - extendedOffset) * cos(
+                        angleInRadians
+                    ).toFloat(),
+                    y = center.y + (radius - maxStrokeWidth / 2 - extendedOffset) * sin(
+                        angleInRadians
+                    ).toFloat()
                 )
                 val lineEnd = Offset(
-                    x = center.x + (radius + maxStrokeWidth / 2 + extendedOffset) * cos(angleInRadians).toFloat(),
-                    y = center.y + (radius + maxStrokeWidth / 2 + extendedOffset) * sin(angleInRadians).toFloat()
+                    x = center.x + (radius + maxStrokeWidth / 2 + extendedOffset) * cos(
+                        angleInRadians
+                    ).toFloat(),
+                    y = center.y + (radius + maxStrokeWidth / 2 + extendedOffset) * sin(
+                        angleInRadians
+                    ).toFloat()
                 )
 
                 // Vẽ đường ngăn
@@ -286,7 +306,8 @@ fun DonutChartIncome(
                     detectTapGestures { offset ->
                         // Xử lý chạm vào segment
                         val clickedAngle = calculateAngleFromCenter(offset, size)
-                        val segmentIndex = findSegmentIndex(clickedAngle, progresses.map { it * 360f })
+                        val segmentIndex =
+                            findSegmentIndex(clickedAngle, progresses.map { it * 360f })
                         selectedSegment = segmentIndex
                     }
                 }
@@ -301,8 +322,10 @@ fun DonutChartIncome(
 
                 // Kiểm tra nếu mảnh hiện tại được chọn
                 val isSelected = selectedSegment == index
-                val segmentRadius = if (isSelected) radius + 20f else radius // Tăng bán kính nếu được chọn
-                val segmentStrokeWidth = if (isSelected) maxStrokeWidth + 10f else maxStrokeWidth // Tăng độ rộng nét nếu được chọn
+                val segmentRadius =
+                    if (isSelected) radius + 20f else radius // Tăng bán kính nếu được chọn
+                val segmentStrokeWidth =
+                    if (isSelected) maxStrokeWidth + 10f else maxStrokeWidth // Tăng độ rộng nét nếu được chọn
 
                 // Vẽ phần chính của donut chart
                 drawArc(
@@ -683,15 +706,28 @@ fun PopupSetBudgetDialog(
                                         amountState = value.text,
                                         onValueChange = { newValue ->
                                             when (label) {
-                                                "Chi phí nhà ở" -> houseValue = TextFieldValue(newValue)
-                                                "Chi phí ăn uống" -> foodValue = TextFieldValue(newValue)
-                                                "Mua sắm quần áo" -> shoppingValue = TextFieldValue(newValue)
+                                                "Chi phí nhà ở" -> houseValue =
+                                                    TextFieldValue(newValue)
+
+                                                "Chi phí ăn uống" -> foodValue =
+                                                    TextFieldValue(newValue)
+
+                                                "Mua sắm quần áo" -> shoppingValue =
+                                                    TextFieldValue(newValue)
+
                                                 "Đi lại" -> movingValue = TextFieldValue(newValue)
-                                                "Chăm sóc sắc đẹp" -> cosmeticValue = TextFieldValue(newValue)
-                                                "Giao lưu" -> exchangingValue = TextFieldValue(newValue)
+                                                "Chăm sóc sắc đẹp" -> cosmeticValue =
+                                                    TextFieldValue(newValue)
+
+                                                "Giao lưu" -> exchangingValue =
+                                                    TextFieldValue(newValue)
+
                                                 "Y tế" -> medicalValue = TextFieldValue(newValue)
-                                                "Học tập" -> educatingValue = TextFieldValue(newValue)
-                                                "Khoản tiết kiệm" -> saveValue = TextFieldValue(newValue)
+                                                "Học tập" -> educatingValue =
+                                                    TextFieldValue(newValue)
+
+                                                "Khoản tiết kiệm" -> saveValue =
+                                                    TextFieldValue(newValue)
                                             }
                                         },
                                         colorPercent = Color.Black
@@ -717,15 +753,42 @@ fun PopupSetBudgetDialog(
                             }
                             TextButton(onClick = {
                                 val categoryLimits = listOf(
-                                    LimitTransaction.CategoryLimit(1, houseValue.text.toLongOrNull() ?: 0L),
-                                    LimitTransaction.CategoryLimit(2, foodValue.text.toLongOrNull() ?: 0L),
-                                    LimitTransaction.CategoryLimit(3, shoppingValue.text.toLongOrNull() ?: 0L),
-                                    LimitTransaction.CategoryLimit(4, movingValue.text.toLongOrNull() ?: 0L),
-                                    LimitTransaction.CategoryLimit(5, cosmeticValue.text.toLongOrNull() ?: 0L),
-                                    LimitTransaction.CategoryLimit(6, exchangingValue.text.toLongOrNull() ?: 0L),
-                                    LimitTransaction.CategoryLimit(7, medicalValue.text.toLongOrNull() ?: 0L),
-                                    LimitTransaction.CategoryLimit(8, educatingValue.text.toLongOrNull() ?: 0L),
-                                    LimitTransaction.CategoryLimit(9, saveValue.text.toLongOrNull() ?: 0L)
+                                    LimitTransaction.CategoryLimit(
+                                        1,
+                                        houseValue.text.toLongOrNull() ?: 0L
+                                    ),
+                                    LimitTransaction.CategoryLimit(
+                                        2,
+                                        foodValue.text.toLongOrNull() ?: 0L
+                                    ),
+                                    LimitTransaction.CategoryLimit(
+                                        3,
+                                        shoppingValue.text.toLongOrNull() ?: 0L
+                                    ),
+                                    LimitTransaction.CategoryLimit(
+                                        4,
+                                        movingValue.text.toLongOrNull() ?: 0L
+                                    ),
+                                    LimitTransaction.CategoryLimit(
+                                        5,
+                                        cosmeticValue.text.toLongOrNull() ?: 0L
+                                    ),
+                                    LimitTransaction.CategoryLimit(
+                                        6,
+                                        exchangingValue.text.toLongOrNull() ?: 0L
+                                    ),
+                                    LimitTransaction.CategoryLimit(
+                                        7,
+                                        medicalValue.text.toLongOrNull() ?: 0L
+                                    ),
+                                    LimitTransaction.CategoryLimit(
+                                        8,
+                                        educatingValue.text.toLongOrNull() ?: 0L
+                                    ),
+                                    LimitTransaction.CategoryLimit(
+                                        9,
+                                        saveValue.text.toLongOrNull() ?: 0L
+                                    )
                                 )
                                 onConfirm(LimitTransaction(categoryLimits))
                                 onDismiss()
@@ -842,7 +905,10 @@ fun OtherFunction(
             // Xác định bo góc cho phần tử đầu hoặc cuối
             val cornerShape = when (index) {
                 0 -> RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp) // Phần tử đầu tiên
-                items.size - 1 -> RoundedCornerShape(bottomStart = 8.dp, bottomEnd = 8.dp) // Phần tử cuối cùng
+                items.size - 1 -> RoundedCornerShape(
+                    bottomStart = 8.dp,
+                    bottomEnd = 8.dp
+                ) // Phần tử cuối cùng
                 else -> RoundedCornerShape(0.dp) // Không bo góc cho các phần tử khác
             }
 
@@ -871,7 +937,7 @@ fun OtherFunction(
                         text = item.first,
                         fontFamily = montserrat,
                         color = textColor,
-                        fontWeight = FontWeight.Normal,
+                        fontWeight = FontWeight.SemiBold,
                         fontSize = 12.sp
                     )
                 }
@@ -995,25 +1061,36 @@ fun ReportTable(income: Long, expense: Long, net: Long) {
                 ) {
                     Text(
                         text = "Chi tiêu",
-                        fontFamily = montserrat,
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 14.sp
+                        style = TextStyle(
+                            fontFamily = montserrat,
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 14.sp,
+                        ),
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = formattedExpense,
-                        fontFamily = montserrat,
-                        color = Color(0xffFF7F50),
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 16.sp
+                        style = TextStyle(
+                            fontFamily = montserrat,
+                            color = Color(0xffFF7F50),
+                            shadow = Shadow(
+                                color = Color.White,
+                                offset = Offset(2f, 2f),
+                                blurRadius = 4f
+                            ),
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 16.sp
+                        )
                     )
                 }
             }
 
-            Divider(Modifier
-                .background(Color.White)
-                .fillMaxWidth(0.8f))
+            Divider(
+                Modifier
+                    .background(Color.White)
+                    .fillMaxWidth(0.8f)
+            )
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,  // Căn giữa theo chiều dọc

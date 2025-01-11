@@ -75,11 +75,11 @@ data class Category(
 )
 
 
-val montserrat = FontFamily(
-    Font(R.font.montserrat_regular, FontWeight.Normal),
-    Font(R.font.montserrat_bold, FontWeight.Bold),
-    Font(R.font.montserrat_light, FontWeight.Light)
-)
+//val montserrat = FontFamily(
+//    Font(R.font.montserrat_regular, FontWeight.Normal),
+//    Font(R.font.montserrat_bold, FontWeight.Bold),
+//    Font(R.font.montserrat_light, FontWeight.Light)
+//)
 
 data class TabItem(val text: String, val icon: ImageVector, val screen: @Composable () -> Unit)
 

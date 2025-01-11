@@ -30,6 +30,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -91,6 +92,7 @@ fun ReportScreen() {
     var netAmount by remember { mutableLongStateOf(0) }
     var listReportExpense by remember { mutableStateOf<List<ReportDataExpense>>(emptyList()) }
     var listReportIncome by remember { mutableStateOf<List<ReportDataIncome>>(emptyList()) }
+    var isLoading by rememberSaveable { mutableStateOf(false) }
 
     val currentMonthYear = remember {
         val calendar = Calendar.getInstance()
@@ -99,7 +101,7 @@ fun ReportScreen() {
         "$month/$year"
     }
 
-    var selectedMonthYear by remember { mutableStateOf(currentMonthYear) }
+    var selectedMonthYear by rememberSaveable { mutableStateOf(currentMonthYear) }
     var selectedTabIndex by remember { mutableStateOf(0) }
 
     MessagePopup(
@@ -109,75 +111,66 @@ fun ReportScreen() {
         onDismiss = { showPopup = false } // Đóng popup khi nhấn ngoài
     )
 
+    // Load data when `selectedMonthYear` changes
     LaunchedEffect(selectedMonthYear) {
+        if (!isLoading) {
+            isLoading = true
+            successMessage = "Đang tải dữ liệu..."
+            showPopup = true
 
-        successMessage = "Đang tải dữ liệu..."
-        showPopup = true
-        val monthYear = selectedMonthYear.substring(0, 7)
-        Log.d("MainActivity", "Selected month year: $monthYear")
-        val (month, year) = monthYear.split("/").map { it.toInt() }.let { it[0] to it[1] }
+            val monthYear = selectedMonthYear.substring(0, 7)
+            val (month, year) = monthYear.split("/").map { it.toInt() }
 
-        reportExpenseViewModel.getExpenseReport(
-            month = month,
-            year = year,
-            onSuccess = { reportExpense ->
-                Log.d("MainActivity", "Report data: $selectedMonthYear")
-
-                percentLimit = reportExpense.categoryExpenseReports.map { it.percentLimit.toInt() }
-                percentSpent =
-                    reportExpense.categoryExpenseReports.map { (it.percentSpent / 100).toFloat() }
-                expense = reportExpense.categoryExpenseReports.map { it.categoryName }
-                totalIncome = reportExpense.totalIncome
-                totalExpense = reportExpense.totalExpense
-                netAmount = reportExpense.netAmount
-                listReportExpense = reportExpense.categoryExpenseReports.map {
-                    ReportDataExpense(
-                        it.categoryName,
-                        it.spentAmount
+            reportExpenseViewModel.getExpenseReport(
+                month = month,
+                year = year,
+                onSuccess = { reportExpense ->
+                    percentLimit =
+                        reportExpense.categoryExpenseReports.map { it.percentLimit.toInt() }
+                    percentSpent =
+                        reportExpense.categoryExpenseReports.map { (it.percentSpent / 100).toFloat() }
+                    expense = reportExpense.categoryExpenseReports.map { it.categoryName }
+                    totalIncome = reportExpense.totalIncome
+                    totalExpense = reportExpense.totalExpense
+                    netAmount = reportExpense.netAmount
+                    listReportExpense = reportExpense.categoryExpenseReports.map {
+                        ReportDataExpense(it.categoryName, it.spentAmount)
+                    }
+                    colorExpense = listOf(
+                        Color(0xFFB40300), Color(0xFF911294), Color(0xFF0C326E),
+                        Color(0xFF126AB6), Color(0xFF0D96DA), Color(0xFF4DB218),
+                        Color(0xFFD5CC00), Color(0xFFEE9305), Color(0xFFD94E0F)
                     )
+                    isLoading = false
+                },
+                onError = { error ->
+                    Log.e("MainActivity", "Error: $error")
+                    isLoading = false
                 }
+            )
 
-                colorExpense = listOf(
-                    Color(0xFFB40300),
-                    Color(0xFF911294),
-                    Color(0xFF0C326E),
-                    Color(0xFF126AB6),
-                    Color(0xFF0D96DA),
-                    Color(0xFF4DB218),
-                    Color(0xFFD5CC00),
-                    Color(0xFFEE9305),
-                    Color(0xFFD94E0F),
-                )
-            },
-            onError = { error ->
-                Log.e("MainActivity", "Error: $error")
-            }
-        )
-        reportIncomeViewModel.getIncomeReport(
-            month = month,
-            year = year,
-            onSuccess = { reportIncome ->
-                Log.d("MainActivity", "Report data: $selectedMonthYear")
-                percentIncome =
-                    reportIncome.categoryIncomeReports.map { (it.percentIncome / 100).toFloat() }
-                income = reportIncome.categoryIncomeReports.map { it.categoryName }
-                listReportIncome = reportIncome.categoryIncomeReports.map {
-                    ReportDataIncome(
-                        it.categoryName,
-                        it.categoryIncome
+            reportIncomeViewModel.getIncomeReport(
+                month = month,
+                year = year,
+                onSuccess = { reportIncome ->
+                    percentIncome =
+                        reportIncome.categoryIncomeReports.map { (it.percentIncome / 100).toFloat() }
+                    income = reportIncome.categoryIncomeReports.map { it.categoryName }
+                    listReportIncome = reportIncome.categoryIncomeReports.map {
+                        ReportDataIncome(it.categoryName, it.categoryIncome)
+                    }
+                    colorIncome = listOf(
+                        Color(0xFFfb791d), Color(0xFF37c166),
+                        Color(0xFFf95aa9), Color(0xFFfba74a)
                     )
+                    isLoading = false
+                },
+                onError = { error ->
+                    Log.e("MainActivity", "Error: $error")
+                    isLoading = false
                 }
-                colorIncome = listOf(
-                    Color(0xFFfb791d),
-                    Color(0xFF37c166),
-                    Color(0xFFf95aa9),
-                    Color(0xFFfba74a),
-                )
-            },
-            onError = { error ->
-                Log.e("MainActivity", "Error: $error")
-            }
-        )
+            )
+        }
     }
     Scaffold(
         topBar = {
@@ -274,7 +267,8 @@ fun ReportScreen() {
                         Tab(
                             selected = selectedTabIndex == index,
                             onClick = { selectedTabIndex = index },
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier
+                                .fillMaxWidth()
                                 .padding(horizontal = 16.dp), // Đảm bảo tab sử dụng toàn bộ chiều rộng
                             text = {
                                 Box(
@@ -367,9 +361,8 @@ fun ReportScreen() {
                         }
                     }
                 }
-            }
-            else {
-                for(item in listReportIncome) {
+            } else {
+                for (item in listReportIncome) {
                     item {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
@@ -395,8 +388,6 @@ fun ReportScreen() {
         }
     }
 }
-
-
 
 
 @Preview
