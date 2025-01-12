@@ -305,7 +305,7 @@ fun CalendarScreen(navController: NavController) {
                     }
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = "Tổng",
+                            text = "Số dư",
                             style = TextStyle(
                                 fontWeight = FontWeight.Bold,
                                 fontFamily = montserrat,

@@ -97,7 +97,8 @@ fun DonutChartWithProgress(
     val proportions = values.map { it.toFloat() / totalValue }
     val angles = proportions.map { it * 360f }
 
-    var selectedSegment by remember { mutableStateOf(-1) } // Lưu trữ mảnh được chọn
+
+    var selectedSegment by remember { mutableStateOf(0) } // Lưu trữ mảnh được chọn
 
     var progressWidth by remember { mutableStateOf(0f) }
     var progressRadius by remember { mutableStateOf(0f) }
@@ -291,7 +292,7 @@ fun DonutChartIncome(
     labels: List<String>,
     progresses: List<Float> // Tỉ lệ hoàn thành (0.0 đến 1.0) cho từng phần
 ) {
-    var selectedSegment by remember { mutableStateOf(-1) } // Lưu trữ mảnh được chọn
+    var selectedSegment by remember { mutableStateOf(0) }
 
     Box(
         modifier = Modifier
@@ -340,6 +341,42 @@ fun DonutChartIncome(
 
                 startAngle += sweepAngle
             }
+
+            // Vẽ đường ngăn giữa các mảnh
+            startAngle = -90f
+            progresses.forEach { progress ->
+                val sweepAngle = progress * 360f
+                val angleInRadians = Math.toRadians(startAngle.toDouble())
+                val extendedOffset = maxStrokeWidth * 0.2f  // Tăng chiều dài đường ngăn thêm giá trị này
+
+                // Điều chỉnh bán kính để tăng chiều dài đường ngăn
+                val lineStart = Offset(
+                    x = center.x + (radius - maxStrokeWidth / 2 - extendedOffset) * cos(
+                        angleInRadians
+                    ).toFloat(),
+                    y = center.y + (radius - maxStrokeWidth / 2 - extendedOffset) * sin(
+                        angleInRadians
+                    ).toFloat()
+                )
+                val lineEnd = Offset(
+                    x = center.x + (radius + maxStrokeWidth / 2 + extendedOffset) * cos(
+                        angleInRadians
+                    ).toFloat(),
+                    y = center.y + (radius + maxStrokeWidth / 2 + extendedOffset) * sin(
+                        angleInRadians
+                    ).toFloat()
+                )
+
+                // Vẽ đường ngăn
+                drawLine(
+                    color = Color.White,
+                    start = lineStart,
+                    end = lineEnd,
+                    strokeWidth = 15f // Độ rộng của đường ngăn
+                )
+
+                startAngle += sweepAngle
+            }
         }
 
         // Hiển thị thông tin khi click vào mảnh
@@ -365,6 +402,7 @@ fun DonutChartIncome(
         }
     }
 }
+
 
 // Tính góc từ tâm dựa trên tọa độ
 private fun calculateAngleFromCenter(tapOffset: Offset, canvasSize: IntSize): Float {
@@ -887,15 +925,15 @@ fun BudgetTextField(
 
 private fun formatNumber(input: String): String {
     return input.replace(",", "").toLongOrNull()?.let {
-        String.format(Locale.US, "%,d", it) // Sử dụng Locale.US để đảm bảo định dạng đúng
+        String.format(Locale.US, "%,d", it)
     } ?: ""
 }
 
 
 @Composable
 fun OtherFunction(
-    items: List<Pair<String, () -> Unit>>, // Danh sách các mục với mô tả và chức năng không phải Composable
-    painters: List<Painter> // Danh sách các biểu tượng (painter) tương ứng với từng mục
+    items: List<Pair<String, () -> Unit>>,
+    painters: List<Painter>
 ) {
     // Kiểm tra độ dài của painters và items có khớp không
     require(items.size == painters.size) { "The number of items and painters must match." }
@@ -916,8 +954,8 @@ fun OtherFunction(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp)
-                    .background(Color.White, shape = cornerShape) // Bo góc tùy vào vị trí
-                    .clickable(onClick = item.second), // Gọi onClick khi nhấn
+                    .background(Color.White, shape = cornerShape)
+                    .clickable(onClick = item.second),
                 contentAlignment = Alignment.CenterStart
             ) {
                 Row(
@@ -967,14 +1005,14 @@ fun ReportTable(income: Long, expense: Long, net: Long) {
 
     val formattedIncome = buildAnnotatedString {
         append("+${currencyFormatter.format(income)}")
-        withStyle(style = SpanStyle(fontSize = 12.sp)) {  // Kích thước nhỏ hơn cho ký tự "₫"
+        withStyle(style = SpanStyle(fontSize = 12.sp)) {
             append("₫")
         }
     }
 
     val formattedExpense = buildAnnotatedString {
         append("-${currencyFormatter.format(expense)}")
-        withStyle(style = SpanStyle(fontSize = 12.sp)) {  // Kích thước nhỏ hơn cho ký tự "₫"
+        withStyle(style = SpanStyle(fontSize = 12.sp)) {
             append("₫")
         }
     }
@@ -1000,9 +1038,9 @@ fun ReportTable(income: Long, expense: Long, net: Long) {
             .height(120.dp)
             .background(
                 Brush.linearGradient(
-                    colors = listOf(Color(0xFFA8E063), Color(0xFF4EB644)), // Đậm đến nhạt
+                    colors = listOf(Color(0xFFF35E17), Color(0xFFFFA573)),
                     start = Offset(0f, 0f),
-                    end = Offset(1000f, 0f) // Hướng gradient ngang
+                    end = Offset(1000f, 0f)
                 )
 
             ),
@@ -1030,16 +1068,16 @@ fun ReportTable(income: Long, expense: Long, net: Long) {
                         text = "Thu nhập",
                         fontFamily = montserrat,
                         color = Color.White,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 14.sp,
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = formattedIncome,
                         fontFamily = montserrat,
-                        color = Color(0xff5B86E5),
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 14.sp
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp
                     )
                 }
 
@@ -1064,7 +1102,7 @@ fun ReportTable(income: Long, expense: Long, net: Long) {
                         style = TextStyle(
                             fontFamily = montserrat,
                             color = Color.White,
-                            fontWeight = FontWeight.Bold,
+                            fontWeight = FontWeight.SemiBold,
                             fontSize = 14.sp,
                         ),
                     )
@@ -1073,13 +1111,13 @@ fun ReportTable(income: Long, expense: Long, net: Long) {
                         text = formattedExpense,
                         style = TextStyle(
                             fontFamily = montserrat,
-                            color = Color(0xffFF7F50),
-                            shadow = Shadow(
-                                color = Color.White,
-                                offset = Offset(2f, 2f),
-                                blurRadius = 4f
-                            ),
-                            fontWeight = FontWeight.SemiBold,
+                            color = Color.White,
+//                            shadow = Shadow(
+//                                color = Color.White,
+//                                offset = Offset(2f, 2f),
+//                                blurRadius = 4f
+//                            ),
+                            fontWeight = FontWeight.Bold,
                             fontSize = 16.sp
                         )
                     )
@@ -1103,14 +1141,14 @@ fun ReportTable(income: Long, expense: Long, net: Long) {
                     text = "Số dư",
                     fontFamily = montserrat,
                     color = Color.White,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 14.sp,
                 )
                 Text(
                     text = formattedBalance,
                     fontFamily = montserrat,
                     color = Color.White,
-                    fontWeight = FontWeight.SemiBold,
+                    fontWeight = FontWeight.Bold,
                     fontSize = 16.sp,
                 )
             }

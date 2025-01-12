@@ -12,13 +12,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
@@ -34,6 +36,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
@@ -100,8 +103,9 @@ fun ReportScreen() {
         val year = calendar.get(Calendar.YEAR)
         "$month/$year"
     }
-
     var selectedMonthYear by rememberSaveable { mutableStateOf(currentMonthYear) }
+
+
     var selectedTabIndex by remember { mutableStateOf(0) }
 
     MessagePopup(
@@ -111,9 +115,9 @@ fun ReportScreen() {
         onDismiss = { showPopup = false } // Đóng popup khi nhấn ngoài
     )
 
-    // Load data when `selectedMonthYear` changes
+    Log.d("ReportScreen", "selectedMonthYear: $selectedMonthYear")
     LaunchedEffect(selectedMonthYear) {
-        if (!isLoading) {
+        if (!isLoading && selectedMonthYear != currentMonthYear) {
             isLoading = true
             successMessage = "Đang tải dữ liệu..."
             showPopup = true
@@ -144,7 +148,6 @@ fun ReportScreen() {
                     isLoading = false
                 },
                 onError = { error ->
-                    Log.e("MainActivity", "Error: $error")
                     isLoading = false
                 }
             )
@@ -166,7 +169,6 @@ fun ReportScreen() {
                     isLoading = false
                 },
                 onError = { error ->
-                    Log.e("MainActivity", "Error: $error")
                     isLoading = false
                 }
             )
@@ -245,21 +247,25 @@ fun ReportScreen() {
                 ReportTable(totalIncome, totalExpense, netAmount)
             }
 
-//            item {
-//                Spacer(modifier = Modifier.height(24.dp))
-//            }
+
             item {
                 // Tabs
                 val tabs = listOf("Chi tiêu", "Thu nhập")
-                ScrollableTabRow(
+                TabRow(
                     selectedTabIndex = selectedTabIndex,
                     modifier = Modifier
                         .background(color = Color.White)
                         .fillMaxWidth(),
                     indicator = { tabPositions ->
                         TabRowDefaults.Indicator(
-                            Modifier.tabIndicatorOffset(tabPositions[selectedTabIndex]),
-                            color = primaryColor
+                            Modifier
+                                .width(15.dp)
+                                .tabIndicatorOffset(tabPositions[selectedTabIndex])
+                                .height(4.dp)
+                                .clip(RoundedCornerShape(50))
+                                .background(primaryColor),
+                            color = primaryColor,
+                            height = 2.dp,
                         )
                     }
                 ) {
@@ -268,12 +274,11 @@ fun ReportScreen() {
                             selected = selectedTabIndex == index,
                             onClick = { selectedTabIndex = index },
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp), // Đảm bảo tab sử dụng toàn bộ chiều rộng
+                                .padding(horizontal = 16.dp),
                             text = {
                                 Box(
                                     modifier = Modifier.fillMaxSize(),
-                                    contentAlignment = Alignment.Center // Căn giữa nội dung
+                                    contentAlignment = Alignment.Center
                                 ) {
                                     Text(
                                         title,
@@ -338,7 +343,7 @@ fun ReportScreen() {
 
             if (selectedTabIndex == 0) {
                 for (item in listReportExpense) {
-                    if (item.name != "Tiết kiệm") {
+                    if (item.name != "Tiết kiệm" && item.amount != 0L) {
                         item {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
