@@ -97,14 +97,13 @@ fun ReportScreen() {
     var listReportIncome by remember { mutableStateOf<List<ReportDataIncome>>(emptyList()) }
     var isLoading by rememberSaveable { mutableStateOf(false) }
 
-    val currentMonthYear = remember {
+    val currentMonthYear = rememberSaveable {
         val calendar = Calendar.getInstance()
         val month = String.format("%02d", calendar.get(Calendar.MONTH) + 1)
         val year = calendar.get(Calendar.YEAR)
         "$month/$year"
     }
-    var selectedMonthYear by rememberSaveable { mutableStateOf(currentMonthYear) }
-
+    var selectedMonthYear by rememberSaveable{ mutableStateOf(currentMonthYear) }
 
     var selectedTabIndex by remember { mutableStateOf(0) }
 
@@ -215,135 +214,210 @@ fun ReportScreen() {
         }
     ) { paddingValues ->
 
-        LazyColumn(
+        // Phần header
+        Column(
             modifier = Modifier
-                .padding(paddingValues)
+                .background(color = Color.White)
                 .fillMaxSize()
-                .background(Color.White)
+                .padding(paddingValues)
         ) {
-            item {
-                // Phần header
-                Column(
-                    modifier = Modifier
-                        .background(color = Color.White)
-                ) {
-                    // Spacer giữa TopAppBar và biểu đồ
-                    Spacer(modifier = Modifier.height(8.dp))
+            // Spacer giữa TopAppBar và biểu đồ
+            Spacer(modifier = Modifier
+                .height(16.dp)
+            )
 
-                    MonthPickerButton(onDateSelected = { month ->
-                        selectedMonthYear = month
-                    })
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                MonthPickerButton(onDateSelected = { month ->
+                    selectedMonthYear = month
+                    Log.d("CalendarScreen", "selectedMonthYear: $selectedMonthYear")
+                })
+            }
 
-                    Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier
+                .height(16.dp)
+            )
 
+            ReportTable(totalIncome, totalExpense, netAmount)
+
+            // Tabs
+            val tabs = listOf("Chi tiêu", "Thu nhập")
+            TabRow(
+                selectedTabIndex = selectedTabIndex,
+                modifier = Modifier
+                    .background(color = Color.White)
+                    .fillMaxWidth(),
+                indicator = { tabPositions ->
+                    TabRowDefaults.Indicator(
+                        Modifier
+                            .width(15.dp)
+                            .tabIndicatorOffset(tabPositions[selectedTabIndex])
+                            .height(4.dp)
+                            .clip(RoundedCornerShape(50))
+                            .background(primaryColor),
+                        color = primaryColor,
+                        height = 2.dp,
+                    )
+                }
+            ) {
+                tabs.forEachIndexed { index, title ->
+                    Tab(
+                        selected = selectedTabIndex == index,
+                        onClick = { selectedTabIndex = index },
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp),
+                        text = {
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    title,
+                                    fontFamily = montserrat,
+                                    fontWeight = FontWeight.SemiBold,
+                                    fontSize = 14.sp,
+                                    color = if (selectedTabIndex == index) primaryColor else textColor,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+                        }
+                    )
                 }
             }
 
-//            item {
-//                Spacer(modifier = Modifier.height(24.dp))
-//            }
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.White)
+            ) {
 
-            item {
-                ReportTable(totalIncome, totalExpense, netAmount)
-            }
+//                item {
+//                    ReportTable(totalIncome, totalExpense, netAmount)
+//                }
 
+//                item {
+//                    // Tabs
+//                    val tabs = listOf("Chi tiêu", "Thu nhập")
+//                    TabRow(
+//                        selectedTabIndex = selectedTabIndex,
+//                        modifier = Modifier
+//                            .background(color = Color.White)
+//                            .fillMaxWidth(),
+//                        indicator = { tabPositions ->
+//                            TabRowDefaults.Indicator(
+//                                Modifier
+//                                    .width(15.dp)
+//                                    .tabIndicatorOffset(tabPositions[selectedTabIndex])
+//                                    .height(4.dp)
+//                                    .clip(RoundedCornerShape(50))
+//                                    .background(primaryColor),
+//                                color = primaryColor,
+//                                height = 2.dp,
+//                            )
+//                        }
+//                    ) {
+//                        tabs.forEachIndexed { index, title ->
+//                            Tab(
+//                                selected = selectedTabIndex == index,
+//                                onClick = { selectedTabIndex = index },
+//                                modifier = Modifier
+//                                    .padding(horizontal = 16.dp),
+//                                text = {
+//                                    Box(
+//                                        modifier = Modifier.fillMaxSize(),
+//                                        contentAlignment = Alignment.Center
+//                                    ) {
+//                                        Text(
+//                                            title,
+//                                            fontFamily = montserrat,
+//                                            fontWeight = FontWeight.SemiBold,
+//                                            fontSize = 14.sp,
+//                                            color = if (selectedTabIndex == index) primaryColor else textColor,
+//                                            textAlign = TextAlign.Center
+//                                        )
+//                                    }
+//                                }
+//                            )
+//                        }
+//                    }
+//
+//
+//                    Spacer(modifier = Modifier.height(16.dp))
+//                }
 
-            item {
-                // Tabs
-                val tabs = listOf("Chi tiêu", "Thu nhập")
-                TabRow(
-                    selectedTabIndex = selectedTabIndex,
-                    modifier = Modifier
-                        .background(color = Color.White)
-                        .fillMaxWidth(),
-                    indicator = { tabPositions ->
-                        TabRowDefaults.Indicator(
-                            Modifier
-                                .width(15.dp)
-                                .tabIndicatorOffset(tabPositions[selectedTabIndex])
-                                .height(4.dp)
-                                .clip(RoundedCornerShape(50))
-                                .background(primaryColor),
-                            color = primaryColor,
-                            height = 2.dp,
-                        )
+                item {
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+
+                item {
+                    when (selectedTabIndex) {
+                        0 -> {
+                            if (percentLimit.isNotEmpty() && percentSpent.isNotEmpty() && expense.isNotEmpty()) {
+                                DonutChartWithProgress(
+                                    percentLimit,
+                                    colorExpense,
+                                    expense,
+                                    percentSpent
+                                )
+                            } else {
+                                Text(
+                                    text = "Đang tải dữ liệu.....",
+                                    textAlign = TextAlign.Center,
+                                    color = Color.Gray,
+                                    fontSize = 16.sp
+                                )
+                            }
+                        }
+
+                        1 -> {
+                            if (percentIncome.isNotEmpty() && expense.isNotEmpty()) {
+                                DonutChartIncome(colorIncome, income, percentIncome)
+                            } else {
+                                Text(
+                                    text = "Đang tải dữ liệu.....",
+                                    textAlign = TextAlign.Center,
+                                    color = Color.Gray,
+                                    fontSize = 16.sp
+                                )
+                            }
+                        }
                     }
-                ) {
-                    tabs.forEachIndexed { index, title ->
-                        Tab(
-                            selected = selectedTabIndex == index,
-                            onClick = { selectedTabIndex = index },
-                            modifier = Modifier
-                                .padding(horizontal = 16.dp),
-                            text = {
-                                Box(
-                                    modifier = Modifier.fillMaxSize(),
-                                    contentAlignment = Alignment.Center
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+                item {
+                    Divider(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(1.dp)
+                    )
+                }
+
+                if (selectedTabIndex == 0) {
+                    for (item in listReportExpense) {
+                        if (item.name != "Tiết kiệm" && item.amount != 0L) {
+                            item {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.Start,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .background(color = Color.White)
+                                        .height(50.dp)
+                                        .padding(horizontal = 16.dp)
                                 ) {
-                                    Text(
-                                        title,
-                                        fontFamily = montserrat,
-                                        fontWeight = FontWeight.SemiBold,
-                                        fontSize = 14.sp,
-                                        color = if (selectedTabIndex == index) primaryColor else textColor,
-                                        textAlign = TextAlign.Center
-                                    )
+                                    CategoryIconWithName(item.name, "", item.amount, "expense")
                                 }
                             }
-                        )
-                    }
-                }
-
-
-                Spacer(modifier = Modifier.height(16.dp))
-            }
-
-            item {
-                when (selectedTabIndex) {
-                    0 -> {
-                        if (percentLimit.isNotEmpty() && percentSpent.isNotEmpty() && expense.isNotEmpty()) {
-                            DonutChartWithProgress(
-                                percentLimit,
-                                colorExpense,
-                                expense,
-                                percentSpent
-                            )
-                        } else {
-                            Text(
-                                text = "Đang tải dữ liệu.....",
-                                textAlign = TextAlign.Center,
-                                color = Color.Gray,
-                                fontSize = 16.sp
-                            )
+                            item {
+                                Divider(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(1.dp)
+                                )
+                            }
                         }
                     }
-
-                    1 -> {
-                        if (percentIncome.isNotEmpty() && expense.isNotEmpty()) {
-                            DonutChartIncome(colorIncome, income, percentIncome)
-                        } else {
-                            Text(
-                                text = "Đang tải dữ liệu.....",
-                                textAlign = TextAlign.Center,
-                                color = Color.Gray,
-                                fontSize = 16.sp
-                            )
-                        }
-                    }
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-            }
-            item {
-                Divider(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(1.dp)
-                )
-            }
-
-            if (selectedTabIndex == 0) {
-                for (item in listReportExpense) {
-                    if (item.name != "Tiết kiệm" && item.amount != 0L) {
+                } else {
+                    for (item in listReportIncome) {
                         item {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
@@ -354,7 +428,7 @@ fun ReportScreen() {
                                     .height(50.dp)
                                     .padding(horizontal = 16.dp)
                             ) {
-                                CategoryIconWithName(item.name, "", item.amount, "expense")
+                                CategoryIconWithName(item.name, "", item.amount, "income")
                             }
                         }
                         item {
@@ -366,31 +440,11 @@ fun ReportScreen() {
                         }
                     }
                 }
-            } else {
-                for (item in listReportIncome) {
-                    item {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Start,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(color = Color.White)
-                                .height(50.dp)
-                                .padding(horizontal = 16.dp)
-                        ) {
-                            CategoryIconWithName(item.name, "", item.amount, "income")
-                        }
-                    }
-                    item {
-                        Divider(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(1.dp)
-                        )
-                    }
-                }
             }
+
         }
+
+
     }
 }
 

@@ -339,6 +339,30 @@ fun DonutChartIncome(
                     size = Size(segmentRadius * 2, segmentRadius * 2)
                 )
 
+                // Chiều rộng vòng trong
+                val innerWidth = maxStrokeWidth * 0.2f // Tỷ lệ chiều rộng mực nước
+
+                // Bán kính vòng trong
+                val innerRadius =
+                    if (isSelected) segmentRadius - (maxStrokeWidth - innerWidth) / 2 - innerWidth - 0.25f else radius - (maxStrokeWidth - innerWidth) / 2 - innerWidth
+
+                // Vòng trong
+                drawArc(
+                    color = colors[index].copy(alpha = 0.6f), // Làm nhạt màu
+                    startAngle = startAngle,
+                    sweepAngle = sweepAngle, // Giữ nguyên góc
+                    useCenter = false,
+                    style = Stroke(
+                        width = innerWidth, // Chiều rộng mực nước theo tỷ lệ
+                        cap = StrokeCap.Butt
+                    ),
+                    topLeft = Offset(center.x - innerRadius, center.y - innerRadius),
+                    size = Size(
+                        innerRadius * 2,
+                        innerRadius * 2
+                    ) // Sử dụng bán kính trong để vẽ mực nước
+                )
+
                 startAngle += sweepAngle
             }
 
