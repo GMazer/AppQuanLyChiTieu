@@ -1091,7 +1091,10 @@ fun MessagePopup(
 }
 
 @Composable
-fun DatePickerButton(onDateSelected: (String) -> Unit) {
+fun DatePickerButton(
+    onDateSelected: (String) -> Unit,
+    initialDate: String?
+) {
     var dateText by remember { mutableStateOf("") }
     val context = LocalContext.current
     val calendar = Calendar.getInstance()
@@ -1100,9 +1103,10 @@ fun DatePickerButton(onDateSelected: (String) -> Unit) {
     val dateFormat = SimpleDateFormat("yyyy-MM-dd (E)", Locale("vi", "VN"))
 
     // Cập nhật ngày hiện tại khi khởi tạo
-    LaunchedEffect(key1 = true) {
+    if (initialDate.isNullOrEmpty()) {
         dateText = dateFormat.format(calendar.time)
-        onDateSelected(dateText)
+    } else {
+        dateText = initialDate
     }
 
     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -1287,11 +1291,6 @@ fun CustomTabRow(
 }
 
 
-@Preview
-@Composable
-fun PreviewDatePickerButton() {
-    DatePickerButton(onDateSelected = {})
-}
 
 
 

@@ -107,7 +107,10 @@ fun IncomeContent(postViewModel: PostTransactionViewModel = PostTransactionViewM
                             fontWeight = FontWeight.Bold,
                             fontFamily = montserrat
                         )
-                        DatePickerButton(onDateSelected = { date -> selectedDate = date })
+                        DatePickerButton(
+                            onDateSelected = { date -> selectedDate = date },
+                            initialDate = ""
+                        )
                     }
 
                     DrawBottomLine(16.dp)

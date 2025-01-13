@@ -213,6 +213,7 @@ fun PostExpenseNotiTransaction(
                     fontFamily = montserrat
                 )
                 DatePickerButton(
+                    initialDate = selectedDateState,
                     onDateSelected = { date ->
                         val validDate = date.split(" ")[0]
                         selectedDateState = validDate

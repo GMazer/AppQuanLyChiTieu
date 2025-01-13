@@ -52,14 +52,10 @@ import com.example.jetpackcompose.components.MessagePopup
 import com.example.jetpackcompose.components.NoteTextField
 import com.example.jetpackcompose.components.NumberTextField
 import com.example.jetpackcompose.components.montserrat
-import com.example.jetpackcompose.ui.theme.primaryColor
 import com.example.jetpackcompose.ui.theme.componentShapes
+import com.example.jetpackcompose.ui.theme.primaryColor
 import com.example.jetpackcompose.ui.theme.textColor
-import java.text.DecimalFormat
-import java.text.DecimalFormatSymbols
-import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Locale
 
 @SuppressLint("DefaultLocale")
 @Composable
@@ -84,18 +80,6 @@ fun EditExpenseTransaction(
     var showPopup by remember { mutableStateOf(false) }
 
     var showDeleteDialog by remember { mutableStateOf(false) }
-
-    // Định dạng tiền tệ
-    val currencyFormatter = remember {
-        val symbols = DecimalFormatSymbols(Locale("vi", "VN"))
-        symbols.decimalSeparator = '.'
-        symbols.groupingSeparator = ','
-        DecimalFormat("#,###", symbols)
-    }
-
-    val dateFormatter = remember {
-        SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()) // Định dạng ngày "yyyy-MM-dd"
-    }
 
     // Danh sách các Category
     val categories = listOf(
@@ -271,10 +255,12 @@ fun EditExpenseTransaction(
                 DatePickerButton(
                     onDateSelected = { date ->
                         // Lấy phần ngày hợp lệ bằng cách tách chuỗi
-                        val validDate = date.split(" ")[0] // Tách theo khoảng trắng và lấy phần ngày "yyyy-MM-dd"
+                        val validDate =
+                            date.split(" ")[0] // Tách theo khoảng trắng và lấy phần ngày "yyyy-MM-dd"
 
                         selectedDate = validDate
                     },
+                    initialDate = selectedDate,
                 )
             }
 
@@ -352,7 +338,7 @@ fun EditExpenseTransaction(
                         putViewModel.putTransaction(
                             transactionId = fixedTransactionId,
                             data = updatedTransaction,
-                            onSuccess = { message ->
+                            onSuccess = {
                                 successMessage = "Chỉnh sửa thành công!"
                                 showPopup = true
                                 navController.popBackStack()
@@ -416,7 +402,7 @@ fun EditExpenseTransaction(
                             // Gọi API xóa giao dịch
                             delViewModel.deleteTransaction(
                                 transactionId = fixedTransactionId,
-                                onSuccess = { message ->
+                                onSuccess = {
                                     successMessage = "Xóa giao dịch thành công!"
                                     showPopup = true
                                     showDeleteDialog = false

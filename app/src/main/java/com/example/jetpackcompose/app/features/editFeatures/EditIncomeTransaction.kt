@@ -242,9 +242,11 @@ fun EditIncomeTransaction(
                 DatePickerButton(
                     onDateSelected = { date ->
                         // Lấy phần ngày hợp lệ bằng cách tách chuỗi
-                        val validDate = date.split(" ")[0] // Tách theo khoảng trắng và lấy phần ngày "yyyy-MM-dd"
+                        val validDate =
+                            date.split(" ")[0] // Tách theo khoảng trắng và lấy phần ngày "yyyy-MM-dd"
                         selectedDate = validDate
                     },
+                    initialDate = selectedDate,
                 )
             }
 
