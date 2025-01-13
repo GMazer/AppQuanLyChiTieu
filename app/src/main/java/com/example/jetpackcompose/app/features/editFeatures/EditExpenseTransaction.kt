@@ -58,6 +58,7 @@ import com.example.jetpackcompose.ui.theme.textColor
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Locale
 
 @SuppressLint("DefaultLocale")
@@ -156,11 +157,14 @@ fun EditExpenseTransaction(
         )
     )
 
+    val calendar = Calendar.getInstance()
+    val year = calendar.get(Calendar.YEAR)
+    val month = calendar.get(Calendar.MONTH) + 1
     // Tải danh sách giao dịch và tìm giao dịch cần chỉnh sửa
     LaunchedEffect(fixedTransactionId) {
         getViewModel.getTransactions(
-            month = 12,
-            year = 2024,
+            month = month,
+            year = year,
             onSuccess1 = { _ ->
                 // Sau khi lấy tất cả giao dịch, tìm giao dịch có ID tương ứng
                 val transaction = getViewModel.dateTransactionList.values.flatten()

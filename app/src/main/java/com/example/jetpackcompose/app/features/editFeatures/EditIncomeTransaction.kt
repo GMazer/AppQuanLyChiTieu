@@ -57,6 +57,8 @@ import com.example.jetpackcompose.ui.theme.textColor
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
 import java.util.Locale
 
 @Composable
@@ -91,7 +93,7 @@ fun EditIncomeTransaction(
     }
 
     val dateFormatter = remember {
-        SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()) // Định dạng ngày "yyyy-MM-dd"
+        SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
     }
 
     // Danh sách các Category
@@ -126,11 +128,14 @@ fun EditIncomeTransaction(
         )
     )
 
+    val calendar = Calendar.getInstance()
+    val year = calendar.get(Calendar.YEAR)
+    val month = calendar.get(Calendar.MONTH) + 1
     // Tải danh sách giao dịch và tìm giao dịch cần chỉnh sửa
     LaunchedEffect(transactionId) {
         getViewModel.getTransactions(
-            month = 12,
-            year = 2024,
+            month = month,
+            year = year,
             onSuccess1 = { _ ->
                 // Sau khi lấy tất cả giao dịch, tìm giao dịch có ID tương ứng
                 val transaction = getViewModel.dateTransactionList.values.flatten()
@@ -140,15 +145,15 @@ fun EditIncomeTransaction(
                     // Cập nhật dữ liệu ban đầu vào các trường nhập liệu
                     textNote = transaction.note?.let { TextFieldValue(it) } ?: TextFieldValue("")
 
-                    // Cập nhật amount
+
                     amountValue = TextFieldValue(transaction.amount.toString())
 
-                    // Cập nhật ngày và loại bỏ phần thông tin " (Th 7)"
+
                     val year = transaction.transactionDate[0]
                     val month = transaction.transactionDate[1]
                     val day = transaction.transactionDate[2]
 
-                    // Dùng String.format để định dạng tháng và ngày
+
                     val formattedMonth = String.format("%02d", month)
                     val formattedDay = String.format("%02d", day)
 
@@ -363,10 +368,9 @@ fun EditIncomeTransaction(
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp)
                             .height(48.dp)
-                            .width(150.dp), // Giới hạn chiều ngang tối đa của AlertDialog
-                        horizontalArrangement = Arrangement.SpaceBetween // Căn chỉnh 2 nút về 2 phía
+                            .width(150.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        // Nút Bỏ qua - nằm bên trái
                         TextButton(onClick = { showDeleteDialog = false }) {
                             Text(
                                 "Bỏ qua",
@@ -376,16 +380,14 @@ fun EditIncomeTransaction(
                             )
                         }
 
-                        // Nút Xoá - nằm bên phải
                         TextButton(onClick = {
-                            // Gọi API xóa giao dịch
                             delViewModel.deleteTransaction(
                                 transactionId = transactionId,
                                 onSuccess = {
                                     successMessage = "Xóa giao dịch thành công!"
                                     showPopup = true
                                     showDeleteDialog = false
-                                    navController.popBackStack() // Trở lại màn hình Calendar
+                                    navController.popBackStack()
                                 },
                                 onError = { error ->
                                     errorMessage = error

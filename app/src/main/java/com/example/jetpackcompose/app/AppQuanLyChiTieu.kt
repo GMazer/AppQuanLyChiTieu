@@ -63,7 +63,7 @@ fun AppQuanLyChiTieu(transactionStorage: TransactionStorage) {
 
     var showDialog by rememberSaveable { mutableStateOf(false) }
     val sharedPreferences = context.getSharedPreferences("app_preferences", Context.MODE_PRIVATE)
-    var isDialogShown by remember {
+    val isDialogShown by remember {
         mutableStateOf(
             sharedPreferences.getBoolean(
                 "is_dialog_shown",
@@ -187,28 +187,47 @@ fun AppQuanLyChiTieu(transactionStorage: TransactionStorage) {
             }
 
             composable(
-                "editFixedExpense/{fixedTransactionId}",
-                arguments = listOf(navArgument("fixedTransactionId") { type = NavType.IntType })
+                "editFixedExpense/{fixedTransactionId}?startDate={startDate}&endDate={endDate}",
+                arguments = listOf(
+                    navArgument("fixedTransactionId") { type = NavType.IntType },
+                    navArgument("startDate") { type = NavType.StringType; nullable = true },
+                    navArgument("endDate") { type = NavType.StringType; nullable = true }
+                )
             ) { backStackEntry ->
-                // Lấy transactionId từ NavArgument
+                // Lấy các tham số từ NavArguments
                 val fixedTransactionId = backStackEntry.arguments?.getInt("fixedTransactionId") ?: 0
+                val startDate = backStackEntry.arguments?.getString("startDate")
+                val endDate = backStackEntry.arguments?.getString("endDate")
+
                 EditFixedExpenseTransaction(
                     navController = navController,
-                    fixedTransactionId = fixedTransactionId
+                    fixedTransactionId = fixedTransactionId,
+                    startDate = startDate,
+                    endDate = endDate
                 )
             }
 
             composable(
-                "editFixedIncome/{fixedTransactionId}",
-                arguments = listOf(navArgument("fixedTransactionId") { type = NavType.IntType })
+                "editFixedIncome/{fixedTransactionId}?startDate={startDate}&endDate={endDate}",
+                arguments = listOf(
+                    navArgument("fixedTransactionId") { type = NavType.IntType },
+                    navArgument("startDate") { type = NavType.StringType; nullable = true },
+                    navArgument("endDate") { type = NavType.StringType; nullable = true }
+                )
             ) { backStackEntry ->
-                // Lấy transactionId từ NavArgument
+                // Lấy các tham số từ NavArguments
                 val fixedTransactionId = backStackEntry.arguments?.getInt("fixedTransactionId") ?: 0
+                val startDate = backStackEntry.arguments?.getString("startDate")
+                val endDate = backStackEntry.arguments?.getString("endDate")
+
                 EditIncomeExpenseTransaction(
                     navController = navController,
-                    fixedTransactionId = fixedTransactionId
+                    fixedTransactionId = fixedTransactionId,
+                    startDate = startDate,
+                    endDate = endDate
                 )
             }
+
 
             composable("postExpenseNotiTransaction/{amount}/{selectedDate}/{index}") { backStackEntry ->
                 val amount = backStackEntry.arguments?.getString("amount")?.toLongOrNull() ?: 0L
@@ -220,6 +239,7 @@ fun AppQuanLyChiTieu(transactionStorage: TransactionStorage) {
                 val amount = backStackEntry.arguments?.getString("amount")?.toLongOrNull() ?: 0L
                 val selectedDate = backStackEntry.arguments?.getString("selectedDate") ?: ""
                 val index = backStackEntry.arguments?.getString("index")?.toIntOrNull() ?: 0
+                PostIncomeNotiTransaction(navController, amount, selectedDate, index)
             }
 
         }
@@ -274,24 +294,44 @@ fun AppQuanLyChiTieu(transactionStorage: TransactionStorage) {
             }
 
             composable(
-                "editFixedExpense/{fixedTransactionId}",
-                arguments = listOf(navArgument("fixedTransactionId") { type = NavType.IntType })
+                "editFixedExpense/{fixedTransactionId}?startDate={startDate}&endDate={endDate}",
+                arguments = listOf(
+                    navArgument("fixedTransactionId") { type = NavType.IntType },
+                    navArgument("startDate") { type = NavType.StringType; nullable = true },
+                    navArgument("endDate") { type = NavType.StringType; nullable = true }
+                )
             ) { backStackEntry ->
+                // Lấy các tham số từ NavArguments
                 val fixedTransactionId = backStackEntry.arguments?.getInt("fixedTransactionId") ?: 0
+                val startDate = backStackEntry.arguments?.getString("startDate")
+                val endDate = backStackEntry.arguments?.getString("endDate")
+
                 EditFixedExpenseTransaction(
                     navController = navController,
-                    fixedTransactionId = fixedTransactionId
+                    fixedTransactionId = fixedTransactionId,
+                    startDate = startDate,
+                    endDate = endDate
                 )
             }
 
             composable(
-                "editFixedIncome/{fixedTransactionId}",
-                arguments = listOf(navArgument("fixedTransactionId") { type = NavType.IntType })
+                "editFixedIncome/{fixedTransactionId}?startDate={startDate}&endDate={endDate}",
+                arguments = listOf(
+                    navArgument("fixedTransactionId") { type = NavType.IntType },
+                    navArgument("startDate") { type = NavType.StringType; nullable = true },
+                    navArgument("endDate") { type = NavType.StringType; nullable = true }
+                )
             ) { backStackEntry ->
+                // Lấy các tham số từ NavArguments
                 val fixedTransactionId = backStackEntry.arguments?.getInt("fixedTransactionId") ?: 0
+                val startDate = backStackEntry.arguments?.getString("startDate")
+                val endDate = backStackEntry.arguments?.getString("endDate")
+
                 EditIncomeExpenseTransaction(
                     navController = navController,
-                    fixedTransactionId = fixedTransactionId
+                    fixedTransactionId = fixedTransactionId,
+                    startDate = startDate,
+                    endDate = endDate
                 )
             }
 

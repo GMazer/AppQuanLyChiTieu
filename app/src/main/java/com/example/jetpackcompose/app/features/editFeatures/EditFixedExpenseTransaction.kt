@@ -1,5 +1,6 @@
 package com.example.jetpackcompose.app.features.editFeatures
 
+import android.annotation.SuppressLint
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -32,7 +33,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -57,9 +57,15 @@ import java.time.LocalDate
 import java.util.Date
 import java.util.Locale
 
+@SuppressLint("SimpleDateFormat")
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun EditFixedExpenseTransaction(navController: NavHostController, fixedTransactionId: Int) {
+fun EditFixedExpenseTransaction(
+    navController: NavHostController,
+    fixedTransactionId: Int,
+    startDate: String?,
+    endDate: String?
+) {
     val getFixedTransactionViewModel: GetFixedTransactionViewModel =
         GetFixedTransactionViewModel(LocalContext.current)
     val putFixedTransactionViewModel: PutFixedTransactionViewModel =
@@ -75,7 +81,6 @@ fun EditFixedExpenseTransaction(navController: NavHostController, fixedTransacti
     var selectedDate by remember { mutableStateOf(currentDate) }
     var selectedEndDate by remember { mutableStateOf("") }
     var amountState by remember { mutableStateOf(TextFieldValue("")) }
-
 
     // Trạng thái hiển thị thông báo
     var showPopup by remember { mutableStateOf(false) }
@@ -99,9 +104,9 @@ fun EditFixedExpenseTransaction(navController: NavHostController, fixedTransacti
                     titleState = TextFieldValue(it.title ?: "")
                     selectedCategory = it.categoryName
                     amountState = TextFieldValue(it.amount.toString())
-                    selectedDate = SimpleDateFormat("yyyy-MM-dd").format(it.startDate)
+
                     selectedEndDate = it.endDate?.let { endDateList ->
-                        SimpleDateFormat("yyyy-MM-dd").format(Date(endDateList[0].toLong()))
+                        LocalDate.of(endDateList[0], endDateList[1], endDateList[2]).toString()
                     } ?: ""
                 }
             },
@@ -230,17 +235,23 @@ fun EditFixedExpenseTransaction(navController: NavHostController, fixedTransacti
                     }
                     Divider(color = Color(0xFFd4d4d4), thickness = 0.5.dp)
 
+                    Log.d("EditFixedExpenseTransaction", "Start Date 2: $startDate")
+
                     DatePickerRow(
                         label = "Bắt đầu",
-                        initialDate = LocalDate.now()
+                        initialDate = LocalDate.parse(startDate),
                     ) { date ->
-                        selectedDate = date.toString()
+                        selectedDate = date
                     }
                     Divider(color = Color(0xFFd4d4d4), thickness = 0.5.dp)
 
-                    EndDateRow { endDate ->
-                        selectedEndDate = endDate
-                    }
+                    EndDateRow(
+                        label = "Kết thúc",
+                        initialDate = endDate,
+                        onDateSelected = { date ->
+                            selectedEndDate = date
+                        }
+                    )
                 }
             }
 
@@ -303,17 +314,5 @@ fun EditFixedExpenseTransaction(navController: NavHostController, fixedTransacti
             }
         }
     }
-}
-
-@RequiresApi(Build.VERSION_CODES.O)
-@Preview
-@Composable
-fun EditFixedExpenseTransactionPreview() {
-    val context = LocalContext.current
-    EditFixedExpenseTransaction(
-        navController = NavHostController(
-            context = context
-        ), fixedTransactionId = 1
-    )
 }
 

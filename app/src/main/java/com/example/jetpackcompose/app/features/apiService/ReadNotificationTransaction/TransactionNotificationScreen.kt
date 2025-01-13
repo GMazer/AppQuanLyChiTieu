@@ -44,12 +44,11 @@ import java.util.Locale
 
 @Composable
 fun TransactionNotificationScreen(navController: NavController) {
+
     val context = LocalContext.current
 
-    // Tạo đối tượng TransactionStorage
     val transactionStorage = TransactionStorage(context)
 
-    // Tải danh sách giao dịch từ bộ nhớ trong
     val transactions = transactionStorage.loadTransactions()
 
     // Nhóm các giao dịch theo ngày
@@ -106,12 +105,6 @@ fun TransactionNotificationScreen(navController: NavController) {
         }
 
         Divider(color = Color.LightGray, thickness = 1.dp)
-        // Hàng chứa nút trở về và nút chuyển hướng
-
-            // Nút quay lại
-
-            // Chữ "Thu chi cố định" luôn nằm giữa và ẩn nếu diện tích không đủ
-
         // Hiển thị các nhóm giao dịch
         LazyColumn {
             groupedTransactions.forEach { (date, transactionsForDate) ->

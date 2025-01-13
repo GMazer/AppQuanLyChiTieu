@@ -54,8 +54,8 @@ import com.example.jetpackcompose.app.features.apiService.FixedTransactionAPI.Ge
 import com.example.jetpackcompose.app.screens.Category
 import com.example.jetpackcompose.components.MessagePopup
 import com.example.jetpackcompose.components.montserrat
-import com.example.jetpackcompose.ui.theme.primaryColor
 import com.example.jetpackcompose.ui.theme.componentShapes
+import com.example.jetpackcompose.ui.theme.primaryColor
 import com.example.jetpackcompose.ui.theme.textColor
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
@@ -99,9 +99,11 @@ fun AnualScreen(navController: NavHostController) {
         reloadTransactions() // Load dữ liệu ngay khi màn hình được tạo
     }
 
-    Column(modifier = Modifier
-        .background(Color(0xfff5f5f5))
-        .fillMaxSize()) {
+    Column(
+        modifier = Modifier
+            .background(Color(0xfff5f5f5))
+            .fillMaxSize()
+    ) {
         // Hàng chứa nút trở về và nút chuyển hướng
         Row(
             modifier = Modifier
@@ -219,7 +221,7 @@ fun FixedTransactionRow(
             if (transaction.category_id >= 10) {
                 "+${currencyFormatter.format(transaction.amount)}"
             } else {
-                "${currencyFormatter.format(transaction.amount)}"
+                currencyFormatter.format(transaction.amount)
             }
         )
         withStyle(style = SpanStyle(fontSize = 12.sp)) {  // Kích thước nhỏ hơn cho ký tự "₫"
@@ -320,11 +322,40 @@ fun FixedTransactionRow(
             .background(Color.White)
             .padding(8.dp)
             .clickable {
-                if (transaction.category_id >= 10) {
-                    navController.navigate("editFixedIncome/${transaction.fixed_transaction_id}")
+                val startDateFormatted = if (transaction.startDate.size == 3) {
+                    "${transaction.startDate[0]}-${
+                        transaction.startDate[1]
+                            .toString()
+                            .padStart(2, '0')
+                    }-${
+                        transaction.startDate[2]
+                            .toString()
+                            .padStart(2, '0')
+                    }"
                 } else {
-                    navController.navigate("editFixedExpense/${transaction.fixed_transaction_id}")
+                    ""
                 }
+                val endDateFormatted = if (transaction.endDate?.size == 3) {
+                    "${transaction.endDate[0]}-${
+                        transaction.endDate[1]
+                            .toString()
+                            .padStart(2, '0')
+                    }-${
+                        transaction.endDate[2]
+                            .toString()
+                            .padStart(2, '0')
+                    }"
+                } else {
+                    ""
+                }
+
+                val route = if (transaction.category_id >= 10) {
+                    "editFixedIncome/${transaction.fixed_transaction_id}?startDate=$startDateFormatted&endDate=$endDateFormatted"
+                } else {
+                    "editFixedExpense/${transaction.fixed_transaction_id}?startDate=$startDateFormatted&endDate=$endDateFormatted"
+                }
+
+                navController.navigate(route)
             },
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically

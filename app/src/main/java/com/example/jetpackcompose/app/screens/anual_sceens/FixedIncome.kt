@@ -139,10 +139,13 @@ fun FixedIncome(
                     }
                     Divider(color = Color(0xFFd4d4d4), thickness = 0.5.dp)
 
-                    EndDateRow { endDate ->
-                        // Xử lý ngày kết thúc
-                        selectedEndDate = endDate
-                    }
+                    EndDateRow(
+                        label = "Kết thúc",
+                        initialDate = selectedEndDate,
+                        onDateSelected = { date ->
+                            selectedEndDate = date
+                        }
+                    )
                 }
             }
 

@@ -25,7 +25,6 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.PagerState
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -47,7 +46,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -73,13 +71,12 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.jetpackcompose.R
-import com.example.jetpackcompose.app.screens.Category
-import com.example.jetpackcompose.app.screens.LimitTransaction
 import com.example.jetpackcompose.app.network.TransactionResponse
-import com.example.jetpackcompose.ui.theme.primaryColor
+import com.example.jetpackcompose.app.screens.Category
 import com.example.jetpackcompose.ui.theme.componentShapes
 import com.example.jetpackcompose.ui.theme.errorColor
 import com.example.jetpackcompose.ui.theme.highGray
+import com.example.jetpackcompose.ui.theme.primaryColor
 import com.example.jetpackcompose.ui.theme.successColor
 import com.example.jetpackcompose.ui.theme.textColor
 import com.example.jetpackcompose.ui.theme.topBarColor
@@ -99,7 +96,7 @@ fun FixedTabRow(
     tabIndex: Int,
     onTabSelected: (Int) -> Unit,
     titles: List<String>,
-    coroutineScoper: CoroutineScope,
+    coroutineScope: CoroutineScope,
     pagerStatement: PagerState,
     navController: NavHostController, // Add NavHostController parameter
     modifier: Modifier = Modifier
@@ -168,7 +165,7 @@ fun FixedTabRow(
                             selected = isSelected,
                             onClick = {
                                 onTabSelected(index)
-                                coroutineScoper.launch {
+                                coroutineScope.launch {
                                     pagerStatement.scrollToPage(index)
                                 }
                             },
@@ -400,6 +397,7 @@ fun DayIndex(
     val dateFormat = remember { SimpleDateFormat("yyyy-MM-dd", Locale("vi", "VN")) }
     val displayDateFormat = remember { SimpleDateFormat("dd/MM/yyyy (E)", Locale("vi", "VN")) }
 
+
     val processedSelectedDate = if (selectedDate.isNotEmpty()) {
         val dateParts = selectedDate.split("-")
         if (dateParts.size == 3 && dateParts[2].startsWith("0")) {
@@ -410,7 +408,7 @@ fun DayIndex(
     } else {
         selectedDate
     }
-
+    Log.d("DayIndex", "selectedDate: $selectedDate")
     // Sắp xếp các entry theo thứ tự ngày mới nhất và lưu vào mutableMapOf
     val sortedDateTransactionList = mutableMapOf<String, List<TransactionResponse.TransactionDetail>>()
     dateTransactionList.entries
@@ -418,7 +416,6 @@ fun DayIndex(
         .forEach { (date, transactions) ->
             sortedDateTransactionList[date] = transactions
         }
-
     sortedDateTransactionList.forEach { (date, transactions) ->
         if (processedSelectedDate.isEmpty() || date == processedSelectedDate) {
             Column(
@@ -485,6 +482,7 @@ fun DayIndex(
                                 }
                             }
                         }
+
                     }
                     Divider(
                         color = highGray,
@@ -761,7 +759,7 @@ fun <T : Enum<T>> DropdownRepeat(
 @Composable
 fun DatePickerRow(
     label: String, // Label của hàng
-    initialDate: LocalDate = LocalDate.now(), // Ngày ban đầu, mặc định là ngày hiện tại
+    initialDate: LocalDate, // Ngày ban đầu, mặc định là ngày hiện tại
     onDateSelected: (String) -> Unit // Callback để trả ngày được chọn dưới dạng chuỗi yyyy-MM-dd
 ) {
     // State để lưu trữ ngày được chọn
@@ -916,15 +914,16 @@ fun RowNumberField(
 @Composable
 fun EndDateRow(
     label: String = "Kết thúc",
-    onDateSelected: (String) -> Unit // Callback trả về giá trị (Không hoặc ngày được chọn)
+    onDateSelected: (String) -> Unit,
+    initialDate: String? = null //
 ) {
     val options = listOf("Không", "Ngày chỉ định") // Các tùy chọn
-    var selectedOption by remember { mutableStateOf(options[0]) } // Lựa chọn mặc định là "Không"
-    var selectedDate by remember { mutableStateOf("") } // Ngày được chọn
-    var showDialog by remember { mutableStateOf(false) } // Hiển thị AlertDialog
-    var showDatePicker by remember { mutableStateOf(false) } // Điều khiển hiển thị DatePickerDialog
+    var selectedOption by remember { mutableStateOf(if (initialDate.isNullOrEmpty()) options[0] else options[1]) }
+    var selectedDate by remember { mutableStateOf(initialDate ?: "") } // Ngày được chọn hoặc giá trị mặc định
+    var showDialog by remember { mutableStateOf(false) }
+    var showDatePicker by remember { mutableStateOf(false) }
 
-    val vietnamLocale = Locale("vi", "VN") // Locale Việt Nam
+    val vietnamLocale = Locale("vi", "VN")
     DateTimeFormatter.ofPattern("dd/MM/yyyy")
 
     Row(
@@ -987,12 +986,10 @@ fun EndDateRow(
                                 .clickable {
                                     selectedOption = option
                                     if (option == "Không") {
-                                        selectedDate =
-                                            null.toString() // Reset ngày nếu chọn "Không"
+                                        selectedDate = ""
                                         onDateSelected("Không")
                                     } else {
-                                        showDatePicker =
-                                            true // Hiển thị DatePickerDialog nếu chọn "Ngày chỉ định"
+                                        showDatePicker = true
                                     }
                                     showDialog = false
                                 }
@@ -1037,6 +1034,7 @@ fun EndDateRow(
     }
 }
 
+
 @Composable
 fun MessagePopup(
     showPopup: Boolean,
@@ -1062,36 +1060,23 @@ fun MessagePopup(
                     verticalArrangement = Arrangement.Center // Căn giữa theo chiều dọc
                 ) {
                     if (errorMessage.isNotEmpty()) {
-                        // Icon lỗi
-//                        Icon(
-//                            painter = painterResource(id = R.drawable.error), // Thay bằng icon lỗi của bạn
-//                            contentDescription = "Error icon",
-//                            tint = errorColor,
-//                            modifier = Modifier.size(48.dp)
-//                        )
-                        Spacer(modifier = Modifier.height(8.dp)) // Khoảng cách giữa icon và message
+
+                        Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             text = errorMessage,
                             color = errorColor,
                             fontFamily = montserrat,
                             fontWeight = FontWeight.Bold,
-                            textAlign = TextAlign.Center // Căn giữa nội dung text
+                            textAlign = TextAlign.Center
                         )
                     } else if (successMessage.isNotEmpty()) {
-                        // Icon thành công
-//                        Icon(
-//                            painter = painterResource(id = R.drawable.success), // Thay bằng icon thành công của bạn
-//                            contentDescription = "Success icon",
-//                            tint = successColor,
-//                            modifier = Modifier.size(48.dp)
-//                        )
-                        Spacer(modifier = Modifier.height(8.dp)) // Khoảng cách giữa icon và message
+                        Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             text = successMessage,
                             color = successColor,
                             fontFamily = montserrat,
                             fontWeight = FontWeight.Bold,
-                            textAlign = TextAlign.Center // Căn giữa nội dung text
+                            textAlign = TextAlign.Center
                         )
                     }
                 }
@@ -1117,7 +1102,7 @@ fun DatePickerButton(onDateSelected: (String) -> Unit) {
     // Cập nhật ngày hiện tại khi khởi tạo
     LaunchedEffect(key1 = true) {
         dateText = dateFormat.format(calendar.time)
-        onDateSelected(dateText) // Gọi callback khi khởi tạo
+        onDateSelected(dateText)
     }
 
     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -1154,7 +1139,7 @@ fun DatePickerButton(onDateSelected: (String) -> Unit) {
                         calendar.set(Calendar.MONTH, month)
                         calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
                         dateText = dateFormat.format(calendar.time)
-                        onDateSelected(dateText) // Gọi callback khi chọn ngày
+                        onDateSelected(dateText)
                     },
                     calendar.get(Calendar.YEAR),
                     calendar.get(Calendar.MONTH),
@@ -1203,7 +1188,7 @@ fun CustomTabRow(
     coroutineScoper: CoroutineScope,
     modifier: Modifier = Modifier
 ) {
-    val inactiveColor = Color(0xFFe1e1e1)  // Màu cho tab không chọn
+    val inactiveColor = Color(0xFFe1e1e1)
     val inactiveTextColor = primaryColor  // Màu văn bản cho tab không chọn
 
     Column {
@@ -1215,22 +1200,22 @@ fun CustomTabRow(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween // Đẩy các phần tử ra hai đầu
         ) {
-            // Nút ảo (nếu cần không hiển thị gì, bạn có thể bỏ phần này)
+
             IconButton(
                 onClick = {},
-                enabled = false // Đặt enabled = false để không thể nhấn được
+                enabled = false
             ) {
-                // Không thêm Icon hoặc Text nào
+
             }
 
             TabRow(
                 selectedTabIndex = tabIndex,
                 modifier = Modifier
                     .background(topBarColor)
-                    .weight(1f), // Sử dụng weight để TabRow chiếm khoảng trống giữa
+                    .weight(1f),
                 indicator = {
-                },  // Không có chỉ báo
-                divider = {}  // Không có dòng phân cách
+                },
+                divider = {}
             ) {
                 titles.forEachIndexed { index, title ->
                     val isSelected = tabIndex == index
@@ -1285,12 +1270,12 @@ fun CustomTabRow(
                 }
             }
 
-            // Nút ảo ở bên phải để giữ bố cục cân bằng (nếu cần)
+
             IconButton(
                 onClick = {},
-                enabled = false // Đặt enabled = false để không thể nhấn được
+                enabled = false
             ) {
-                // Không thêm Icon hoặc Text nào
+
             }
         }
 

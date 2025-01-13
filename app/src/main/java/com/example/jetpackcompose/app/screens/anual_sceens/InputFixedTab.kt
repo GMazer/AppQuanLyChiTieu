@@ -50,7 +50,7 @@ fun InputFixedTab(navController: NavHostController) {
             },
             titles = listOf("Tiền chi", "Tiền thu"),
             pagerStatement = pagerState,
-            coroutineScoper = coroutineScope,
+            coroutineScope = coroutineScope,
             navController = navController
         )
 

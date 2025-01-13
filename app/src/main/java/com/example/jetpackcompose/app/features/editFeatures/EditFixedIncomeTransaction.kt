@@ -58,7 +58,12 @@ import java.util.Locale
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun EditIncomeExpenseTransaction(navController: NavHostController, fixedTransactionId: Int) {
+fun EditIncomeExpenseTransaction(
+    navController: NavHostController,
+    fixedTransactionId: Int,
+    startDate: String?,
+    endDate: String?
+) {
     val getFixedTransactionViewModel: GetFixedTransactionViewModel =
         GetFixedTransactionViewModel(LocalContext.current)
     val putFixedTransactionViewModel: PutFixedTransactionViewModel =
@@ -90,7 +95,8 @@ fun EditIncomeExpenseTransaction(navController: NavHostController, fixedTransact
     LaunchedEffect(fixedTransactionId) {
         getFixedTransactionViewModel.getFixedTransactions(
             onSuccess = { transactionList ->
-                fixedTransaction = transactionList.find { it.fixed_transaction_id == fixedTransactionId }
+                fixedTransaction =
+                    transactionList.find { it.fixed_transaction_id == fixedTransactionId }
                 // Điền dữ liệu vào các trường nhập liệu
                 fixedTransaction?.let {
                     titleState = TextFieldValue(it.title ?: "")
@@ -109,9 +115,11 @@ fun EditIncomeExpenseTransaction(navController: NavHostController, fixedTransact
         )
     }
 
-    Column(modifier = Modifier
-        .background(Color(0xfff5f5f5))
-        .fillMaxSize()) {
+    Column(
+        modifier = Modifier
+            .background(Color(0xfff5f5f5))
+            .fillMaxSize()
+    ) {
         // Thanh tiêu đề với nút Quay lại và Xóa
         Box(
             modifier = Modifier
@@ -162,9 +170,10 @@ fun EditIncomeExpenseTransaction(navController: NavHostController, fixedTransact
             }
         )
 
-        Column(modifier = Modifier
-            .background(Color(0xfff5f5f5))
-            .fillMaxSize()
+        Column(
+            modifier = Modifier
+                .background(Color(0xfff5f5f5))
+                .fillMaxSize()
         ) {
             // Tiêu đề và số tiền
             Box(
@@ -213,7 +222,7 @@ fun EditIncomeExpenseTransaction(navController: NavHostController, fixedTransact
                 Column {
                     DropdownRepeat(
                         label = "Lặp lại",
-                        options = RepeatFrequency.values()
+                        options = RepeatFrequency.entries
                             .map { it.displayName to it }
                     ) { repeat ->
                         selectedRepeat = repeat
@@ -222,19 +231,21 @@ fun EditIncomeExpenseTransaction(navController: NavHostController, fixedTransact
 
                     DatePickerRow(
                         label = "Bắt đầu",
-                        initialDate = LocalDate.now()
+                        initialDate = LocalDate.parse(startDate),
                     ) { date ->
-                        selectedDate = date.toString()
+                        selectedDate = date
                     }
                     Divider(color = Color(0xFFd4d4d4), thickness = 0.5.dp)
 
-                    EndDateRow { endDate ->
-                        selectedEndDate = endDate
-                    }
+                    EndDateRow(
+                        label = "Kết thúc",
+                        initialDate = endDate,
+                        onDateSelected = { date ->
+                            selectedEndDate = date
+                        }
+                    )
                 }
             }
-
-            // Nút chỉnh sửa giao dịch
             Box(
                 modifier = Modifier
                     .padding(horizontal = 50.dp)
@@ -247,8 +258,7 @@ fun EditIncomeExpenseTransaction(navController: NavHostController, fixedTransact
                         isLoading = true
                         // Tạo đối tượng FixedTransactionUpdate
                         val updatedTransaction = FixedTransactionUpdate(
-                            category_id = when (selectedCategory)
-                            {
+                            category_id = when (selectedCategory) {
                                 "Tiền lương" -> 10
                                 "Tiền thưởng" -> 11
                                 "Thu nhập phụ" -> 12
@@ -263,8 +273,14 @@ fun EditIncomeExpenseTransaction(navController: NavHostController, fixedTransact
                             end_date = selectedEndDate
                         )
 
-                        Log.d("EditFixedExpenseTransaction", "Fixed Transaction ID: $fixedTransactionId")
-                        Log.d("EditFixedExpenseTransaction", "Updated Transaction: $updatedTransaction")
+                        Log.d(
+                            "EditFixedExpenseTransaction",
+                            "Fixed Transaction ID: $fixedTransactionId"
+                        )
+                        Log.d(
+                            "EditFixedExpenseTransaction",
+                            "Updated Transaction: $updatedTransaction"
+                        )
                         // Gọi PutFixedTransactionViewModel để cập nhật giao dịch
                         putFixedTransactionViewModel.putFixedTransaction(
                             fixed_transaction_id = fixedTransactionId,

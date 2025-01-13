@@ -23,8 +23,8 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.jetpackcompose.R
-import com.example.jetpackcompose.app.features.apiService.FixedTransactionAPI.PostFixedTransactionViewModel
 import com.example.jetpackcompose.app.features.apiService.FixedTransactionAPI.FixedTransaction
+import com.example.jetpackcompose.app.features.apiService.FixedTransactionAPI.PostFixedTransactionViewModel
 import com.example.jetpackcompose.app.features.apiService.FixedTransactionAPI.RepeatFrequency
 import com.example.jetpackcompose.components.DatePickerRow
 import com.example.jetpackcompose.components.DropdownRepeat
@@ -127,7 +127,7 @@ fun FixedExpense(
                 Column {
                     DropdownRepeat(
                         label = "Lặp lại",
-                        options = RepeatFrequency.values().map { it.displayName to it } // Lấy tất cả giá trị enum
+                        options = RepeatFrequency.entries.map { it.displayName to it } // Lấy tất cả giá trị enum
                     ) { repeat ->
                         selectedRepeat = repeat // Lưu enum thay vì chuỗi
                     }
@@ -141,74 +141,80 @@ fun FixedExpense(
                     }
                     Divider(color = Color(0xFFd4d4d4), thickness = 0.5.dp)
 
-                    EndDateRow { endDate ->
-                        // Xử lý ngày kết thúc
-                        selectedEndDate = endDate
-                    }
-                }
-            }
-
-            // Nút thêm giao dịch
-            MyButtonComponent(
-                value = "Thêm",
-                isLoading = isLoading,
-                onClick = {
-                    isLoading = true
-                    // Chuyển giá trị sang FixedTransaction và gọi ViewModel để thêm
-                    val amount = amountState.text.toLongOrNull() ?: 0L
-
-                    val fixedTransaction = FixedTransaction(
-                        category_id = when (selectedCategory) {
-                            "Chi phí nhà ở" -> 1
-                            "Ăn uống" -> 2
-                            "Mua sắm quần áo" -> 3
-                            "Đi lại" -> 4
-                            "Chăm sóc sắc đẹp" -> 5
-                            "Giao lưu" -> 6
-                            "Y tế" -> 7
-                            "Học tập" -> 8
-                            else -> 0
-                        },
-                        title = titleState.text,
-                        amount = amount,
-                        repeat_frequency = selectedRepeat, // Sử dụng enum RepeatFrequency
-                        start_date = selectedDate,
-                        end_date = selectedEndDate
-                    )
-
-                    Log.i("FixedExpense", "FixedTransaction: $fixedTransaction")
-
-                    // Gọi ViewModel để thêm giao dịch và xử lý kết quả
-                    viewModel.addFixedTransaction(fixedTransaction,
-                        onSuccess = { message ->
-                            // Cập nhật thông báo thành công và hiển thị popup
-                            successMessage = "Gửi dữ liệu thành công!"
-                            errorMessage = ""
-                            statusMessage = message
-                            statusColor = Color.Green
-                            showPopup = true // Hiển thị popup thành công
-                            navController.popBackStack("anual", inclusive = false)
-                        },
-                        onError = { message ->
-                            // Cập nhật thông báo lỗi và hiển thị popup
-                            successMessage = ""
-                            errorMessage = selectedDate
-                            statusMessage = message
-                            statusColor = Color.Red
-                            showPopup = true // Hiển thị popup lỗi
+                    EndDateRow(
+                        label = "Kết thúc",
+                        initialDate = selectedEndDate,
+                        onDateSelected = { date ->
+                            selectedEndDate = date
                         }
                     )
                 }
+            }
+            Box(
+                modifier = Modifier
+                    .padding(horizontal = 50.dp)
+                    .fillMaxWidth()
+            ) {
+                MyButtonComponent(
+                    value = "Thêm",
+                    isLoading = isLoading,
+                    onClick = {
+                        isLoading = true
+                        // Chuyển giá trị sang FixedTransaction và gọi ViewModel để thêm
+                        val amount = amountState.text.toLongOrNull() ?: 0L
+
+                        val fixedTransaction = FixedTransaction(
+                            category_id = when (selectedCategory) {
+                                "Chi phí nhà ở" -> 1
+                                "Ăn uống" -> 2
+                                "Mua sắm quần áo" -> 3
+                                "Đi lại" -> 4
+                                "Chăm sóc sắc đẹp" -> 5
+                                "Giao lưu" -> 6
+                                "Y tế" -> 7
+                                "Học tập" -> 8
+                                else -> 0
+                            },
+                            title = titleState.text,
+                            amount = amount,
+                            repeat_frequency = selectedRepeat, // Sử dụng enum RepeatFrequency
+                            start_date = selectedDate,
+                            end_date = selectedEndDate
+                        )
+
+                        Log.i("FixedExpense", "FixedTransaction: $fixedTransaction")
+
+                        // Gọi ViewModel để thêm giao dịch và xử lý kết quả
+                        viewModel.addFixedTransaction(fixedTransaction,
+                            onSuccess = { message ->
+                                // Cập nhật thông báo thành công và hiển thị popup
+                                successMessage = "Gửi dữ liệu thành công!"
+                                errorMessage = ""
+                                statusMessage = message
+                                statusColor = Color.Green
+                                showPopup = true // Hiển thị popup thành công
+                                navController.popBackStack("anual", inclusive = false)
+                            },
+                            onError = { message ->
+                                // Cập nhật thông báo lỗi và hiển thị popup
+                                successMessage = ""
+                                errorMessage = selectedDate
+                                statusMessage = message
+                                statusColor = Color.Red
+                                showPopup = true // Hiển thị popup lỗi
+                            }
+                        )
+                    }
+                )
+            }
+            // Hiển thị thông báo popup
+            MessagePopup(
+                showPopup = showPopup,
+                successMessage = successMessage,
+                errorMessage = errorMessage,
+                onDismiss = { showPopup = false } // Đóng popup khi nhấn ngoài
             )
         }
-
-        // Hiển thị thông báo popup
-        MessagePopup(
-            showPopup = showPopup,
-            successMessage = successMessage,
-            errorMessage = errorMessage,
-            onDismiss = { showPopup = false } // Đóng popup khi nhấn ngoài
-        )
     }
 }
 
