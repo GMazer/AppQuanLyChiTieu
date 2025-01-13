@@ -3,6 +3,7 @@ package com.example.jetpackcompose.components
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
@@ -463,6 +464,7 @@ fun DayIndex(
                             .padding(horizontal = 16.dp)
                             .clickable {
                                 val id = transaction.transaction_id
+                                Log.d("IdTransaction", "$id")
                                 if (transaction.type == "expense") {
                                     navController.navigate("editExpense/$id")
                                 }

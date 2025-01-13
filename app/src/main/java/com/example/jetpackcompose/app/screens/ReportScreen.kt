@@ -103,7 +103,7 @@ fun ReportScreen() {
         val year = calendar.get(Calendar.YEAR)
         "$month/$year"
     }
-    var selectedMonthYear by rememberSaveable{ mutableStateOf(currentMonthYear) }
+    var selectedMonthYear by remember { mutableStateOf(currentMonthYear) }
 
     var selectedTabIndex by remember { mutableStateOf(0) }
 

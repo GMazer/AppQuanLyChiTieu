@@ -28,6 +28,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -85,7 +86,7 @@ fun CalendarScreen(navController: NavController) {
         format
     }
 
-    var selectedMonthYear by remember { mutableStateOf(currentMonthYear) }
+    var selectedMonthYear by rememberSaveable { mutableStateOf(currentMonthYear) }
     var selectedDate by remember { mutableStateOf("") }
     var transactionList by remember { mutableStateOf(listOf<DailyTransaction>()) }
     var dateTransactionList by remember { mutableStateOf<Map<String, List<TransactionResponse.TransactionDetail>>>(emptyMap()) }
