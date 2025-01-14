@@ -1,5 +1,6 @@
 package com.example.jetpackcompose.app.features.inputFeatures
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -45,6 +45,9 @@ import com.example.jetpackcompose.components.NoteTextField
 import com.example.jetpackcompose.components.NumberTextField
 import com.example.jetpackcompose.components.montserrat
 import com.example.jetpackcompose.ui.theme.primaryColor
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 @Composable
 fun ExpenseContent(
@@ -53,18 +56,39 @@ fun ExpenseContent(
 ) {
     // State cho các dữ liệu nhập vào và thông báo
     var categoryLimits by remember {
-        mutableStateOf(listOf(
-            RemainLimit.CategoryLimit(categoryId = 1, limitExpense = 0, remainingPercent = 1.00),
-            RemainLimit.CategoryLimit(categoryId = 2, limitExpense = 0, remainingPercent = 1.00),
-            RemainLimit.CategoryLimit(categoryId = 3, limitExpense = 0, remainingPercent = 1.00),
-            RemainLimit.CategoryLimit(categoryId = 4, limitExpense = 0, remainingPercent = 1.00),
-            RemainLimit.CategoryLimit(categoryId = 5, limitExpense = 0, remainingPercent = 1.00)
-        ))
+        mutableStateOf(
+            listOf(
+                RemainLimit.CategoryLimit(
+                    categoryId = 1,
+                    limitExpense = 0,
+                    remainingPercent = 1.00
+                ),
+                RemainLimit.CategoryLimit(
+                    categoryId = 2,
+                    limitExpense = 0,
+                    remainingPercent = 1.00
+                ),
+                RemainLimit.CategoryLimit(
+                    categoryId = 3,
+                    limitExpense = 0,
+                    remainingPercent = 1.00
+                ),
+                RemainLimit.CategoryLimit(
+                    categoryId = 4,
+                    limitExpense = 0,
+                    remainingPercent = 1.00
+                ),
+                RemainLimit.CategoryLimit(categoryId = 5, limitExpense = 0, remainingPercent = 1.00)
+            )
+        )
     }
 
+    val currentDate = Calendar.getInstance().time
+    val dateFormat = SimpleDateFormat("yyyy-MM-dd (E)", Locale("vi", "VN"))
+    val formattedDate = dateFormat.format(currentDate)
     var textNote by remember { mutableStateOf(TextFieldValue()) }
     var amountValue by remember { mutableStateOf(TextFieldValue()) }
-    var selectedDate by remember { mutableStateOf("Chưa chọn ngày") }
+    var selectedDate by remember { mutableStateOf(formattedDate.toString()) }
     var selectedCategory by remember { mutableStateOf<Category?>(null) }
 
     var errorMessage by remember { mutableStateOf("") }
@@ -73,18 +97,68 @@ fun ExpenseContent(
     var showPopup by remember { mutableStateOf(false) }  // Trạng thái popup
 
     // Cập nhật lại danh sách categories
-    var categories by remember { mutableStateOf(
-        listOf(
-            Category(1, "Chi phí nhà ở", { painterResource(R.drawable.outline_home_work_24) }, Color(0xFFB40300), 1.00f),
-            Category(2, "Ăn uống", { painterResource(R.drawable.outline_ramen_dining_24) }, Color(0xFF911294), 1.00f),
-            Category(3, "Mua sắm quần áo", { painterResource(R.drawable.clothes) }, Color(0xFF0C326E), 1.00f),
-            Category(4, "Đi lại", { painterResource(R.drawable.outline_train_24) }, Color(0xFF126AB6), 1.00f),
-            Category(5, "Chăm sóc sắc đẹp", { painterResource(R.drawable.outline_cosmetic) }, Color(0xFF0D96DA), 1.00f),
-            Category(6, "Giao lưu", { painterResource(R.drawable.entertainment) }, Color(0xFF4DB218), 1.00f),
-            Category(7, "Y tế", { painterResource(R.drawable.outline_health_and_safety_24) }, Color(0xFFD5CC00), 1.00f),
-            Category(8, "Học tập", { painterResource(R.drawable.outline_education) }, Color(0xFFEE9305), 1.00f)
+    var categories by remember {
+        mutableStateOf(
+            listOf(
+                Category(
+                    1,
+                    "Chi phí nhà ở",
+                    { painterResource(R.drawable.outline_home_work_24) },
+                    Color(0xFFB40300),
+                    1.00f
+                ),
+                Category(
+                    2,
+                    "Ăn uống",
+                    { painterResource(R.drawable.outline_ramen_dining_24) },
+                    Color(0xFF911294),
+                    1.00f
+                ),
+                Category(
+                    3,
+                    "Mua sắm quần áo",
+                    { painterResource(R.drawable.clothes) },
+                    Color(0xFF0C326E),
+                    1.00f
+                ),
+                Category(
+                    4,
+                    "Đi lại",
+                    { painterResource(R.drawable.outline_train_24) },
+                    Color(0xFF126AB6),
+                    1.00f
+                ),
+                Category(
+                    5,
+                    "Chăm sóc sắc đẹp",
+                    { painterResource(R.drawable.outline_cosmetic) },
+                    Color(0xFF0D96DA),
+                    1.00f
+                ),
+                Category(
+                    6,
+                    "Giao lưu",
+                    { painterResource(R.drawable.entertainment) },
+                    Color(0xFF4DB218),
+                    1.00f
+                ),
+                Category(
+                    7,
+                    "Y tế",
+                    { painterResource(R.drawable.outline_health_and_safety_24) },
+                    Color(0xFFD5CC00),
+                    1.00f
+                ),
+                Category(
+                    8,
+                    "Học tập",
+                    { painterResource(R.drawable.outline_education) },
+                    Color(0xFFEE9305),
+                    1.00f
+                )
+            )
         )
-    ) }
+    }
 
     // Hàm cập nhật lại tỷ lệ phần trăm cho các danh mục chi tiêu
     fun updatePercentage(categoryLimits: List<RemainLimit.CategoryLimit>) {
@@ -141,7 +215,9 @@ fun ExpenseContent(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text("Ghi chú ", color = Color.DarkGray, fontWeight = FontWeight.Bold)
                         Spacer(Modifier.width(8.dp))
-                        NoteTextField(textState = textNote, onValueChange = { newValue -> textNote = newValue })
+                        NoteTextField(
+                            textState = textNote,
+                            onValueChange = { newValue -> textNote = newValue })
                     }
 
                     DrawBottomLine(16.dp)
@@ -150,7 +226,9 @@ fun ExpenseContent(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text("Tiền chi ", color = Color.DarkGray, fontWeight = FontWeight.Bold)
                         Spacer(Modifier.width(16.dp))
-                        NumberTextField(amountState = amountValue.text, onValueChange = { newValue -> amountValue = TextFieldValue(newValue) })
+                        NumberTextField(
+                            amountState = amountValue.text,
+                            onValueChange = { newValue -> amountValue = TextFieldValue(newValue) })
                         Spacer(Modifier.width(8.dp))
                         Text("₫", color = Color.DarkGray)
                     }
@@ -173,19 +251,22 @@ fun ExpenseContent(
                     Spacer(Modifier.height(16.dp))
 
                     // Nút nhập khoản chi
-                    Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
+                    Row(
+                        horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
                         Button(
                             onClick = {
                                 successMessage = "Đang gửi dữ liệu..."
                                 showPopup = true
                                 val amount = amountValue.text.toLongOrNull() ?: 0L
                                 val transaction = Transaction(
-                                    transaction_date = selectedDate.substring(0, 11),
+                                    transaction_date = selectedDate.substring(0, 11).trimEnd(),
                                     note = textNote.text,
                                     amount = amount,
                                     category_id = selectedCategory?.id ?: 0
                                 )
-
+                                Log.d("ExpenseContent", "Transaction: $transaction")
                                 // Gửi dữ liệu giao dịch
                                 postViewModel.postTransaction(
                                     transaction,
@@ -217,7 +298,11 @@ fun ExpenseContent(
                             modifier = Modifier.width(248.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = primaryColor)
                         ) {
-                            Text("Nhập khoản chi", color = Color.White, fontWeight = FontWeight.Bold)
+                            Text(
+                                "Nhập khoản chi",
+                                color = Color.White,
+                                fontWeight = FontWeight.Bold
+                            )
                         }
                     }
                 }
@@ -233,10 +318,6 @@ fun ExpenseContent(
         }
     )
 }
-
-
-
-
 
 
 @Preview

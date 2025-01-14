@@ -58,13 +58,13 @@ import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Date
 import java.util.Locale
 
 @Composable
 fun EditIncomeTransaction(
     navController: NavHostController,
     transactionId: Int,
+    transactionDate: String,
 ) {
     val getViewModel: GetTransactionViewModel = GetTransactionViewModel(LocalContext.current)
     val putViewModel: PutTransactionViewModel = PutTransactionViewModel(LocalContext.current)
@@ -84,17 +84,7 @@ fun EditIncomeTransaction(
     var showPopup by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
 
-    // Định dạng tiền tệ
-    val currencyFormatter = remember {
-        val symbols = DecimalFormatSymbols(Locale("vi", "VN"))
-        symbols.decimalSeparator = '.'
-        symbols.groupingSeparator = ','
-        DecimalFormat("#,###", symbols)
-    }
 
-    val dateFormatter = remember {
-        SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-    }
 
     // Danh sách các Category
     val categories = listOf(
@@ -246,7 +236,7 @@ fun EditIncomeTransaction(
                             date.split(" ")[0] // Tách theo khoảng trắng và lấy phần ngày "yyyy-MM-dd"
                         selectedDate = validDate
                     },
-                    initialDate = selectedDate,
+                    initialDate = transactionDate,
                 )
             }
 

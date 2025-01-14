@@ -351,7 +351,7 @@ fun CalendarScreen(navController: NavController) {
                             // Truyền navController vào DayIndex
                             DayIndex(
                                 dateTransactionList = dateTransactionList,
-                                selectedDate = selectedDate,    // Truyền navController vào đây
+                                selectedDate = selectedDate,
                                 navController = navController
                             )
                         }

@@ -65,7 +65,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -391,14 +390,14 @@ fun CategoryIconWithName(
 @Composable
 fun DayIndex(
     dateTransactionList: Map<String, List<TransactionResponse.TransactionDetail>>,
-    selectedDate: String = "",
+    selectedDate: String,
     navController: NavController
 ) {
     val dateFormat = remember { SimpleDateFormat("yyyy-MM-dd", Locale("vi", "VN")) }
     val displayDateFormat = remember { SimpleDateFormat("dd/MM/yyyy (E)", Locale("vi", "VN")) }
 
 
-    val processedSelectedDate = if (selectedDate.isNotEmpty()) {
+    val processedTransactionDate = if (selectedDate.isNotEmpty()) {
         val dateParts = selectedDate.split("-")
         if (dateParts.size == 3 && dateParts[2].startsWith("0")) {
             "${dateParts[0]}-${dateParts[1]}-${dateParts[2].drop(1)}"
@@ -408,7 +407,7 @@ fun DayIndex(
     } else {
         selectedDate
     }
-    Log.d("DayIndex", "selectedDate: $selectedDate")
+
     // Sắp xếp các entry theo thứ tự ngày mới nhất và lưu vào mutableMapOf
     val sortedDateTransactionList = mutableMapOf<String, List<TransactionResponse.TransactionDetail>>()
     dateTransactionList.entries
@@ -417,7 +416,7 @@ fun DayIndex(
             sortedDateTransactionList[date] = transactions
         }
     sortedDateTransactionList.forEach { (date, transactions) ->
-        if (processedSelectedDate.isEmpty() || date == processedSelectedDate) {
+        if (processedTransactionDate.isEmpty() || date == processedTransactionDate) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -450,6 +449,8 @@ fun DayIndex(
                     color = highGray,
                     thickness = 0.7.dp
                 )
+
+                // Hiển thị danh sách giao dịch cho ngày này
                 transactions.forEach { transaction ->
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -460,35 +461,40 @@ fun DayIndex(
                             .height(50.dp)
                             .padding(horizontal = 16.dp)
                             .clickable {
-                                val id = transaction.transaction_id
-                                Log.d("IdTransaction", "$id")
-                                if (transaction.type == "expense") {
-                                    navController.navigate("editExpense/$id")
+                                val transactionId = transaction.transaction_id
+                                val inputFormat = SimpleDateFormat("yyyy-MM-dd (E)", Locale("vi", "VN"))
+                                val transactionDate = try {
+                                    inputFormat.parse(date)?.let { inputFormat.format(it) }
+                                } catch (e: Exception) {
+                                    date
                                 }
-                                else {
-                                    navController.navigate("editIncome/$id")
+                                Log.d("DayIndex", "CAIDEOGIVAY: $transactionId, Date: $transactionDate")
+                                if (transaction.type == "expense") {
+                                    navController.navigate("editExpense/$transactionId?date=$transactionDate")
+                                } else {
+                                    navController.navigate("editIncome/$transactionId?date=$transactionDate")
                                 }
                             }
                     ) {
                         transaction.transaction_id.let {
                             transaction.note?.let {
-                                transaction.type?.let { it1 ->
+                                transaction.type?.let { type ->
                                     CategoryIconWithName(
                                         categoryName = transaction.categoryName,
                                         transactionNote = it,
                                         transactionAmount = transaction.amount,
-                                        transactionType = it1
+                                        transactionType = type
                                     )
                                 }
                             }
                         }
-
                     }
                     Divider(
                         color = highGray,
                         thickness = 0.7.dp
                     )
                 }
+
             }
         }
     }
@@ -1095,24 +1101,34 @@ fun DatePickerButton(
     onDateSelected: (String) -> Unit,
     initialDate: String?
 ) {
-    var dateText by remember { mutableStateOf("") }
+    val dateFormat = SimpleDateFormat("yyyy-MM-dd (E)", Locale("vi", "VN"))
+    val inputFormat = SimpleDateFormat("yyyy-M-d", Locale("vi", "VN")) // Định dạng đầu vào
     val context = LocalContext.current
     val calendar = Calendar.getInstance()
 
-    // Định dạng ngày tháng năm thứ
-    val dateFormat = SimpleDateFormat("yyyy-MM-dd (E)", Locale("vi", "VN"))
-
-    // Cập nhật ngày hiện tại khi khởi tạo
-    if (initialDate.isNullOrEmpty()) {
-        dateText = dateFormat.format(calendar.time)
-    } else {
-        dateText = initialDate
+    // Sử dụng State để theo dõi giá trị của dateText
+    var dateText by remember {
+        mutableStateOf(
+            if (initialDate.isNullOrEmpty()) {
+                val currentDate = Calendar.getInstance().time
+                dateFormat.format(currentDate)
+            } else {
+                try {
+                    // Chuyển đổi initialDate sang định dạng chuẩn
+                    val parsedDate = inputFormat.parse(initialDate)
+                    dateFormat.format(parsedDate!!)
+                } catch (e: Exception) {
+                    initialDate // Nếu lỗi, giữ nguyên giá trị ban đầu
+                }
+            }
+        )
     }
 
     Row(verticalAlignment = Alignment.CenterVertically) {
         // Nút lùi lịch
         IconButton(
             onClick = {
+                calendar.time = dateFormat.parse(dateText) ?: Calendar.getInstance().time
                 calendar.add(Calendar.DAY_OF_MONTH, -1)
                 dateText = dateFormat.format(calendar.time)
                 onDateSelected(dateText) // Gọi callback khi lùi ngày
@@ -1134,7 +1150,7 @@ fun DatePickerButton(
                 .height(30.dp)
                 .weight(8f),
             contentPadding = PaddingValues(horizontal = 8.dp),
-                    shape = componentShapes.small,
+            shape = componentShapes.small,
             onClick = {
                 val datePickerDialog = DatePickerDialog(
                     context,
@@ -1164,6 +1180,7 @@ fun DatePickerButton(
         // Nút tiến lịch
         IconButton(
             onClick = {
+                calendar.time = dateFormat.parse(dateText) ?: Calendar.getInstance().time
                 calendar.add(Calendar.DAY_OF_MONTH, +1)
                 dateText = dateFormat.format(calendar.time)
                 onDateSelected(dateText) // Gọi callback khi tiến ngày
@@ -1180,6 +1197,8 @@ fun DatePickerButton(
         }
     }
 }
+
+
 
 
 // Tạo custom TabRow

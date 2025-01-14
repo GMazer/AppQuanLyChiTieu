@@ -42,14 +42,20 @@ import com.example.jetpackcompose.components.NoteTextField
 import com.example.jetpackcompose.components.NumberTextField
 import com.example.jetpackcompose.components.montserrat
 import com.example.jetpackcompose.ui.theme.primaryColor
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun IncomeContent(postViewModel: PostTransactionViewModel = PostTransactionViewModel(LocalContext.current)) {
 
+    val currentDate = Calendar.getInstance().time
+    val dateFormat = SimpleDateFormat("yyyy-MM-dd (E)", Locale("vi", "VN"))
+    val formattedDate = dateFormat.format(currentDate)
     var textNote by remember { mutableStateOf(TextFieldValue()) }
     var amountValue by remember { mutableStateOf(TextFieldValue()) }
-    var selectedDate by remember { mutableStateOf("Chưa chọn ngày") }
+    var selectedDate by remember { mutableStateOf(formattedDate) }
     var selectedCategory by remember { mutableStateOf<Category?>(null) }
 
     var errorMessage by remember { mutableStateOf("") }
@@ -158,7 +164,7 @@ fun IncomeContent(postViewModel: PostTransactionViewModel = PostTransactionViewM
                                 val amount = amountValue.text.toLongOrNull() ?: 0L
 
                                 val transaction = Transaction(
-                                    transaction_date = selectedDate.substring(0, 11),
+                                    transaction_date = selectedDate.substring(0, 11).trimEnd(),
                                     note = textNote.text,
                                     amount = amount,
                                     category_id = selectedCategory?.id ?: 0

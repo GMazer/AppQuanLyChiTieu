@@ -61,8 +61,9 @@ import java.util.Calendar
 @Composable
 fun EditExpenseTransaction(
     navController: NavHostController,
-    fixedTransactionId: Int,
-) {
+    transactionId: Int,
+    transactionDate: String
+    ) {
     val getViewModel: GetTransactionViewModel = GetTransactionViewModel(LocalContext.current)
     val putViewModel: PutTransactionViewModel = PutTransactionViewModel(LocalContext.current)
     val delViewModel: DeleteTransactionViewModel = DeleteTransactionViewModel(LocalContext.current)
@@ -72,10 +73,10 @@ fun EditExpenseTransaction(
     var selectedDate by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf<Category?>(null) }
 
-
     var errorMessage by remember { mutableStateOf("") }
     var successMessage by remember { mutableStateOf("") }
 
+    Log.d("EditExpenseTransaction", "WTFHYPER: $transactionDate")
     // Trạng thái hiển thị Popup
     var showPopup by remember { mutableStateOf(false) }
 
@@ -145,14 +146,14 @@ fun EditExpenseTransaction(
     val year = calendar.get(Calendar.YEAR)
     val month = calendar.get(Calendar.MONTH) + 1
     // Tải danh sách giao dịch và tìm giao dịch cần chỉnh sửa
-    LaunchedEffect(fixedTransactionId) {
+    LaunchedEffect(transactionId) {
         getViewModel.getTransactions(
             month = month,
             year = year,
             onSuccess1 = { _ ->
                 // Sau khi lấy tất cả giao dịch, tìm giao dịch có ID tương ứng
                 val transaction = getViewModel.dateTransactionList.values.flatten()
-                    .find { it.transaction_id == fixedTransactionId }
+                    .find { it.transaction_id == transactionId }
 
                 if (transaction != null) {
                     // Cập nhật dữ liệu ban đầu vào các trường nhập liệu
@@ -260,7 +261,7 @@ fun EditExpenseTransaction(
 
                         selectedDate = validDate
                     },
-                    initialDate = selectedDate,
+                    initialDate = transactionDate,
                 )
             }
 
@@ -336,7 +337,7 @@ fun EditExpenseTransaction(
 
                         // Sửa dữ liệu giao dịch
                         putViewModel.putTransaction(
-                            transactionId = fixedTransactionId,
+                            transactionId = transactionId,
                             data = updatedTransaction,
                             onSuccess = {
                                 successMessage = "Chỉnh sửa thành công!"
@@ -401,7 +402,7 @@ fun EditExpenseTransaction(
                         TextButton(onClick = {
                             // Gọi API xóa giao dịch
                             delViewModel.deleteTransaction(
-                                transactionId = fixedTransactionId,
+                                transactionId = transactionId,
                                 onSuccess = {
                                     successMessage = "Xóa giao dịch thành công!"
                                     showPopup = true

@@ -166,25 +166,43 @@ fun AppQuanLyChiTieu(transactionStorage: TransactionStorage) {
 
             // Chỉnh sửa giao dịch (truyền transactionId)
             composable(
-                "editExpense/{transactionId}",
-                arguments = listOf(navArgument("transactionId") { type = NavType.IntType })
+                "editExpense/{transactionId}?date={transactionDate}",
+                arguments = listOf(
+                    navArgument("transactionId") { type = NavType.IntType },
+                    navArgument("transactionDate") { type = NavType.StringType; nullable = true }
+                )
             ) { backStackEntry ->
-                // Lấy transactionId từ NavArgument
+                // Lấy các tham số từ NavArgument
                 val transactionId = backStackEntry.arguments?.getInt("transactionId") ?: 0
+                val transactionDate = backStackEntry.arguments?.getString("transactionDate") ?: ""
+
+                // Chuyển đến màn hình chỉnh sửa chi tiêu
                 EditExpenseTransaction(
                     navController = navController,
-                    fixedTransactionId = transactionId
+                    transactionId = transactionId,
+                    transactionDate = transactionDate
                 )
             }
 
             composable(
-                "editIncome/{transactionId}",
-                arguments = listOf(navArgument("transactionId") { type = NavType.IntType })
+                "editIncome/{transactionId}?date={transactionDate}",
+                arguments = listOf(
+                    navArgument("transactionId") { type = NavType.IntType },
+                    navArgument("transactionDate") { type = NavType.StringType; nullable = true }
+                )
             ) { backStackEntry ->
-                // Lấy transactionId từ NavArgument
+                // Lấy các tham số từ NavArgument
                 val transactionId = backStackEntry.arguments?.getInt("transactionId") ?: 0
-                EditIncomeTransaction(navController = navController, transactionId = transactionId)
+                val transactionDate = backStackEntry.arguments?.getString("transactionDate") ?: ""
+
+                // Chuyển đến màn hình chỉnh sửa thu nhập
+                EditIncomeTransaction(
+                    navController = navController,
+                    transactionId = transactionId,
+                    transactionDate = transactionDate
+                )
             }
+
 
             composable(
                 "editFixedExpense/{fixedTransactionId}?startDate={startDate}&endDate={endDate}",
@@ -274,24 +292,43 @@ fun AppQuanLyChiTieu(transactionStorage: TransactionStorage) {
 
             // Chỉnh sửa giao dịch (truyền transactionId)
             composable(
-                "editExpense/{transactionId}",
-                arguments = listOf(navArgument("transactionId") { type = NavType.IntType })
+                "editExpense/{transactionId}?date={transactionDate}",
+                arguments = listOf(
+                    navArgument("transactionId") { type = NavType.IntType },
+                    navArgument("transactionDate") { type = NavType.StringType; nullable = true }
+                )
             ) { backStackEntry ->
-                // Lấy transactionId từ NavArgument
+                // Lấy các tham số từ NavArgument
                 val transactionId = backStackEntry.arguments?.getInt("transactionId") ?: 0
+                val transactionDate = backStackEntry.arguments?.getString("transactionDate") ?: ""
+
+                // Chuyển đến màn hình chỉnh sửa chi tiêu
                 EditExpenseTransaction(
                     navController = navController,
-                    fixedTransactionId = transactionId
+                    transactionId = transactionId,
+                    transactionDate = transactionDate
                 )
             }
+
             composable(
-                "editIncome/{transactionId}",
-                arguments = listOf(navArgument("transactionId") { type = NavType.IntType })
+                "editIncome/{transactionId}?date={transactionDate}",
+                arguments = listOf(
+                    navArgument("transactionId") { type = NavType.IntType },
+                    navArgument("transactionDate") { type = NavType.StringType; nullable = true }
+                )
             ) { backStackEntry ->
-                // Lấy transactionId từ NavArgument
+                // Lấy các tham số từ NavArgument
                 val transactionId = backStackEntry.arguments?.getInt("transactionId") ?: 0
-                EditIncomeTransaction(navController = navController, transactionId = transactionId)
+                val transactionDate = backStackEntry.arguments?.getString("transactionDate") ?: ""
+
+                // Chuyển đến màn hình chỉnh sửa thu nhập
+                EditIncomeTransaction(
+                    navController = navController,
+                    transactionId = transactionId,
+                    transactionDate = transactionDate
+                )
             }
+
 
             composable(
                 "editFixedExpense/{fixedTransactionId}?startDate={startDate}&endDate={endDate}",
