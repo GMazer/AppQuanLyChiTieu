@@ -86,16 +86,16 @@ fun AnualScreen(navController: NavHostController) {
         viewModel.getFixedTransactions(
             onSuccess = { transactions ->
                 fixedTransactions = transactions
+                showPopup = false
             },
             onError = { errorMessage ->
                 Log.e("AnualScreen", errorMessage)
+                showPopup = false
             }
         )
     }
 
     LaunchedEffect(Unit) {
-        successMessage = "Đang tải dữ liệu..."
-        showPopup = true
         reloadTransactions() // Load dữ liệu ngay khi màn hình được tạo
     }
 
@@ -239,56 +239,56 @@ fun FixedTransactionRow(
             1,
             "Chi phí nhà ở",
             { painterResource(R.drawable.outline_home_work_24) },
-            Color(0xFFfb791d),
+            Color(0xFFB40300),
             1.00f
         ),
         Category(
             2,
             "Ăn uống",
             { painterResource(R.drawable.outline_ramen_dining_24) },
-            Color(0xFF37c166),
+            Color(0xFF911294),
             1.00f
         ),
         Category(
             3,
             "Mua sắm quần áo",
             { painterResource(R.drawable.clothes) },
-            Color(0xFF283eaa),
+            Color(0xFF0C326E),
             1.00f
         ),
         Category(
             4,
             "Đi lại",
             { painterResource(R.drawable.outline_train_24) },
-            Color(0xFFa06749),
+            Color(0xFF126AB6),
             1.00f
         ),
         Category(
             5,
             "Chăm sóc sắc đẹp",
             { painterResource(R.drawable.outline_cosmetic) },
-            Color(0xFFf95aa9),
+            Color(0xFF0D96DA),
             1.00f
         ),
         Category(
             6,
             "Giao lưu",
             { painterResource(R.drawable.entertainment) },
-            Color(0xFF6a1b9a),
+            Color(0xFF4DB218),
             1.00f
         ),
         Category(
             7,
             "Y tế",
             { painterResource(R.drawable.outline_health_and_safety_24) },
-            Color(0xFFfc3d39),
+            Color(0xFFD5CC00),
             1.00f
         ),
         Category(
             8,
             "Học tập",
             { painterResource(R.drawable.outline_education) },
-            Color(0xFFfc7c1f),
+            Color(0xFFEE9305),
             1.00f
         ),
         Category(
@@ -391,7 +391,7 @@ fun FixedTransactionRow(
 
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = transaction.title ?: "No Title",
+                text = transaction.categoryName,
                 fontWeight = FontWeight.SemiBold,
                 fontFamily = montserrat,
                 color = textColor,
@@ -400,18 +400,6 @@ fun FixedTransactionRow(
             Spacer(modifier = Modifier.height(4.dp))
             Row {
                 Text(
-                    text = transaction.categoryName,
-                    fontSize = 8.sp,
-                    fontFamily = montserrat,
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = "\u2022",
-                    fontSize = 8.sp,
-                    fontFamily = montserrat,
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
                     text = when (transaction.repeate_frequency) {
                         "daily" -> "Hàng ngày"
                         "weekly" -> "Hàng tuần"
@@ -419,6 +407,20 @@ fun FixedTransactionRow(
                         "yearly" -> "Hàng năm"
                         else -> "Không xác định"
                     },
+                    fontSize = 8.sp,
+                    fontFamily = montserrat,
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                if (transaction.title != ""){
+                    Text(
+                        text = "\u2022",
+                        fontSize = 8.sp,
+                        fontFamily = montserrat,
+                    )
+                }
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = transaction.title ?: "No Title",
                     fontSize = 8.sp,
                     fontFamily = montserrat,
                 )

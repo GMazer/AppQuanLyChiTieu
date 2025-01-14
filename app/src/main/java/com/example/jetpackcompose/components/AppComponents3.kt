@@ -1050,8 +1050,12 @@ fun MessagePopup(
 ) {
     if (showPopup) {
         LaunchedEffect(key1 = showPopup) {
-            delay(1000)
-            onDismiss() //
+            if (!showPopup){
+                onDismiss()
+            } else {
+                delay(2000)
+                onDismiss()
+            }
         }
 
         AlertDialog(

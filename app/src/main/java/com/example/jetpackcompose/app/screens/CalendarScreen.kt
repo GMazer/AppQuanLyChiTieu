@@ -92,6 +92,9 @@ fun CalendarScreen(navController: NavController) {
     var showPopup by remember { mutableStateOf(false) }
     val monthYear = selectedMonthYear.substring(0, 7)
 
+    var isDataLoaded1 by remember { mutableStateOf(false) }
+    var isDataLoaded2 by remember { mutableStateOf(false) }
+
     MessagePopup(
         showPopup = showPopup,
         successMessage = successMessage,
@@ -117,6 +120,7 @@ fun CalendarScreen(navController: NavController) {
                         amountExpense = transaction.amountExpense
                     )
                 }
+                isDataLoaded1 = true
             },
             onSuccess2 = { transactions ->
                 val groupedTransactions = transactions.entries.map { (date, transactionDetails) ->
@@ -134,11 +138,20 @@ fun CalendarScreen(navController: NavController) {
                 }
 
                 dateTransactionList = groupedTransactions.toMap().toSortedMap(reverseOrder())
+
+                isDataLoaded2 = true
             },
             onError = { error -> errorMessage = error }
         )
     }
 
+    LaunchedEffect(isDataLoaded1, isDataLoaded2) {
+        if (isDataLoaded1 && isDataLoaded2) {
+            showPopup = false
+            isDataLoaded1 = false
+            isDataLoaded2 = false
+        }
+    }
 
     val totalExpense = transactionList.sumOf { it.amountExpense }
     val totalIncome = transactionList.sumOf { it.amountIncome }

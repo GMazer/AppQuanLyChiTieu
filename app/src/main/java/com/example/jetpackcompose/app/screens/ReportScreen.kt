@@ -48,6 +48,7 @@ import androidx.compose.ui.unit.sp
 import com.example.jetpackcompose.app.features.apiService.ReportAPI.GetReportExpenseViewModel
 import com.example.jetpackcompose.app.features.apiService.ReportAPI.GetReportIncomeViewModel
 import com.example.jetpackcompose.components.CategoryIconWithName
+import com.example.jetpackcompose.components.CategoryProgress
 import com.example.jetpackcompose.components.DonutChartIncome
 import com.example.jetpackcompose.components.DonutChartWithProgress
 import com.example.jetpackcompose.components.MessagePopup
@@ -61,12 +62,14 @@ import java.util.Calendar
 
 data class ReportDataExpense(
     var name: String,
-    var amount: Long
+    var amount: Long,
+    var process: Float
 )
 
 data class ReportDataIncome(
     var name: String,
-    var amount: Long
+    var amount: Long,
+    var process: Float
 )
 
 @SuppressLint("DefaultLocale")
@@ -81,7 +84,10 @@ fun ReportScreen() {
     var showPopup by remember { mutableStateOf(false) }
 
     var successMessage by remember { mutableStateOf("") }
-    val errorMessage by remember { mutableStateOf("") }
+    var errorMessage by remember { mutableStateOf("") }
+
+    var isDataLoaded1 by remember { mutableStateOf(false) }
+    var isDataLoaded2 by remember { mutableStateOf(false) }
 
     var percentSpent by remember { mutableStateOf(listOf<Float>()) }
     var percentIncome by remember { mutableStateOf(listOf<Float>()) }
@@ -137,7 +143,7 @@ fun ReportScreen() {
                     totalExpense = reportExpense.totalExpense
                     netAmount = reportExpense.netAmount
                     listReportExpense = reportExpense.categoryExpenseReports.map {
-                        ReportDataExpense(it.categoryName, it.spentAmount)
+                        ReportDataExpense(it.categoryName, it.spentAmount, (it.percentSpent / 100).toFloat())
                     }
                     colorExpense = listOf(
                         Color(0xFFB40300), Color(0xFF911294), Color(0xFF0C326E),
@@ -145,9 +151,12 @@ fun ReportScreen() {
                         Color(0xFFD5CC00), Color(0xFFEE9305), Color(0xFFD94E0F)
                     )
                     isLoading = false
+                    isDataLoaded1 = true
                 },
                 onError = { error ->
                     isLoading = false
+                    errorMessage = "Có lỗi xảy ra khi tải dữ liệu."
+                    showPopup = true
                 }
             )
 
@@ -159,18 +168,28 @@ fun ReportScreen() {
                         reportIncome.categoryIncomeReports.map { (it.percentIncome / 100).toFloat() }
                     income = reportIncome.categoryIncomeReports.map { it.categoryName }
                     listReportIncome = reportIncome.categoryIncomeReports.map {
-                        ReportDataIncome(it.categoryName, it.categoryIncome)
+                        ReportDataIncome(it.categoryName, it.categoryIncome, (it.percentIncome / 100).toFloat())
                     }
                     colorIncome = listOf(
                         Color(0xFFfb791d), Color(0xFF37c166),
                         Color(0xFFf95aa9), Color(0xFFfba74a)
                     )
                     isLoading = false
+                    isDataLoaded2 = true
                 },
                 onError = { error ->
                     isLoading = false
+                    errorMessage = "Có lỗi xảy ra khi tải dữ liệu."
+                    showPopup = true
                 }
             )
+        }
+    }
+    LaunchedEffect(isDataLoaded1, isDataLoaded2) {
+        if (isDataLoaded1 && isDataLoaded2) {
+            showPopup = false
+            isDataLoaded1 = false
+            isDataLoaded2 = false
         }
     }
     Scaffold(
@@ -406,7 +425,7 @@ fun ReportScreen() {
                                         .height(50.dp)
                                         .padding(horizontal = 16.dp)
                                 ) {
-                                    CategoryIconWithName(item.name, "", item.amount, "expense")
+                                    CategoryProgress(item.name, "", item.amount, "expense", item.process)
                                 }
                             }
                             item {
@@ -430,7 +449,8 @@ fun ReportScreen() {
                                     .height(50.dp)
                                     .padding(horizontal = 16.dp)
                             ) {
-                                CategoryIconWithName(item.name, "", item.amount, "income")
+                                Log.d("ReportScreen", "item: $item")
+                                CategoryProgress(item.name, "", item.amount, "income", item.process)
                             }
                         }
                         item {

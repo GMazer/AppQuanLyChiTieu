@@ -34,6 +34,7 @@ import com.example.jetpackcompose.components.MessagePopup
 import com.example.jetpackcompose.components.MyButtonComponent
 import com.example.jetpackcompose.components.RowNumberField
 import com.example.jetpackcompose.components.RowTextField
+import kotlinx.coroutines.delay
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.util.Date
@@ -159,6 +160,8 @@ fun FixedExpense(
                     value = "Thêm",
                     isLoading = isLoading,
                     onClick = {
+                        successMessage = "Đang gửi dữ liệu..."
+                        showPopup = true
                         isLoading = true
                         // Chuyển giá trị sang FixedTransaction và gọi ViewModel để thêm
                         val amount = amountState.text.toLongOrNull() ?: 0L
@@ -193,12 +196,13 @@ fun FixedExpense(
                                 statusMessage = message
                                 statusColor = Color.Green
                                 showPopup = true // Hiển thị popup thành công
+                                showPopup = false
                                 navController.popBackStack("anual", inclusive = false)
                             },
                             onError = { message ->
                                 // Cập nhật thông báo lỗi và hiển thị popup
                                 successMessage = ""
-                                errorMessage = selectedDate
+                                errorMessage = "Gửi dữ liệu thất bại!"
                                 statusMessage = message
                                 statusColor = Color.Red
                                 showPopup = true // Hiển thị popup lỗi
