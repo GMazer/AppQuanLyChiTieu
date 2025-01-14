@@ -118,9 +118,9 @@ fun EditIncomeTransaction(
         )
     )
 
-    val calendar = Calendar.getInstance()
-    val year = calendar.get(Calendar.YEAR)
-    val month = calendar.get(Calendar.MONTH) + 1
+    val dateParts = transactionDate.split("-")
+    val year = dateParts[0].toInt()
+    val month = dateParts[1].toInt()
     // Tải danh sách giao dịch và tìm giao dịch cần chỉnh sửa
     LaunchedEffect(transactionId) {
         getViewModel.getTransactions(

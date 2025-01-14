@@ -76,7 +76,7 @@ fun EditExpenseTransaction(
     var errorMessage by remember { mutableStateOf("") }
     var successMessage by remember { mutableStateOf("") }
 
-    Log.d("EditExpenseTransaction", "WTFHYPER: $transactionDate")
+    Log.d("EditExpenseTransaction", "WTFHYPER: $transactionId")
     // Trạng thái hiển thị Popup
     var showPopup by remember { mutableStateOf(false) }
 
@@ -142,10 +142,11 @@ fun EditExpenseTransaction(
         )
     )
 
-    val calendar = Calendar.getInstance()
-    val year = calendar.get(Calendar.YEAR)
-    val month = calendar.get(Calendar.MONTH) + 1
+    val dateParts = transactionDate.split("-")
+    val year = dateParts[0].toInt()
+    val month = dateParts[1].toInt()
     // Tải danh sách giao dịch và tìm giao dịch cần chỉnh sửa
+    Log.d("EditExpenseTransaction", "VAILON: $month - $year")
     LaunchedEffect(transactionId) {
         getViewModel.getTransactions(
             month = month,
