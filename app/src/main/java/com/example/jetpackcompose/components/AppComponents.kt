@@ -7,6 +7,7 @@ package com.example.jetpackcompose.components
 //noinspection UsingMaterialAndMaterial3Libraries
 //noinspection UsingMaterialAndMaterial3Libraries
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -965,11 +966,13 @@ fun CustomCalendar(
 
                                     // Chuyển ngày thành định dạng yyyy-MM-dd để so sánh
                                     val formattedDay = String.format("%02d", day.toInt())
-                                    val transactionDate = "$year-${month + 1}-$formattedDay"
+                                    val formattedMonth = String.format("%02d", month + 1)
+                                    val transactionDate = "$year-${formattedMonth}-$formattedDay"
 
                                     // Kiểm tra xem ngày có giao dịch không và hiển thị amountIncome và amountExpense
                                     val transaction =
                                         transactionList.find { it.date == transactionDate }
+                                    Log.d("CustomCalendar", "transaction: $transaction")
                                     transaction?.let {
                                         // Hiển thị amountIncome nếu không bằng 0
                                         if (it.amountIncome > 0) {
