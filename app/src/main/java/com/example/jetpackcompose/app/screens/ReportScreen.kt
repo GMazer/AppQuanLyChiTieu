@@ -363,7 +363,8 @@ fun ReportScreen() {
                                     text = "Đang tải dữ liệu.....",
                                     textAlign = TextAlign.Center,
                                     color = Color.Gray,
-                                    fontSize = 16.sp
+                                    fontSize = 16.sp,
+                                    modifier = Modifier.fillMaxWidth()
                                 )
                             }
                         }
@@ -376,7 +377,8 @@ fun ReportScreen() {
                                     text = "Đang tải dữ liệu.....",
                                     textAlign = TextAlign.Center,
                                     color = Color.Gray,
-                                    fontSize = 16.sp
+                                    fontSize = 16.sp,
+                                    modifier = Modifier.fillMaxWidth()
                                 )
                             }
                         }
