@@ -76,6 +76,8 @@ import androidx.compose.ui.window.Dialog
 import com.example.jetpackcompose.app.features.apiService.TransactionAPI.GetBudgetCategoryViewModel
 import com.example.jetpackcompose.app.screens.LimitTransaction
 import com.example.jetpackcompose.ui.theme.componentShapes
+import com.example.jetpackcompose.ui.theme.gradientColor1
+import com.example.jetpackcompose.ui.theme.gradientColor2
 import com.example.jetpackcompose.ui.theme.primaryColor
 import com.example.jetpackcompose.ui.theme.textColor
 import java.text.DecimalFormat
@@ -1062,7 +1064,7 @@ fun ReportTable(income: Long, expense: Long, net: Long) {
             .height(120.dp)
             .background(
                 Brush.linearGradient(
-                    colors = listOf(Color(0xFFF35E17), Color(0xFFFFA573)),
+                    colors = listOf(gradientColor1, gradientColor2),
                     start = Offset(0f, 0f),
                     end = Offset(1000f, 0f)
                 )
