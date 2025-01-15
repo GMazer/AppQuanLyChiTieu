@@ -14,8 +14,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -24,6 +26,7 @@ import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -41,13 +44,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.jetpackcompose.app.features.apiService.ReportAPI.GetReportExpenseViewModel
 import com.example.jetpackcompose.app.features.apiService.ReportAPI.GetReportIncomeViewModel
-import com.example.jetpackcompose.components.CategoryIconWithName
+import com.example.jetpackcompose.app.features.apiService.TransactionAPI.GetBudgetCategoryViewModel
 import com.example.jetpackcompose.components.CategoryProgress
 import com.example.jetpackcompose.components.DonutChartIncome
 import com.example.jetpackcompose.components.DonutChartWithProgress
@@ -58,6 +64,8 @@ import com.example.jetpackcompose.components.montserrat
 import com.example.jetpackcompose.ui.theme.primaryColor
 import com.example.jetpackcompose.ui.theme.textColor
 import com.example.jetpackcompose.ui.theme.topBarColor
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import java.util.Calendar
 
 data class ReportDataExpense(
@@ -75,19 +83,40 @@ data class ReportDataIncome(
 @SuppressLint("DefaultLocale")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ReportScreen() {
+fun ReportScreen(
+    navController: NavController,
+    pagerState: PagerState,
+    coroutineScope: CoroutineScope,
+    onPageSelected: (Int) -> Unit
+) {
+
+    val getBudgetCategoryViewModel : GetBudgetCategoryViewModel =
+        GetBudgetCategoryViewModel(LocalContext.current)
+
+    var houseValue by remember { mutableStateOf(TextFieldValue()) }
+    var foodValue by remember { mutableStateOf(TextFieldValue()) }
+    var shoppingValue by remember { mutableStateOf(TextFieldValue()) }
+    var movingValue by remember { mutableStateOf(TextFieldValue()) }
+    var cosmeticValue by remember { mutableStateOf(TextFieldValue()) }
+    var exchangingValue by remember { mutableStateOf(TextFieldValue()) }
+    var medicalValue by remember { mutableStateOf(TextFieldValue()) }
+    var educatingValue by remember { mutableStateOf(TextFieldValue()) }
+    var saveValue by remember { mutableStateOf(TextFieldValue()) }
 
     val reportExpenseViewModel: GetReportExpenseViewModel =
         GetReportExpenseViewModel(LocalContext.current)
     val reportIncomeViewModel: GetReportIncomeViewModel =
         GetReportIncomeViewModel(LocalContext.current)
+
     var showPopup by remember { mutableStateOf(false) }
+    var recommendBudget by remember { mutableStateOf(false) }
 
     var successMessage by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf("") }
 
     var isDataLoaded1 by remember { mutableStateOf(false) }
     var isDataLoaded2 by remember { mutableStateOf(false) }
+    var isBudgetLoaded by remember { mutableStateOf(false) }
 
     var percentSpent by remember { mutableStateOf(listOf<Float>()) }
     var percentIncome by remember { mutableStateOf(listOf<Float>()) }
@@ -122,8 +151,43 @@ fun ReportScreen() {
 
     Log.d("ReportScreen", "selectedMonthYear: $selectedMonthYear")
     LaunchedEffect(selectedMonthYear) {
+
+        isDataLoaded1 = false
+        isDataLoaded2 = false
+
+        getBudgetCategoryViewModel.getBudgetTransaction(
+            onSuccess = {
+                houseValue = TextFieldValue(it[0].limitExpense.toString())
+                foodValue = TextFieldValue(it[1].limitExpense.toString())
+                shoppingValue = TextFieldValue(it[2].limitExpense.toString())
+                movingValue = TextFieldValue(it[3].limitExpense.toString())
+                cosmeticValue = TextFieldValue(it[4].limitExpense.toString())
+                exchangingValue = TextFieldValue(it[5].limitExpense.toString())
+                medicalValue = TextFieldValue(it[6].limitExpense.toString())
+                educatingValue = TextFieldValue(it[7].limitExpense.toString())
+                saveValue = TextFieldValue(it[8].limitExpense.toString())
+
+                // Kiểm tra nếu tất cả các giá trị đều bằng 0
+                val allZero = listOf(
+                    houseValue.text, foodValue.text, shoppingValue.text, movingValue.text,
+                    cosmeticValue.text, exchangingValue.text, medicalValue.text,
+                    educatingValue.text, saveValue.text
+                ).all { it == "0" } // Kiểm tra nếu tất cả đều là "0"
+
+                if (allZero) {
+                    recommendBudget = true
+                } else {
+                    isBudgetLoaded = true
+                }
+
+            },
+            onError = {
+
+            }
+        )
+
         errorMessage = ""
-        if (!isLoading && selectedMonthYear != currentMonthYear) {
+        if (!isLoading && selectedMonthYear != currentMonthYear && !recommendBudget) {
             isLoading = true
             successMessage = "Đang tải dữ liệu..."
             showPopup = true
@@ -184,6 +248,10 @@ fun ReportScreen() {
                     showPopup = true
                 }
             )
+        } else {
+            showPopup = false
+            isDataLoaded1 = false
+            isDataLoaded2 = false
         }
     }
     LaunchedEffect(isDataLoaded1, isDataLoaded2) {
@@ -193,6 +261,58 @@ fun ReportScreen() {
             isDataLoaded2 = false
         }
     }
+
+    if (recommendBudget) {
+        AlertDialog(
+            onDismissRequest = { recommendBudget = false },
+            title = {
+                Text(
+                    "Chưa phân bổ ngân sách!",
+                    fontFamily = montserrat,
+                    color = Color(0xff222222),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
+            },
+            text = {
+                Text(
+                    "Bạn chưa phân bổ ngân sách để thống kê báo cáo, nhập phân bổ ngân sách ngay?",
+                    fontFamily = montserrat,
+                    fontWeight = FontWeight.SemiBold,
+                    color = textColor,
+                    fontSize = 14.sp
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    recommendBudget = false
+                    onPageSelected(4)  // Cập nhật selectedPage thành 4 khi bấm nút
+                    coroutineScope.launch {
+                        pagerState.scrollToPage(4) // Điều hướng đến BudgetScreen (trang 4)
+                    }
+                }) {
+                    Text(
+                        "OK",
+                        fontFamily = montserrat,
+                        color = primaryColor
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    recommendBudget = false
+                    // Không cần lưu lại trạng thái "bỏ qua" vì muốn dialog hiển thị lại khi mở lại app
+                }) {
+                    Text(
+                        "Bỏ qua",
+                        color = Color.Gray,
+                        fontFamily = montserrat
+                    )
+                }
+            }
+        )
+    }
+
     Scaffold(
         topBar = {
             Column {
@@ -310,60 +430,6 @@ fun ReportScreen() {
                     .background(Color.White)
             ) {
 
-//                item {
-//                    ReportTable(totalIncome, totalExpense, netAmount)
-//                }
-
-//                item {
-//                    // Tabs
-//                    val tabs = listOf("Chi tiêu", "Thu nhập")
-//                    TabRow(
-//                        selectedTabIndex = selectedTabIndex,
-//                        modifier = Modifier
-//                            .background(color = Color.White)
-//                            .fillMaxWidth(),
-//                        indicator = { tabPositions ->
-//                            TabRowDefaults.Indicator(
-//                                Modifier
-//                                    .width(15.dp)
-//                                    .tabIndicatorOffset(tabPositions[selectedTabIndex])
-//                                    .height(4.dp)
-//                                    .clip(RoundedCornerShape(50))
-//                                    .background(primaryColor),
-//                                color = primaryColor,
-//                                height = 2.dp,
-//                            )
-//                        }
-//                    ) {
-//                        tabs.forEachIndexed { index, title ->
-//                            Tab(
-//                                selected = selectedTabIndex == index,
-//                                onClick = { selectedTabIndex = index },
-//                                modifier = Modifier
-//                                    .padding(horizontal = 16.dp),
-//                                text = {
-//                                    Box(
-//                                        modifier = Modifier.fillMaxSize(),
-//                                        contentAlignment = Alignment.Center
-//                                    ) {
-//                                        Text(
-//                                            title,
-//                                            fontFamily = montserrat,
-//                                            fontWeight = FontWeight.SemiBold,
-//                                            fontSize = 14.sp,
-//                                            color = if (selectedTabIndex == index) primaryColor else textColor,
-//                                            textAlign = TextAlign.Center
-//                                        )
-//                                    }
-//                                }
-//                            )
-//                        }
-//                    }
-//
-//
-//                    Spacer(modifier = Modifier.height(16.dp))
-//                }
-
                 item {
                     Spacer(modifier = Modifier.height(16.dp))
                 }
@@ -371,7 +437,7 @@ fun ReportScreen() {
                 item {
                     when (selectedTabIndex) {
                         0 -> {
-                            if (percentLimit.isNotEmpty() && percentSpent.isNotEmpty() && expense.isNotEmpty()) {
+                            if (percentLimit.isNotEmpty() && percentSpent.isNotEmpty() && expense.isNotEmpty() && isBudgetLoaded) {
                                 DonutChartWithProgress(
                                     percentLimit,
                                     colorExpense,
@@ -390,7 +456,7 @@ fun ReportScreen() {
                         }
 
                         1 -> {
-                            if (percentIncome.isNotEmpty() && expense.isNotEmpty()) {
+                            if (percentIncome.isNotEmpty() && expense.isNotEmpty() && isBudgetLoaded) {
                                 DonutChartIncome(colorIncome, income, percentIncome)
                             } else {
                                 Text(
@@ -413,7 +479,7 @@ fun ReportScreen() {
                     )
                 }
 
-                if (selectedTabIndex == 0) {
+                if (selectedTabIndex == 0 && isBudgetLoaded) {
                     for (item in listReportExpense) {
                         if (item.name != "Tiết kiệm" && item.amount != 0L) {
                             item {
@@ -438,7 +504,7 @@ fun ReportScreen() {
                             }
                         }
                     }
-                } else {
+                } else if (selectedTabIndex == 1 && isBudgetLoaded) {
                     for (item in listReportIncome) {
                         item {
                             Row(
@@ -476,6 +542,6 @@ fun ReportScreen() {
 @Composable
 fun PreviewReportScreen() {
     MaterialTheme {
-        ReportScreen()
+//        ReportScreen()
     }
 }

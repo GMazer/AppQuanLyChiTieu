@@ -122,6 +122,7 @@ fun FixedIncome(
             ) {
                 Column {
                     DropdownRepeat(
+                        initialValue = 0,
                         label = "Lặp lại",
                         options = RepeatFrequency.values().map {
                             it.displayName to it

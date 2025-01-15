@@ -113,6 +113,7 @@ fun EditFixedExpenseTransaction(
                     titleState = TextFieldValue(it.title ?: "")
                     selectedCategory = it.categoryName
                     amountState = TextFieldValue(it.amount.toString())
+                    selectedRepeat = RepeatFrequency.valueOf(it.repeate_frequency)
                     selectedDate = SimpleDateFormat("yyyy-MM-dd").format(calendar.time)
                     selectedEndDate = it.endDate?.let { endDateList ->
                         LocalDate.of(endDateList[0], endDateList[1], endDateList[2]).toString()
@@ -238,6 +239,13 @@ fun EditFixedExpenseTransaction(
             ) {
                 Column {
                     DropdownRepeat(
+                        initialValue = when (selectedRepeat) {
+                            RepeatFrequency.daily -> 0
+                            RepeatFrequency.weekly -> 1
+                            RepeatFrequency.monthly -> 2
+                            RepeatFrequency.yearly -> 3
+                            else -> 0  // Default giá trị nếu không có
+                        },
                         label = "Lặp lại",
                         options = RepeatFrequency.values()
                             .map { it.displayName to it }

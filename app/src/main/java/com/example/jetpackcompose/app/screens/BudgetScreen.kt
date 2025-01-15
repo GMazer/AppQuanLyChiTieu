@@ -38,9 +38,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.jetpackcompose.app.features.apiService.TransactionAPI.GetBudgetCategoryViewModel
 import com.example.jetpackcompose.app.features.apiService.TransactionAPI.PutLimitTransactionViewModel
 import com.example.jetpackcompose.components.BudgetTextField
+import com.example.jetpackcompose.components.MessagePopup
 import com.example.jetpackcompose.components.MyButtonComponent
 import com.example.jetpackcompose.components.montserrat
 import com.example.jetpackcompose.ui.theme.primaryColor
@@ -49,8 +51,14 @@ import com.example.jetpackcompose.ui.theme.topBarColor
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BudgetScreen() {
+fun BudgetScreen(navController: NavController) {
     val putViewModel = PutLimitTransactionViewModel(LocalContext.current)
+
+    var showPopup by remember { mutableStateOf(false) }
+
+    var successMessage by remember { mutableStateOf("") }
+    var errorMessage by remember { mutableStateOf("") }
+
     var houseValue by remember { mutableStateOf(TextFieldValue()) }
     var foodValue by remember { mutableStateOf(TextFieldValue()) }
     var shoppingValue by remember { mutableStateOf(TextFieldValue()) }
@@ -81,6 +89,13 @@ fun BudgetScreen() {
             }
         )
     }
+
+    MessagePopup(
+        showPopup = showPopup,
+        successMessage = successMessage,
+        errorMessage = errorMessage,
+        onDismiss = { showPopup = false } // Đóng popup khi nhấn ngoài
+    )
 
     MaterialTheme {
         Scaffold(
@@ -212,26 +227,37 @@ fun BudgetScreen() {
                             value = "Lưu ngân sách",
                             isLoading = false,
                             onClick = {
-                            val categoryLimits = listOf(
-                                LimitTransaction.CategoryLimit(1, houseValue.text.toLongOrNull() ?: 0L),
-                                LimitTransaction.CategoryLimit(2, foodValue.text.toLongOrNull() ?: 0L),
-                                LimitTransaction.CategoryLimit(3, shoppingValue.text.toLongOrNull() ?: 0L),
-                                LimitTransaction.CategoryLimit(4, movingValue.text.toLongOrNull() ?: 0L),
-                                LimitTransaction.CategoryLimit(5, cosmeticValue.text.toLongOrNull() ?: 0L),
-                                LimitTransaction.CategoryLimit(6, exchangingValue.text.toLongOrNull() ?: 0L),
-                                LimitTransaction.CategoryLimit(7, medicalValue.text.toLongOrNull() ?: 0L),
-                                LimitTransaction.CategoryLimit(8, educatingValue.text.toLongOrNull() ?: 0L),
-                                LimitTransaction.CategoryLimit(9, saveValue.text.toLongOrNull() ?: 0L)
-                            )
 
-                            val limitTransaction: LimitTransaction = LimitTransaction(categoryLimits)
-                            // Gọi ViewModel hoặc logic khác để lưu dữ liệu
-                            putViewModel.addLimitTransaction(
-                                data = limitTransaction.limits,
-                                onError = { },
-                                onSuccess = { }
-                            )
-                        })
+                                successMessage = "Đang gửi dữ liệu..."
+                                showPopup = true
+
+                                val categoryLimits = listOf(
+                                    LimitTransaction.CategoryLimit(1, houseValue.text.toLongOrNull() ?: 0L),
+                                    LimitTransaction.CategoryLimit(2, foodValue.text.toLongOrNull() ?: 0L),
+                                    LimitTransaction.CategoryLimit(3, shoppingValue.text.toLongOrNull() ?: 0L),
+                                    LimitTransaction.CategoryLimit(4, movingValue.text.toLongOrNull() ?: 0L),
+                                    LimitTransaction.CategoryLimit(5, cosmeticValue.text.toLongOrNull() ?: 0L),
+                                    LimitTransaction.CategoryLimit(6, exchangingValue.text.toLongOrNull() ?: 0L),
+                                    LimitTransaction.CategoryLimit(7, medicalValue.text.toLongOrNull() ?: 0L), LimitTransaction.CategoryLimit(8, educatingValue.text.toLongOrNull() ?: 0L), LimitTransaction.CategoryLimit(9, saveValue.text.toLongOrNull() ?: 0L)
+                                )
+
+                                val limitTransaction: LimitTransaction = LimitTransaction(categoryLimits)
+                                // Gọi ViewModel hoặc logic khác để lưu dữ liệu
+                                putViewModel.addLimitTransaction(
+                                    data = limitTransaction.limits,
+                                     onError = {
+                                         successMessage = ""
+                                         errorMessage = "Có lỗi xảy ra khi gửi dữ liệu!"
+                                         showPopup = true
+                                     },
+                                    onSuccess = {
+                                        errorMessage = ""
+                                        successMessage = "Gửi dữ liệu thành công!"
+                                        showPopup = true
+                                    }
+                                )
+                            }
+                        )
                     }
                 }
             }
@@ -242,6 +268,6 @@ fun BudgetScreen() {
 @Preview
 @Composable
 fun BudgetScreenPreview() {
-    BudgetScreen()
+//    BudgetScreen()
 }
 

@@ -663,11 +663,26 @@ fun DropdownRow(
 
 @Composable
 fun <T : Enum<T>> DropdownRepeat(
+    initialValue: Int, // Giá trị hiển thị ban đầu
     label: String,
     options: List<Pair<String, T>>, // Truyền vào danh sách các giá trị enum dưới dạng cặp (displayName, enumValue)
     onChangeValue: (T) -> Unit // Trả về enum thay vì String
 ) {
+
+    Log.d("DropdownRepeat", "Initial Value: $initialValue")
+
     var selectedOption by remember { mutableStateOf(options[0].second) } // Lưu enum thay vì String
+
+    if (initialValue == 0){
+        selectedOption = options[0].second // Lưu enum thay vì String
+    } else if (initialValue == 1){
+        selectedOption = options[1].second // Lưu enum thay vì String
+    } else if (initialValue == 2){
+        selectedOption = options[2].second // Lưu enum thay vì String
+    } else if (initialValue == 3){
+        selectedOption = options[3].second // Lưu enum thay vì String
+    }
+
     var showDialog by remember { mutableStateOf(false) }
 
     Row(
@@ -1053,7 +1068,7 @@ fun MessagePopup(
             if (!showPopup){
                 onDismiss()
             } else {
-                delay(5000)
+                delay(2500)
                 onDismiss()
             }
         }

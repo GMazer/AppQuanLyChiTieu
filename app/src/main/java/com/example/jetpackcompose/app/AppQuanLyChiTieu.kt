@@ -34,6 +34,7 @@ import com.example.jetpackcompose.app.features.editFeatures.EditExpenseTransacti
 import com.example.jetpackcompose.app.features.editFeatures.EditFixedExpenseTransaction
 import com.example.jetpackcompose.app.features.editFeatures.EditIncomeExpenseTransaction
 import com.example.jetpackcompose.app.features.editFeatures.EditIncomeTransaction
+import com.example.jetpackcompose.app.screens.BudgetScreen
 import com.example.jetpackcompose.app.screens.CalendarScreen
 import com.example.jetpackcompose.app.screens.MainScreen
 import com.example.jetpackcompose.app.screens.OtherScreen
@@ -162,6 +163,7 @@ fun AppQuanLyChiTieu(transactionStorage: TransactionStorage) {
             composable("other") { OtherScreen(navController) }
             composable("inputfixedtab") { InputFixedTab(navController) }
             composable("calendar") { CalendarScreen(navController) }
+            composable("budget") { BudgetScreen(navController) }
             composable("transactionNotification") { TransactionNotificationScreen(navController) }
 
             // Chỉnh sửa giao dịch (truyền transactionId)
@@ -286,6 +288,7 @@ fun AppQuanLyChiTieu(transactionStorage: TransactionStorage) {
             composable("other") { OtherScreen(navController) }
             composable("inputfixedtab") { InputFixedTab(navController) }
             composable("calendar") { CalendarScreen(navController) }
+            composable("budget") { BudgetScreen(navController) }
             composable("findtransaction") { FindCalendarScreen(navController) }
             composable("transactionNotification") { TransactionNotificationScreen(navController) }
 

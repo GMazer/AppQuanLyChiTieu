@@ -127,6 +127,7 @@ fun FixedExpense(
             ) {
                 Column {
                     DropdownRepeat(
+                        initialValue = 0,
                         label = "Lặp lại",
                         options = RepeatFrequency.entries.map { it.displayName to it } // Lấy tất cả giá trị enum
                     ) { repeat ->

@@ -110,6 +110,11 @@ fun EditIncomeExpenseTransaction(
 
                     titleState = TextFieldValue(it.title ?: "")
                     selectedCategory = it.categoryName
+
+                    Log.d("EditFixedExpenseTransaction", "Category repeat: ${it.repeate_frequency}")
+                    selectedRepeat = RepeatFrequency.valueOf(it.repeate_frequency)
+                    Log.d("EditFixedExpenseTransaction", "Category repeat: $selectedRepeat")
+
                     amountState = TextFieldValue(it.amount.toString())
                     selectedDate = SimpleDateFormat("yyyy-MM-dd").format(calendar.time)
                     Log.d("EditFixedExpenseTransaction", "Start Date: ${it.startDate}")
@@ -231,12 +236,21 @@ fun EditIncomeExpenseTransaction(
                     .background(color = Color.White, shape = RoundedCornerShape(8.dp))
             ) {
                 Column {
+                    Log.d("EditFixedIncomeTransaction", "selectedRepeat: $selectedRepeat")
                     DropdownRepeat(
+                        initialValue = when (selectedRepeat) {
+                            RepeatFrequency.daily -> 0
+                            RepeatFrequency.weekly -> 1
+                            RepeatFrequency.monthly -> 2
+                            RepeatFrequency.yearly -> 3
+                            else -> 0  // Default giá trị nếu không có
+                        },
                         label = "Lặp lại",
                         options = RepeatFrequency.entries
                             .map { it.displayName to it }
                     ) { repeat ->
                         selectedRepeat = repeat
+                        Log.d("EditFixedExpenseTransaction", "Category repeat display: $selectedRepeat")
                     }
                     Divider(color = Color(0xFFd4d4d4), thickness = 0.5.dp)
 
