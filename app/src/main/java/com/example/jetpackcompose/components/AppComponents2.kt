@@ -247,7 +247,7 @@ fun DonutChartWithProgress(
                     color = Color.White,
                     start = lineStart,
                     end = lineEnd,
-                    strokeWidth = 15f // Độ rộng của đường ngăn
+                    strokeWidth = 10f // Độ rộng của đường ngăn
                 )
 
                 startAngle += sweepAngle
@@ -396,7 +396,7 @@ fun DonutChartIncome(
                     color = Color.White,
                     start = lineStart,
                     end = lineEnd,
-                    strokeWidth = 15f // Độ rộng của đường ngăn
+                    strokeWidth = 10f // Độ rộng của đường ngăn
                 )
 
                 startAngle += sweepAngle

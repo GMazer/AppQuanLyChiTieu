@@ -31,6 +31,7 @@ import com.example.jetpackcompose.app.network.RegistrationData
 import com.example.jetpackcompose.components.CheckboxComponent
 import com.example.jetpackcompose.components.ClickableTextComponent
 import com.example.jetpackcompose.components.HeadingTextComponent
+import com.example.jetpackcompose.components.MessagePopup
 import com.example.jetpackcompose.components.MyButtonComponent
 import com.example.jetpackcompose.components.MyTextFieldComponent
 import com.example.jetpackcompose.components.NormalTextComponent
@@ -46,6 +47,18 @@ fun SignUpScreen(navController: NavHostController, viewModel: SignUpViewModel = 
     var errorMessage by remember { mutableStateOf("") }
     var successMessage by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
+
+    var showPopup by remember { mutableStateOf(false) }
+    var errorMessage2 by remember { mutableStateOf("") }
+    var successMessage2 by remember { mutableStateOf("") }
+
+
+    MessagePopup(
+        showPopup = showPopup,
+        successMessage = successMessage2,
+        errorMessage = errorMessage2,
+        onDismiss = { showPopup = false } // Đóng popup khi nhấn ngoài
+    )
 
     Surface(
         modifier = Modifier
@@ -106,6 +119,8 @@ fun SignUpScreen(navController: NavHostController, viewModel: SignUpViewModel = 
                     } else if (!agreeToTerms) {
                         errorMessage = "Vui lòng đồng ý với điều khoản và chính sách."
                     } else {
+                        successMessage2 = "Đang đăng ký tài khoản..."
+                        showPopup = true
                         val registrationData = RegistrationData(
                             phone_number = phoneNumber,
                             email = email,
@@ -116,6 +131,8 @@ fun SignUpScreen(navController: NavHostController, viewModel: SignUpViewModel = 
                         viewModel.registerUser(
                             data = registrationData,
                             onSuccess = {
+                                successMessage2 = "Tài khoản đã được đăng ký thành công!"
+                                showPopup = true
                                 successMessage = it
                                 navController.navigate("signin")
                                 {
@@ -128,24 +145,7 @@ fun SignUpScreen(navController: NavHostController, viewModel: SignUpViewModel = 
                         )
                     }
                 })
-            if (errorMessage.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(20.dp))
-                Text(
-                    text = errorMessage,
-                    color = Color.Red,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
 
-            if (successMessage.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(20.dp))
-                Thread.sleep(3000)
-                Text(
-                    text = successMessage,
-                    color = Color.Green,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
             Row(modifier = Modifier.fillMaxWidth()) {
                 Spacer(modifier = Modifier.weight(1f))
                 ClickableTextComponent("Đã có tài khoản? Đăng nhập ngay", onClick = {
