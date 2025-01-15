@@ -89,7 +89,7 @@ fun IncomeContent(postViewModel: PostTransactionViewModel = PostTransactionViewM
             13,
             "Trợ cấp",
             { painterResource(R.drawable.subsidy) },
-            Color(0xFFfba74a),
+            Color(0xFF0000FF),
             percentage = 1.00f // 50%
         )
     )

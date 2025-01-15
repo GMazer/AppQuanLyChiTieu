@@ -1,5 +1,6 @@
 package com.example.jetpackcompose.app.features.editFeatures
 
+import android.annotation.SuppressLint
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -53,9 +54,11 @@ import com.example.jetpackcompose.components.montserrat
 import com.example.jetpackcompose.ui.theme.textColor
 import java.text.SimpleDateFormat
 import java.time.LocalDate
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
+@SuppressLint("SimpleDateFormat")
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun EditIncomeExpenseTransaction(
@@ -82,7 +85,6 @@ fun EditIncomeExpenseTransaction(
 
     // Trạng thái hiển thị thông báo
     var showPopup by remember { mutableStateOf(false) }
-    var errorMessage1 by remember { mutableStateOf("") }
     var successMessage2 by remember { mutableStateOf("Đang tải dữ liệu") }
     var errorMessage2 by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
@@ -93,23 +95,32 @@ fun EditIncomeExpenseTransaction(
 
     // Lấy thông tin giao dịch cố định khi màn hình được mở
     LaunchedEffect(fixedTransactionId) {
+        successMessage2 = "Đang tải dữ liệu..."
+        showPopup = true
         getFixedTransactionViewModel.getFixedTransactions(
             onSuccess = { transactionList ->
+                showPopup = false
                 fixedTransaction =
                     transactionList.find { it.fixed_transaction_id == fixedTransactionId }
+
                 // Điền dữ liệu vào các trường nhập liệu
                 fixedTransaction?.let {
+                    val calendar = Calendar.getInstance()
+                    calendar.set(it.startDate[0], it.startDate[1] - 1, it.startDate[2]) // Month trừ 1 vì Calendar sử dụng 0-based indexing cho tháng.
+
                     titleState = TextFieldValue(it.title ?: "")
                     selectedCategory = it.categoryName
                     amountState = TextFieldValue(it.amount.toString())
-                    selectedDate = SimpleDateFormat("yyyy-MM-dd").format(it.startDate)
+                    selectedDate = SimpleDateFormat("yyyy-MM-dd").format(calendar.time)
+                    Log.d("EditFixedExpenseTransaction", "Start Date: ${it.startDate}")
                     selectedEndDate = it.endDate?.let { endDateList ->
                         SimpleDateFormat("yyyy-MM-dd").format(Date(endDateList[0].toLong()))
                     } ?: ""
                 }
             },
             onError = { errorMessage ->
-                errorMessage1 = ""
+                Log.d("EditFixedExpenseTransaction", "Error: $errorMessage")
+                errorMessage2 = "Có lỗi xảy ra khi tải giao dịch!"
                 showPopup = true
             }
         )

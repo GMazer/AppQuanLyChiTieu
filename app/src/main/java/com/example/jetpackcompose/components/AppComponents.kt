@@ -1125,7 +1125,7 @@ fun CategoryProgress(
             Color(0xFFf95aa9),
             1.00f
         ),
-        Category(11, "Trợ cấp", { painterResource(R.drawable.subsidy) }, Color(0xFFfba74a), 1.00f)
+        Category(11, "Trợ cấp", { painterResource(R.drawable.subsidy) }, Color(0xFF0000FF), 1.00f)
     )
 
     // Tìm Category phù hợp với categoryName

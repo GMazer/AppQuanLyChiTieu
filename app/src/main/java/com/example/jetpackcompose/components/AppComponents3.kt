@@ -320,7 +320,7 @@ fun CategoryIconWithName(
             Color(0xFFf95aa9),
             1.00f
         ),
-        Category(11, "Trợ cấp", { painterResource(R.drawable.subsidy) }, Color(0xFFfba74a), 1.00f)
+        Category(11, "Trợ cấp", { painterResource(R.drawable.subsidy) }, Color(0xFF0000FF), 1.00f)
     )
 
     // Tìm Category phù hợp với categoryName
@@ -642,7 +642,7 @@ fun DropdownRow(
                                 Icon(
                                     painter = painterResource(id = iconId),
                                     contentDescription = null,
-                                    tint = Color(0xff4caf50),
+                                    tint = Color(0xfff35e17),
                                     modifier = Modifier.size(24.dp)
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
@@ -1053,7 +1053,7 @@ fun MessagePopup(
             if (!showPopup){
                 onDismiss()
             } else {
-                delay(2000)
+                delay(5000)
                 onDismiss()
             }
         }

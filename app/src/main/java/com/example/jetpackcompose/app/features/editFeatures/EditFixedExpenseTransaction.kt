@@ -54,6 +54,7 @@ import com.example.jetpackcompose.components.montserrat
 import com.example.jetpackcompose.ui.theme.textColor
 import java.text.SimpleDateFormat
 import java.time.LocalDate
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
@@ -95,23 +96,33 @@ fun EditFixedExpenseTransaction(
 
     // Lấy thông tin giao dịch cố định khi màn hình được mở
     LaunchedEffect(fixedTransactionId) {
+        successMessage2 = "Đang tải dữ liệu"
+        showPopup = true
         getFixedTransactionViewModel.getFixedTransactions(
             onSuccess = { transactionList ->
                 fixedTransaction =
                     transactionList.find { it.fixed_transaction_id == fixedTransactionId }
+
                 // Điền dữ liệu vào các trường nhập liệu
                 fixedTransaction?.let {
+
+                    val calendar = Calendar.getInstance()
+                    calendar.set(it.startDate[0], it.startDate[1] - 1, it.startDate[2]) // Month trừ 1 vì Calendar sử dụng 0-based indexing cho tháng.
+
+
                     titleState = TextFieldValue(it.title ?: "")
                     selectedCategory = it.categoryName
                     amountState = TextFieldValue(it.amount.toString())
-
+                    selectedDate = SimpleDateFormat("yyyy-MM-dd").format(calendar.time)
                     selectedEndDate = it.endDate?.let { endDateList ->
                         LocalDate.of(endDateList[0], endDateList[1], endDateList[2]).toString()
                     } ?: ""
                 }
+                showPopup = false
+                successMessage2 = ""
             },
             onError = { errorMessage ->
-                errorMessage1 = ""
+                errorMessage1 = "Có lỗi xảy ra khi tải giao dịch"
                 showPopup = true
             }
         )

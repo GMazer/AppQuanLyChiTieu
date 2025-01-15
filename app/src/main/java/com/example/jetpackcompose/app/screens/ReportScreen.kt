@@ -122,6 +122,7 @@ fun ReportScreen() {
 
     Log.d("ReportScreen", "selectedMonthYear: $selectedMonthYear")
     LaunchedEffect(selectedMonthYear) {
+        errorMessage = ""
         if (!isLoading && selectedMonthYear != currentMonthYear) {
             isLoading = true
             successMessage = "Đang tải dữ liệu..."
@@ -172,7 +173,7 @@ fun ReportScreen() {
                     }
                     colorIncome = listOf(
                         Color(0xFFfb791d), Color(0xFF37c166),
-                        Color(0xFFf95aa9), Color(0xFFfba74a)
+                        Color(0xFFf95aa9), Color(0xFF0000FF)
                     )
                     isLoading = false
                     isDataLoaded2 = true
