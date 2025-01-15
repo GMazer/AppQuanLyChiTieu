@@ -146,7 +146,6 @@ fun EditExpenseTransaction(
     val year = dateParts[0].toInt()
     val month = dateParts[1].toInt()
     // Tải danh sách giao dịch và tìm giao dịch cần chỉnh sửa
-    Log.d("EditExpenseTransaction", "VAILON: $month - $year")
     LaunchedEffect(transactionId) {
         getViewModel.getTransactions(
             month = month,
