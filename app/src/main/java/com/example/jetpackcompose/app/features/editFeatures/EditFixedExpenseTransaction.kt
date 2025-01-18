@@ -109,7 +109,6 @@ fun EditFixedExpenseTransaction(
                     val calendar = Calendar.getInstance()
                     calendar.set(it.startDate[0], it.startDate[1] - 1, it.startDate[2]) // Month trừ 1 vì Calendar sử dụng 0-based indexing cho tháng.
 
-
                     titleState = TextFieldValue(it.title ?: "")
                     selectedCategory = it.categoryName
                     amountState = TextFieldValue(it.amount.toString())
@@ -211,6 +210,17 @@ fun EditFixedExpenseTransaction(
                     Divider(color = Color(0xFFd4d4d4), thickness = 0.5.dp)
 
                     DropdownRow(
+                        initialValue = when (selectedCategory) {
+                            "Chi phí nhà ở" -> 0
+                            "Ăn uống" -> 1
+                            "Mua sắm quần áo" -> 2
+                            "Đi lại" -> 3
+                            "Chăm sóc săc đẹp" -> 4
+                            "Giao lưu" -> 5
+                            "Y tế" -> 6
+                            "Học tập" -> 7
+                            else -> 0  // Default giá trị nếu không có
+                        },
                         label = "Danh mục",
                         options = listOf(
                             Pair(R.drawable.outline_home_work_24, "Chi phí nhà ở"),

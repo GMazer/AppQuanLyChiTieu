@@ -2,6 +2,7 @@ package com.example.jetpackcompose.app.screens.find_calendar
 
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Divider
@@ -34,6 +36,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -41,6 +44,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -52,6 +56,7 @@ import com.example.jetpackcompose.app.features.apiService.TransactionAPI.FindTra
 import com.example.jetpackcompose.app.network.FindTransactionResponse
 import com.example.jetpackcompose.app.network.TransactionResponse
 import com.example.jetpackcompose.components.DayIndex
+import com.example.jetpackcompose.components.DropdownRow
 import com.example.jetpackcompose.components.montserrat
 import com.example.jetpackcompose.ui.theme.primaryColor
 import com.example.jetpackcompose.ui.theme.componentShapes
@@ -87,7 +92,12 @@ fun FindCalendarScreen(navController: NavController) {
     var transactions by remember { mutableStateOf<List<FindTransactionResponse>>(emptyList()) }
     var errorMessage by remember { mutableStateOf("") }
 
+    var selectedCategory by remember { mutableStateOf("Ghi chú") }
+
     var textNote by remember { mutableStateOf(TextFieldValue()) }
+    var textCategoryName by remember { mutableStateOf(TextFieldValue()) }
+    var textAmount by remember { mutableStateOf(TextFieldValue()) }
+
     val keyboardController = LocalSoftwareKeyboardController.current
 
     MaterialTheme {
@@ -124,9 +134,9 @@ fun FindCalendarScreen(navController: NavController) {
                                     )
                                 }
 
-                                // Text "Lịch" căn giữa
+                                // Text "Tìm kiếm" căn giữa
                                 androidx.compose.material.Text(
-                                    text = "Lịch",
+                                    text = "Tìm kiếm",
                                     style = TextStyle(
                                         fontWeight = FontWeight.Bold,
                                         fontFamily = montserrat,
@@ -162,6 +172,34 @@ fun FindCalendarScreen(navController: NavController) {
                     .fillMaxWidth()
                     .background(Color.White)
             ) {
+
+                item {
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Row(
+                        modifier = Modifier
+                            .padding(horizontal = 24.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(Color.LightGray.copy(alpha = 0.5f)), // Bo góc cho phần tử bên trong
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+
+                    ){
+                        DropdownRow(
+                            initialValue = 4,
+                            label = "Theo:",
+                            options = listOf(
+                                Pair(R.drawable.essentials, "Ghi chú"),
+                                Pair(R.drawable.budget, "Danh mục"),
+                                Pair(R.drawable.secondary, "Số tiền"),
+                            )
+                        ) { category ->
+                            selectedCategory = category
+                        }
+                    }
+                }
+
                 item {
                     // Phần header
                     Column(
@@ -175,21 +213,49 @@ fun FindCalendarScreen(navController: NavController) {
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.padding(horizontal = 24.dp)
                         ) {
-                            OutlinedTextField(
 
-                                value = textNote, // Truyền vào TextFieldValue
+                            OutlinedTextField(
+                                value = when (selectedCategory) {
+                                    "Ghi chú" -> textNote
+                                    "Danh mục" -> textCategoryName
+                                    "Số tiền" -> textAmount
+                                    else -> TextFieldValue() // Giá trị mặc định nếu selectedCategory không hợp lệ
+                                },
                                 onValueChange = { newValue ->
-                                    textNote = newValue // Cập nhật TextFieldValue
-                                    viewModel.findTransactions(
-                                        note = newValue.text, // Lấy chuỗi từ TextFieldValue
-                                        onSuccess = {
-                                            transactions = it
-                                            Log.d("transactions", transactions.toString())
-                                        },
-                                        onError = {
-                                            errorMessage = it
+                                    // Chỉ cho phép nhập số nếu chọn "Số tiền"
+                                    if (selectedCategory == "Số tiền" && newValue.text.all { it.isDigit() || it == '.' }) {
+                                        textAmount = newValue
+                                        viewModel.findTransactions(
+                                            categoryName = "",
+                                            note = "",
+                                            amount = newValue.text.toLongOrNull(),
+                                            onSuccess = {
+                                                transactions = it
+                                                Log.d("transactions", transactions.toString())
+                                            },
+                                            onError = {
+                                                errorMessage = it
+                                            }
+                                        )
+                                    } else if (selectedCategory != "Số tiền") {
+                                        // Thực hiện tìm kiếm đối với các trường hợp khác
+                                        when (selectedCategory) {
+                                            "Ghi chú" -> textNote = newValue
+                                            "Danh mục" -> textCategoryName = newValue
                                         }
-                                    )
+                                        viewModel.findTransactions(
+                                            categoryName = if (selectedCategory == "Danh mục") newValue.text else "",
+                                            note = if (selectedCategory == "Ghi chú") newValue.text else "",
+                                            amount = if (selectedCategory == "Số tiền") newValue.text.toLongOrNull() else null,
+                                            onSuccess = {
+                                                transactions = it
+                                                Log.d("transactions", transactions.toString())
+                                            },
+                                            onError = {
+                                                errorMessage = it
+                                            }
+                                        )
+                                    }
                                 },
                                 label = {
                                     Row(
@@ -218,7 +284,8 @@ fun FindCalendarScreen(navController: NavController) {
                                     unfocusedLabelColor = Color(0xffB0B0B0),
                                 ),
                                 keyboardOptions = KeyboardOptions.Default.copy(
-                                    imeAction = ImeAction.Done
+                                    imeAction = ImeAction.Done,
+                                    keyboardType = if (selectedCategory == "Số tiền") KeyboardType.Number else KeyboardType.Text
                                 ),
                                 keyboardActions = KeyboardActions(
                                     onDone = {
@@ -232,6 +299,7 @@ fun FindCalendarScreen(navController: NavController) {
 
                 item {
                     if (transactions.isNotEmpty()) {
+                        Log.d("transactions", "$transactions")
                         val mappedTransactions = mapFindTransactionToTransactionResponse(transactions)
                         Spacer(modifier = Modifier.height(16.dp))
                         DayIndex(

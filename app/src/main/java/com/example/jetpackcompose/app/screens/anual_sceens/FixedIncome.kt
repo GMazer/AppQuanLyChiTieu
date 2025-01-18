@@ -98,6 +98,7 @@ fun FixedIncome(
                     Divider(color = Color(0xFFd4d4d4), thickness = 0.5.dp)
 
                     DropdownRow(
+                        initialValue = 4,
                         label = "Danh mục",
                         options = listOf(
                             Pair(R.drawable.salary, "Tiền lương"),
@@ -122,7 +123,7 @@ fun FixedIncome(
             ) {
                 Column {
                     DropdownRepeat(
-                        initialValue = 0,
+                        initialValue = 4,
                         label = "Lặp lại",
                         options = RepeatFrequency.values().map {
                             it.displayName to it

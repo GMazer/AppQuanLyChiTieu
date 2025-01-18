@@ -568,7 +568,7 @@ fun ClickableTextComponent(value: String, onClick: () -> Unit) {
     )
 }
 
-private fun formatNumber(input: String): String {
+fun formatNumber(input: String): String {
     return input.replace(",", "").toLongOrNull()?.let {
         String.format(Locale.US, "%,d", it) // Sử dụng Locale.US để đảm bảo định dạng đúng
     } ?: ""
@@ -1125,23 +1125,17 @@ fun CategoryProgress(
             Color(0xFFf95aa9),
             1.00f
         ),
-        Category(11, "Trợ cấp", { painterResource(R.drawable.subsidy) }, Color(0xFF0000FF), 1.00f)
+        Category(13, "Trợ cấp", { painterResource(R.drawable.subsidy) }, Color(0xFF0000FF), 1.00f)
     )
 
     // Tìm Category phù hợp với categoryName
     val category = categories.find { it.name == categoryName }
-
-    // Trạng thái để kiểm soát hiển thị thanh tiến trình
-    var isProgressVisible by remember { mutableStateOf(false) }
 
     // Nếu tìm thấy Category, hiển thị icon và tên
     category?.let {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable {
-                    isProgressVisible = !isProgressVisible
-                }
                 .padding(8.dp)
         ) {
             Row(
@@ -1185,59 +1179,60 @@ fun CategoryProgress(
                     text = amountText,
                     fontFamily = montserrat,
                     fontWeight = FontWeight.Bold,
-                    color = if (transactionType == "expense") textColor else Color(0xff37c8ec),
+                    color = if (transactionType == "expense") primaryColor else Color(0xff37c8ec),
                     textAlign = TextAlign.End
                 )
 
-                Icon(
-                    painter = painterResource(id = R.drawable.outline_arrow_forward_ios_24),
-                    contentDescription = "Arrow Right",
-                    modifier = Modifier
-                        .size(16.dp)
-                        .padding(start = 8.dp),
-                    tint = textColor
+                Spacer(modifier = Modifier.width(8.dp))
+
+                Text(
+                    text = "(${String.format("%.2f", categoryPercent * 100)}%)",
+                    fontFamily = montserrat,
+                    fontWeight = FontWeight.Light,
+                    fontSize = 10.sp,
+                    color = if (transactionType == "expense") primaryColor else Color(0xff37c8ec),
+                    textAlign = TextAlign.End
                 )
+
             }
 
-            if (isProgressVisible) {
-                Log.d("CategoryProgress", "name: ${categoryName}, process: ${categoryPercent}")
-                // Thanh tiến trình
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(8.dp)
-                        .padding(top = 2.dp)
-                ) {
-//                   Nền của thanh tiến trình
-                    Canvas(modifier = Modifier.fillMaxSize()) {
-                        drawRoundRect(
-                            color = Color.LightGray.copy(alpha = 0.3f),
-                            size = size ,
-                            cornerRadius = CornerRadius(4.dp.toPx())
-                        )
-                    }
-                    // Tiến trình chính theo tỷ lệ
-                    Canvas(modifier = Modifier
-                        .fillMaxWidth(categoryPercent)
-                        .height(8.dp)
-                    ) {
-                        val progressColor = if (categoryPercent > 1f) {
-                            Brush.linearGradient(
-                                colors = listOf(
-                                    it.iconColor.copy(alpha = 0.8f),
-                                    it.iconColor.copy(alpha = 1f)
-                                )
-                            )
-                        } else {
-                            SolidColor(it.iconColor.copy(alpha = 0.8f))
-                        }
 
-                        drawRoundRect(
-                            brush = progressColor,
-                            size = size,
-                            cornerRadius = CornerRadius(4.dp.toPx())
+            Log.d("CategoryProgress", "name: ${categoryName}, process: ${categoryPercent}")
+            // Thanh tiến trình
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(8.dp)
+                    .padding(top = 2.dp)
+            ) {
+//              Nền của thanh tiến trình
+                Canvas(modifier = Modifier.fillMaxSize()) {
+                    drawRoundRect(
+                        color = Color.LightGray.copy(alpha = 0.3f),
+                        size = size ,
+                        cornerRadius = CornerRadius(4.dp.toPx())
+                    )
+                }
+                // Tiến trình chính theo tỷ lệ
+                Canvas(modifier = Modifier
+                    .fillMaxWidth(categoryPercent)
+                    .height(8.dp)
+                ) {
+                    val progressColor = if (categoryPercent > 1f) {
+                        Brush.linearGradient(
+                            colors = listOf(
+                                it.iconColor.copy(alpha = 0.8f),
+                                it.iconColor.copy(alpha = 1f)
+                            )
                         )
+                    } else {
+                        SolidColor(it.iconColor.copy(alpha = 0.8f))
                     }
+                    drawRoundRect(
+                        brush = progressColor,
+                        size = size,
+                        cornerRadius = CornerRadius(4.dp.toPx())
+                    )
                 }
             }
         }

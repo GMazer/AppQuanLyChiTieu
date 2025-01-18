@@ -213,6 +213,14 @@ fun EditIncomeExpenseTransaction(
                     Divider(color = Color(0xFFd4d4d4), thickness = 0.5.dp)
 
                     DropdownRow(
+                        initialValue = when (selectedCategory) {
+                            "Tiền lương" -> 0
+                            "Tiền thưởng" -> 1
+                            "Thu nhập phụ" -> 2
+                            "Trợ cấp" -> 3
+                            else -> 0  // Default giá trị nếu không có
+
+                        },
                         label = "Danh mục",
                         options = listOf(
                             Pair(R.drawable.salary, "Tiền lương"),

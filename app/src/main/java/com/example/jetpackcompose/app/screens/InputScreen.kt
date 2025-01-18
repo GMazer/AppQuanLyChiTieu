@@ -61,7 +61,7 @@ data class RemainLimit(
 ) {
     data class CategoryLimit(
         val categoryId: Int,
-        val limitExpense: Int,
+        val limitExpense: Long,
         val remainingPercent: Double
     )
 }

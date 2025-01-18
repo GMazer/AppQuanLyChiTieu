@@ -320,7 +320,7 @@ fun CategoryIconWithName(
             Color(0xFFf95aa9),
             1.00f
         ),
-        Category(11, "Trợ cấp", { painterResource(R.drawable.subsidy) }, Color(0xFF0000FF), 1.00f)
+        Category(13, "Trợ cấp", { painterResource(R.drawable.subsidy) }, Color(0xFF0000FF), 1.00f)
     )
 
     // Tìm Category phù hợp với categoryName
@@ -369,7 +369,7 @@ fun CategoryIconWithName(
                 text = amountText,
                 fontFamily = montserrat,
                 fontWeight = FontWeight.Bold,
-                color = if (transactionType == "expense") textColor else Color(0xff37c8ec),
+                color = if (transactionType == "expense") primaryColor else Color(0xff37c8ec),
                 textAlign = TextAlign.End
             )
 
@@ -468,7 +468,6 @@ fun DayIndex(
                                 } catch (e: Exception) {
                                     date
                                 }
-                                Log.d("DayIndex", "CAIDEOGIVAY: $transactionId, Date: $transactionDate")
                                 if (transaction.type == "expense") {
                                     navController.navigate("editExpense/$transactionId?date=$transactionDate")
                                 } else {
@@ -567,12 +566,25 @@ fun RowTextField(
 
 @Composable
 fun DropdownRow(
+    initialValue: Int,
     label: String,
     options: List<Pair<Int?, String>>, // Icon (Int?) và tên danh mục (String)
     onChangeValue: (String) -> Unit // Callback chỉ trả về String
 ) {
     var selectedOption by remember { mutableStateOf(options[0].second) }
     var showDialog by remember { mutableStateOf(false) }
+
+    if (initialValue == 0){
+        selectedOption = options[0].second // Lưu enum thay vì String
+    } else if (initialValue == 1){
+        selectedOption = options[1].second // Lưu enum thay vì String
+    } else if (initialValue == 2){
+        selectedOption = options[2].second // Lưu enum thay vì String
+    } else if (initialValue == 3){
+        selectedOption = options[3].second // Lưu enum thay vì String
+    } else {
+
+    }
 
     Row(
         modifier = Modifier
@@ -619,7 +631,7 @@ fun DropdownRow(
             onDismissRequest = { showDialog = false },
             title = {
                 Text(
-                    text = "Chọn $label",
+                    text = "Chọn:",
                     fontFamily = montserrat,
                     fontWeight = FontWeight.Bold
                 )
@@ -681,6 +693,8 @@ fun <T : Enum<T>> DropdownRepeat(
         selectedOption = options[2].second // Lưu enum thay vì String
     } else if (initialValue == 3){
         selectedOption = options[3].second // Lưu enum thay vì String
+    } else {
+
     }
 
     var showDialog by remember { mutableStateOf(false) }

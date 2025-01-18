@@ -164,6 +164,7 @@ fun AppQuanLyChiTieu(transactionStorage: TransactionStorage) {
             composable("inputfixedtab") { InputFixedTab(navController) }
             composable("calendar") { CalendarScreen(navController) }
             composable("budget") { BudgetScreen(navController) }
+            composable("findTransaction") { FindCalendarScreen(navController) }
             composable("transactionNotification") { TransactionNotificationScreen(navController) }
 
             // Chỉnh sửa giao dịch (truyền transactionId)
@@ -289,7 +290,7 @@ fun AppQuanLyChiTieu(transactionStorage: TransactionStorage) {
             composable("inputfixedtab") { InputFixedTab(navController) }
             composable("calendar") { CalendarScreen(navController) }
             composable("budget") { BudgetScreen(navController) }
-            composable("findtransaction") { FindCalendarScreen(navController) }
+            composable("findTransaction") { FindCalendarScreen(navController) }
             composable("transactionNotification") { TransactionNotificationScreen(navController) }
 
 

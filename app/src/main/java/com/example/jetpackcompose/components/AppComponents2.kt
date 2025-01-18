@@ -947,13 +947,6 @@ fun BudgetTextField(
     )
 }
 
-private fun formatNumber(input: String): String {
-    return input.replace(",", "").toLongOrNull()?.let {
-        String.format(Locale.US, "%,d", it)
-    } ?: ""
-}
-
-
 @Composable
 fun OtherFunction(
     items: List<Pair<String, () -> Unit>>,

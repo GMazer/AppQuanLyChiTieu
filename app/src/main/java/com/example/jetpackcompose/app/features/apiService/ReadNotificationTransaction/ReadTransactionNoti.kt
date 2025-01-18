@@ -56,6 +56,7 @@ class ReadTransactionNoti : NotificationListenerService() {
     override fun onNotificationPosted(sbn: StatusBarNotification) {
         // Lấy thông tin thông báo
         val packageName = sbn.packageName
+        val postTime = sbn.postTime
         val notificationTitle = sbn.notification.extras.getString("android.title") ?: "Unknown"
         val notificationText = sbn.notification.extras.getString("android.text") ?: "Unknown"
         Log.d("NotificationService", "Thông báo mới được nhận:")
@@ -63,23 +64,32 @@ class ReadTransactionNoti : NotificationListenerService() {
         Log.d("NotificationService", "Title: $notificationTitle")
         Log.d("NotificationService", "Text: $notificationText")
 
+        // Sử dụng SharedPreferences để lưu thời gian thông báo cuối cùng
+        val sharedPreferences = this.getSharedPreferences("app_preferences", Context.MODE_PRIVATE)
+        val lastNotificationTime = sharedPreferences.getLong("last_notification_time", 0L)
+
         // Kiểm tra xem thông báo có chứa thông tin về biến động số dư không
         val transactionData = getTransactionData(packageName, notificationText)
 
         transactionData?.let {
 
-            // Thêm giao dịch vào danh sách
-            transactionList.add(it)
+            if (postTime == lastNotificationTime) {
+                return
+            } else {
+                // Thêm giao dịch vào danh sách
+                transactionList.add(it)
 
-            // Lưu danh sách giao dịch vào bộ nhớ trong
-            transactionStorage.saveTransactions(transactionList)
+                // Lưu danh sách giao dịch vào bộ nhớ trong
+                transactionStorage.saveTransactions(transactionList)
 
-            val sharedPreferences = this.getSharedPreferences("app_preferences", Context.MODE_PRIVATE)
-            sharedPreferences.edit().putBoolean("is_dialog_shown", false).apply()
+                sharedPreferences.edit().putBoolean("is_dialog_shown", false).apply()
 
-            showReceivedNotification( if (it.type == "expense") "Expense" else "Income", it.amount.toString() + "VND")
+                sharedPreferences.edit().putLong("last_notification_time", postTime).apply()
 
-            Log.d("NotificationService", "Danh sách giao dịch đã được lưu: $transactionList")
+                showReceivedNotification( if (it.type == "expense") "Expense" else "Income", it.amount.toString() + "VND")
+
+                Log.d("NotificationService", "Danh sách giao dịch đã được lưu: $transactionList")
+            }
         }
     }
 
@@ -88,7 +98,7 @@ class ReadTransactionNoti : NotificationListenerService() {
         val validPackageNames = listOf(
             "bidv", "techcombank", "vcb", "vib", "acb", "vnpay", "mbmobile", "viettinbank",
             "sgbank", "dongabank", "lpb", "hdbank", "ncb", "ocb", "sacombank", "cake", "tpb",
-            "msb", "bplus", "facebook", "agribank3"
+            "msb", "bplus", "agribank3"
         )
 
         val packageNameParts = packageName.toLowerCase(Locale.getDefault()).split(".")

@@ -457,7 +457,11 @@ fun ReportScreen(
 
                         1 -> {
                             if (percentIncome.isNotEmpty() && expense.isNotEmpty() && isBudgetLoaded) {
-                                DonutChartIncome(colorIncome, income, percentIncome)
+                                DonutChartIncome(
+                                    colorIncome,
+                                    income,
+                                    percentIncome
+                                )
                             } else {
                                 Text(
                                     text = "Đang tải dữ liệu.....",
@@ -506,26 +510,28 @@ fun ReportScreen(
                     }
                 } else if (selectedTabIndex == 1 && isBudgetLoaded) {
                     for (item in listReportIncome) {
-                        item {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Start,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .background(color = Color.White)
-                                    .height(50.dp)
-                                    .padding(horizontal = 16.dp)
-                            ) {
-                                Log.d("ReportScreen", "item: $item")
-                                CategoryProgress(item.name, "", item.amount, "income", item.process)
+                        if (item.amount != 0L){
+                            item {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.Start,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .background(color = Color.White)
+                                        .height(50.dp)
+                                        .padding(horizontal = 16.dp)
+                                ) {
+                                    Log.d("ReportScreen", "item: $item")
+                                    CategoryProgress(item.name, "", item.amount, "income", item.process)
+                                }
                             }
-                        }
-                        item {
-                            Divider(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(1.dp)
-                            )
+                            item {
+                                Divider(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(1.dp)
+                                )
+                            }
                         }
                     }
                 }

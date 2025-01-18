@@ -99,6 +99,7 @@ fun FixedExpense(
                     Divider(color = Color(0xFFd4d4d4), thickness = 0.5.dp)
 
                     DropdownRow(
+                        initialValue = 4,
                         label = "Danh mục",
                         options = listOf(
                             Pair(R.drawable.outline_home_work_24, "Chi phí nhà ở"),
@@ -127,7 +128,7 @@ fun FixedExpense(
             ) {
                 Column {
                     DropdownRepeat(
-                        initialValue = 0,
+                        initialValue = 4,
                         label = "Lặp lại",
                         options = RepeatFrequency.entries.map { it.displayName to it } // Lấy tất cả giá trị enum
                     ) { repeat ->

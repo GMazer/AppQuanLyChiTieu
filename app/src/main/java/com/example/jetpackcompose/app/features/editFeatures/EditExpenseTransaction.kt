@@ -76,7 +76,6 @@ fun EditExpenseTransaction(
     var errorMessage by remember { mutableStateOf("") }
     var successMessage by remember { mutableStateOf("") }
 
-    Log.d("EditExpenseTransaction", "WTFHYPER: $transactionId")
     // Trạng thái hiển thị Popup
     var showPopup by remember { mutableStateOf(false) }
 
@@ -146,8 +145,9 @@ fun EditExpenseTransaction(
     val year = dateParts[0].toInt()
     val month = dateParts[1].toInt()
     // Tải danh sách giao dịch và tìm giao dịch cần chỉnh sửa
-    Log.d("EditExpenseTransaction", "VAILON: $month - $year")
     LaunchedEffect(transactionId) {
+        successMessage = "Đang tải giao dịch..."
+        showPopup = true
         getViewModel.getTransactions(
             month = month,
             year = year,
@@ -175,6 +175,8 @@ fun EditExpenseTransaction(
                     selectedDate = "$year-$formattedMonth-$formattedDay"
                     selectedDate = selectedDate.split(" ")[0]
                     selectedCategory = categories.find { it.name == transaction.categoryName }
+
+                    showPopup = false
                 } else {
                     errorMessage = "Không tìm thấy giao dịch!"
                     showPopup = true
