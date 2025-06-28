@@ -40,7 +40,7 @@ import com.example.jetpackcompose.components.DrawBottomLine
 import com.example.jetpackcompose.components.MessagePopup
 import com.example.jetpackcompose.components.NoteTextField
 import com.example.jetpackcompose.components.NumberTextField
-import com.example.jetpackcompose.components.montserrat
+import com.example.jetpackcompose.components.myFont
 import com.example.jetpackcompose.ui.theme.primaryColor
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -55,6 +55,7 @@ fun IncomeContent(postViewModel: PostTransactionViewModel = PostTransactionViewM
     val formattedDate = dateFormat.format(currentDate)
     var textNote by remember { mutableStateOf(TextFieldValue()) }
     var amountValue by remember { mutableStateOf(TextFieldValue()) }
+    var rawAmount by remember { mutableStateOf("1000000") }
     var selectedDate by remember { mutableStateOf(formattedDate) }
     var selectedCategory by remember { mutableStateOf<Category?>(null) }
 
@@ -111,7 +112,7 @@ fun IncomeContent(postViewModel: PostTransactionViewModel = PostTransactionViewM
                             "Ngày ",
                             color = Color.DarkGray,
                             fontWeight = FontWeight.Bold,
-                            fontFamily = montserrat
+                            fontFamily = myFont
                         )
                         DatePickerButton(
                             onDateSelected = { date -> selectedDate = date },
@@ -133,7 +134,10 @@ fun IncomeContent(postViewModel: PostTransactionViewModel = PostTransactionViewM
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text("Tiền thu ", color = Color.DarkGray, fontWeight = FontWeight.Bold)
                         Spacer(Modifier.width(8.dp))
-                        NumberTextField(amountState = amountValue.text, onValueChange = { newValue -> amountValue = TextFieldValue(newValue) })
+                        NumberTextField(amountState = amountValue,
+                            onValueChange = { newValue -> amountValue = newValue },
+                            onRawValueChange = { newValue -> rawAmount = newValue }
+                        )
                         Spacer(Modifier.width(8.dp))
                         Text("₫", color = Color.DarkGray)
                     }
@@ -161,8 +165,7 @@ fun IncomeContent(postViewModel: PostTransactionViewModel = PostTransactionViewM
                             onClick = {
                                 successMessage = "Đang gửi dữ liệu..."
                                 showPopup = true
-                                val amount = amountValue.text.toLongOrNull() ?: 0L
-
+                                val amount = rawAmount.toLongOrNull() ?: 0L
                                 val transaction = Transaction(
                                     transaction_date = selectedDate.substring(0, 11).trimEnd(),
                                     note = textNote.text,

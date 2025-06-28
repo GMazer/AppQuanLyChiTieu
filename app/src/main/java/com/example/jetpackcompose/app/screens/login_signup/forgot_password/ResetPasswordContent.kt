@@ -46,7 +46,7 @@ import com.example.jetpackcompose.app.features.apiService.ForgotPasswordAPI.Rese
 import com.example.jetpackcompose.app.network.ResetPassword
 import com.example.jetpackcompose.components.MessagePopup
 import com.example.jetpackcompose.components.MyButtonComponent
-import com.example.jetpackcompose.components.montserrat
+import com.example.jetpackcompose.components.myFont
 import com.example.jetpackcompose.ui.theme.primaryColor
 import com.example.jetpackcompose.ui.theme.textColor
 
@@ -103,7 +103,7 @@ fun SetPasswordContent(navController: NavHostController, email: String) {
 
             Text(
                 text = "Đặt mật khẩu mới",
-                fontFamily = montserrat,
+                fontFamily = myFont,
                 color = textColor,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold
@@ -113,7 +113,7 @@ fun SetPasswordContent(navController: NavHostController, email: String) {
 
             Text(
                 text = "Mât khẩu mới của bạn phải chứa ít nhất 8 ký tự.",
-                fontFamily = montserrat,
+                fontFamily = myFont,
                 color = Color.Gray,
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Medium,
@@ -124,7 +124,7 @@ fun SetPasswordContent(navController: NavHostController, email: String) {
 
             Text(
                 text = "Mật khẩu",
-                fontFamily = montserrat,
+                fontFamily = myFont,
                 color = textColor,
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Bold,
@@ -141,7 +141,7 @@ fun SetPasswordContent(navController: NavHostController, email: String) {
                     {
                         Text(
                             "Nhập mật khẩu của bạn",
-                            fontFamily = montserrat,
+                            fontFamily = myFont,
                             fontSize = 10.sp,
                             color = Color.LightGray
                         )
@@ -158,7 +158,7 @@ fun SetPasswordContent(navController: NavHostController, email: String) {
                     .onFocusChanged { isPasswordFocused = it.isFocused },
                 textStyle = TextStyle(
                     fontSize = 14.sp,
-                    fontFamily = montserrat
+                    fontFamily = myFont
                 ),
                 colors = TextFieldDefaults.textFieldColors(
                     backgroundColor = Color.Transparent,
@@ -182,7 +182,7 @@ fun SetPasswordContent(navController: NavHostController, email: String) {
 
             Text(
                 text = "Xác nhận mật khẩu",
-                fontFamily = montserrat,
+                fontFamily = myFont,
                 color = textColor,
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Bold,
@@ -199,7 +199,7 @@ fun SetPasswordContent(navController: NavHostController, email: String) {
                     {
                         Text(
                             "Xác nhận mật khẩu của bạn",
-                            fontFamily = montserrat,
+                            fontFamily = myFont,
                             fontSize = 10.sp,
                             color = Color.LightGray
                         )
@@ -216,7 +216,7 @@ fun SetPasswordContent(navController: NavHostController, email: String) {
                     .onFocusChanged { isConfirmPasswordFocused = it.isFocused },
                 textStyle = TextStyle(
                     fontSize = 14.sp,
-                    fontFamily = montserrat
+                    fontFamily = myFont
                 ),
                 colors = TextFieldDefaults.textFieldColors(
                     backgroundColor = Color.Transparent,

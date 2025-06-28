@@ -51,7 +51,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.painter.Painter
@@ -59,7 +58,9 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -73,6 +74,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.example.jetpackcompose.R
 import com.example.jetpackcompose.app.features.apiService.TransactionAPI.GetBudgetCategoryViewModel
 import com.example.jetpackcompose.app.screens.LimitTransaction
 import com.example.jetpackcompose.ui.theme.componentShapes
@@ -262,7 +264,7 @@ fun DonutChartWithProgress(
                 Text(
                     text = "${labels[selectedSegment]}",
                     modifier = Modifier.align(Alignment.CenterHorizontally),
-                    fontFamily = montserrat,
+                    fontFamily = myFont,
                     fontWeight = FontWeight.Bold,
                     color = colors[selectedSegment],
                     fontSize = 12.sp
@@ -270,7 +272,7 @@ fun DonutChartWithProgress(
                 Text(
                     text = "Phân bổ: ${values[selectedSegment]}%",
                     modifier = Modifier.align(Alignment.CenterHorizontally),
-                    fontFamily = montserrat,
+                    fontFamily = myFont,
                     fontWeight = FontWeight.Normal,
                     color = colors[selectedSegment],
                     fontSize = 12.sp
@@ -278,7 +280,7 @@ fun DonutChartWithProgress(
                 Text(
                     text = "Chi tiêu: ${(progresses[selectedSegment] * 100).toInt()}%",
                     modifier = Modifier.align(Alignment.CenterHorizontally),
-                    fontFamily = montserrat,
+                    fontFamily = myFont,
                     fontWeight = FontWeight.Normal,
                     color = colors[selectedSegment],
                     fontSize = 12.sp
@@ -411,7 +413,7 @@ fun DonutChartIncome(
                 Text(
                     text = "${labels[selectedSegment]}",
                     modifier = Modifier.align(Alignment.CenterHorizontally),
-                    fontFamily = montserrat,
+                    fontFamily = myFont,
                     fontWeight = FontWeight.Bold,
                     color = colors[selectedSegment],
                     fontSize = 12.sp
@@ -419,7 +421,7 @@ fun DonutChartIncome(
                 Text(
                     text = "Thu nhập: ${(progresses[selectedSegment] * 100).toInt()}%",
                     modifier = Modifier.align(Alignment.CenterHorizontally),
-                    fontFamily = montserrat,
+                    fontFamily = myFont,
                     fontWeight = FontWeight.Normal,
                     color = colors[selectedSegment],
                     fontSize = 12.sp
@@ -493,7 +495,7 @@ fun MonthPickerDialog(
                         text = selectedYear.value.toString(),
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
-                        fontFamily = montserrat,
+                        fontFamily = myFont,
                         color = textColor
 
                     )
@@ -527,7 +529,7 @@ fun MonthPickerDialog(
                                 text = months[monthIndex],
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold,
-                                fontFamily = montserrat,
+                                fontFamily = myFont,
                                 color = if (isSelected) Color.White else textColor,
                                 modifier = Modifier
                                     .background(
@@ -552,13 +554,13 @@ fun MonthPickerDialog(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     TextButton(onClick = { onDismiss() }) {
-                        Text(text = "Cancel", fontFamily = montserrat, color = textColor)
+                        Text(text = "Cancel", fontFamily = myFont, color = textColor)
                     }
                     TextButton(onClick = {
                         onMonthYearSelected(selectedMonth.value, selectedYear.value)
                         onDismiss()
                     }) {
-                        Text(text = "Ok", fontFamily = montserrat, color = primaryColor)
+                        Text(text = "Ok", fontFamily = myFont, color = primaryColor)
                     }
                 }
             }
@@ -600,7 +602,7 @@ fun YearPickerDialog(
                 Text(
                     text = "Chọn năm",
                     fontSize = 20.sp,
-                    fontFamily = montserrat,
+                    fontFamily = myFont,
                     color = textColor,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(bottom = 16.dp)
@@ -619,7 +621,7 @@ fun YearPickerDialog(
                             Text(
                                 text = year.toString(),
                                 fontSize = 18.sp,
-                                fontFamily = montserrat,
+                                fontFamily = myFont,
                                 fontWeight = if (year == selectedYear) FontWeight.Bold else FontWeight.Normal,
                                 color = if (year == selectedYear) primaryColor else textColor,
                                 modifier = Modifier
@@ -640,13 +642,13 @@ fun YearPickerDialog(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     TextButton(onClick = { onDismiss() }) {
-                        Text(text = "Cancel", fontFamily = montserrat, color = textColor)
+                        Text(text = "Cancel", fontFamily = myFont, color = textColor)
                     }
                     TextButton(onClick = {
                         onYearSelected(selectedYear)
                         onDismiss()
                     }) {
-                        Text(text = "Ok", fontFamily = montserrat, color = primaryColor)
+                        Text(text = "Ok", fontFamily = myFont, color = primaryColor)
                     }
                 }
             }
@@ -732,7 +734,7 @@ fun PopupSetBudgetDialog(
                         }
                         Text(
                             text = "Phân bổ ngân sách",
-                            fontFamily = montserrat,
+                            fontFamily = myFont,
                             color = primaryColor,
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
@@ -759,7 +761,7 @@ fun PopupSetBudgetDialog(
                             ) {
                                 Text(
                                     text = label,
-                                    fontFamily = montserrat,
+                                    fontFamily = myFont,
                                     color = textColor,
                                     fontSize = 12.sp,
                                     fontWeight = FontWeight.Normal,
@@ -767,31 +769,24 @@ fun PopupSetBudgetDialog(
                                 )
                                 Box(modifier = Modifier.weight(7f)) {
                                     BudgetTextField(
-                                        amountState = value.text,
+                                        amountState = value,
                                         onValueChange = { newValue ->
                                             when (label) {
-                                                "Chi phí nhà ở" -> houseValue =
-                                                    TextFieldValue(newValue)
+                                                "Chi phí nhà ở" -> houseValue = newValue
 
-                                                "Chi phí ăn uống" -> foodValue =
-                                                    TextFieldValue(newValue)
+                                                "Chi phí ăn uống" -> foodValue = newValue
 
-                                                "Mua sắm quần áo" -> shoppingValue =
-                                                    TextFieldValue(newValue)
+                                                "Mua sắm quần áo" -> shoppingValue = newValue
 
-                                                "Đi lại" -> movingValue = TextFieldValue(newValue)
-                                                "Chăm sóc sắc đẹp" -> cosmeticValue =
-                                                    TextFieldValue(newValue)
+                                                "Đi lại" -> movingValue = newValue
+                                                "Chăm sóc sắc đẹp" -> cosmeticValue = newValue
 
-                                                "Giao lưu" -> exchangingValue =
-                                                    TextFieldValue(newValue)
+                                                "Giao lưu" -> exchangingValue = newValue
 
-                                                "Y tế" -> medicalValue = TextFieldValue(newValue)
-                                                "Học tập" -> educatingValue =
-                                                    TextFieldValue(newValue)
+                                                "Y tế" -> medicalValue = newValue
+                                                "Học tập" -> educatingValue = newValue
 
-                                                "Khoản tiết kiệm" -> saveValue =
-                                                    TextFieldValue(newValue)
+                                                "Khoản tiết kiệm" -> saveValue = newValue
                                             }
                                         },
                                         colorPercent = Color.Black
@@ -799,7 +794,7 @@ fun PopupSetBudgetDialog(
                                 }
                                 Text(
                                     text = "₫",
-                                    fontFamily = montserrat,
+                                    fontFamily = myFont,
                                     color = textColor,
                                     fontSize = 14.sp,
                                     fontWeight = FontWeight.Normal,
@@ -813,7 +808,7 @@ fun PopupSetBudgetDialog(
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             TextButton(onClick = { onDismiss() }) {
-                                Text(text = "Huỷ bỏ", fontFamily = montserrat, color = textColor)
+                                Text(text = "Huỷ bỏ", fontFamily = myFont, color = textColor)
                             }
                             TextButton(onClick = {
                                 val categoryLimits = listOf(
@@ -857,7 +852,7 @@ fun PopupSetBudgetDialog(
                                 onConfirm(LimitTransaction(categoryLimits))
                                 onDismiss()
                             }) {
-                                Text(text = "OK", fontFamily = montserrat, color = primaryColor)
+                                Text(text = "OK", fontFamily = myFont, color = primaryColor)
                             }
                         }
                     }
@@ -872,33 +867,59 @@ fun PopupSetBudgetDialog(
 
 @Composable
 fun BudgetTextField(
-    amountState: String,
-    onValueChange: (String) -> Unit,
+    amountState: TextFieldValue,
+    onValueChange: (TextFieldValue) -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     colorPercent: Color
 ) {
-
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
     var isFocused by remember { mutableStateOf(false) }
 
     BasicTextField(
-        value = formatNumber(amountState), // Định dạng số với dấu phẩy
-        onValueChange = { newInput ->
-            val unformattedInput = newInput.replace(",", "") // Loại bỏ dấu phẩy trước khi xử lý
-            if (unformattedInput == "0" && amountState.isEmpty()) {
-                // Không làm gì để chặn '0' đầu tiên
-            } else {
-                val filteredInput = unformattedInput.filter { it.isDigit() }
-                onValueChange(filteredInput)
-            }
+        value = amountState,
+        onValueChange = { newValue ->
+            val raw = newValue.text.replace(",", "")
+            val digitsOnly = raw.filter { it.isDigit() }
+
+            val oldText = amountState.text
+            val formatted = formatNumber(digitsOnly)
+
+            // Tính số lượng dấu ',' trước và sau
+            val oldCommaCount = oldText.count { it == ',' }
+            val newCommaCount = formatted.count { it == ',' }
+
+            // Tính chênh lệch độ dài
+            val diff = newCommaCount - oldCommaCount
+
+            // Lấy vị trí con trỏ hiện tại
+            val oldCursor = newValue.selection.start
+
+            // Tính vị trí con trỏ mới
+            val newCursor = (oldCursor + diff).coerceIn(0, formatted.length)
+
+            onValueChange(
+                TextFieldValue(
+                    text = formatted,
+                    selection = TextRange(newCursor)
+                )
+            )
         },
         singleLine = true,
         enabled = enabled,
         modifier = modifier
-            .onFocusChanged { focusState ->
+            .onFocusChanged {
+                focusState ->
                 isFocused = focusState.isFocused
+                if (focusState.isFocused) {
+                    onValueChange(
+                        TextFieldValue(
+                            text = amountState.text,
+                            selection = TextRange(amountState.text.length)
+                        )
+                    )
+                }
             }
             .height(30.dp)
             .fillMaxWidth()
@@ -910,9 +931,9 @@ fun BudgetTextField(
             )
             .padding(horizontal = 8.dp),
         textStyle = TextStyle(
-            textAlign = TextAlign.Start,
+            textAlign = TextAlign.End,
             fontSize = 20.sp,
-            fontFamily = montserrat,
+            fontFamily = myFont,
             fontWeight = FontWeight.Bold,
             color = colorPercent,
         ),
@@ -923,7 +944,7 @@ fun BudgetTextField(
         keyboardActions = KeyboardActions(
             onDone = {
                 focusManager.clearFocus()
-                keyboardController?.hide() // Ẩn bàn phím khi nhấn Done
+                keyboardController?.hide()
             }
         ),
         decorationBox = { innerTextField ->
@@ -931,16 +952,15 @@ fun BudgetTextField(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 4.dp),
-                contentAlignment = Alignment.CenterStart
+                contentAlignment = Alignment.CenterEnd
             ) {
-                if (amountState.isEmpty()) {
+                if (amountState.text.isEmpty()) {
                     Text(
                         text = if (isFocused) "" else "0",
                         color = textColor,
                         fontWeight = FontWeight.SemiBold,
-                        fontFamily = montserrat,
-                        fontSize = 20.sp,
-                        style = LocalTextStyle.current
+                        fontFamily = myFont,
+                        fontSize = 20.sp
                     )
                 }
                 innerTextField()
@@ -950,10 +970,11 @@ fun BudgetTextField(
 }
 
 private fun formatNumber(input: String): String {
-    return input.replace(",", "").toLongOrNull()?.let {
+    return input.toLongOrNull()?.let {
         String.format(Locale.US, "%,d", it)
     } ?: ""
 }
+
 
 
 @Composable
@@ -999,7 +1020,7 @@ fun OtherFunction(
                     Spacer(modifier = Modifier.width(16.dp))
                     Text(
                         text = item.first,
-                        fontFamily = montserrat,
+                        fontFamily = myFont,
                         color = textColor,
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 12.sp
@@ -1074,7 +1095,7 @@ fun ReportTable(income: Long, expense: Long, net: Long) {
         Column(
             modifier = Modifier
                 .fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
+            horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.Center
         ) {
             Row(
@@ -1083,60 +1104,77 @@ fun ReportTable(income: Long, expense: Long, net: Long) {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 // Tổng thu nhập
+                Box(
+                    modifier = Modifier
+                        .padding(start = 16.dp, end = 8.dp)
+                        .size(36.dp) // kích thước hình tròn
+                        .background(Color.White.copy(alpha = 0.8f), shape = CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.dollar), // icon bạn dùng
+                        contentDescription = null,
+                        tint = primaryColor,
+                        modifier = Modifier.size(18.dp) // icon nhỏ bên trong
+                    )
+                }
+
                 Column(
                     modifier = Modifier
                         .weight(1f)
+                        .padding(end = 16.dp)
                         .height(60.dp), // Chia đều chiều rộng giữa các cột
-                    horizontalAlignment = Alignment.CenterHorizontally,
+                    horizontalAlignment = Alignment.Start,
                     verticalArrangement = Arrangement.Center
                 ) {
                     Text(
                         text = "Thu nhập",
-                        fontFamily = montserrat,
+                        fontFamily = myFont,
                         color = Color.White,
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 14.sp,
+                        textAlign = TextAlign.Start
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = formattedIncome,
-                        fontFamily = montserrat,
+                        fontFamily = myFont,
                         color = Color.White,
                         fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp
+                        fontSize = 14.sp,
+                        textAlign = TextAlign.Start
                     )
                 }
-
-                // Divider dọc giữa các cột thu nhập và chi tiêu
-                Box(
-                    modifier = Modifier
-                        .height(40.dp)
-                        .width(1.dp) // Chiều rộng của divider
-                        .background(Color.White) // Màu của divider
-                )
-// test branch
                 // Tổng chi tiêu
                 Column(
                     modifier = Modifier
                         .weight(1f)
+                        .padding(horizontal = 16.dp)
                         .height(60.dp), // Chia đều chiều rộng giữa các cột
-                    horizontalAlignment = Alignment.CenterHorizontally,
+                    horizontalAlignment = Alignment.End,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    Text(
-                        text = "Chi tiêu",
-                        style = TextStyle(
-                            fontFamily = montserrat,
-                            color = Color.White,
-                            fontWeight = FontWeight.SemiBold,
-                            fontSize = 14.sp,
-                        ),
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.End,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = "Chi tiêu",
+                            style = TextStyle(
+                                fontFamily = myFont,
+                                color = Color.White,
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 14.sp,
+                                textAlign = TextAlign.End
+                            ),
+                        )
+                    }
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = formattedExpense,
                         style = TextStyle(
-                            fontFamily = montserrat,
+                            fontFamily = myFont,
                             color = Color.White,
 //                            shadow = Shadow(
 //                                color = Color.White,
@@ -1144,55 +1182,81 @@ fun ReportTable(income: Long, expense: Long, net: Long) {
 //                                blurRadius = 4f
 //                            ),
                             fontWeight = FontWeight.Bold,
-                            fontSize = 16.sp
+                            fontSize = 14.sp,
+                            textAlign = TextAlign.End
                         )
                     )
                 }
             }
 
-            Divider(
-                Modifier
-                    .background(Color.White)
-                    .fillMaxWidth(0.8f)
-            )
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,  // Căn giữa theo chiều dọc
-                horizontalArrangement = Arrangement.SpaceAround,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(60.dp)
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = "Số dư",
-                    fontFamily = montserrat,
-                    color = Color.White,
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 14.sp,
-                )
-                Text(
-                    text = formattedBalance,
-                    fontFamily = montserrat,
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp,
+                Divider(
+                    modifier = Modifier
+                        .fillMaxWidth(0.95f) // chỉ chiếm 80% chiều ngang
+                        .background(Color.White)
                 )
             }
 
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween, // chia đều khoảng trắng
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(60.dp)
+                    .padding(horizontal = 16.dp)
+            ) {
+                // Icon + label
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.weight(1f) // phần trái
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(36.dp)
+                            .background(Color.White.copy(alpha = 0.8f), CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.wallet),
+                            contentDescription = null,
+                            tint = primaryColor,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(8.dp)) // khoảng cách giữa icon và text
+
+                    Text(
+                        text = "Số dư",
+                        fontFamily = myFont,
+                        color = Color.White,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 14.sp
+                    )
+                }
+
+                // Số tiền
+                Text(
+                    text = formattedBalance,
+                    fontFamily = myFont,
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 14.sp,
+                    modifier = Modifier.weight(1f),
+                    textAlign = TextAlign.End
+                )
+            }
         }
     }
 }
 
 @Preview
 @Composable
-fun BudgetTextField() {
-    var amountState by remember { mutableStateOf("0") }
-    BudgetTextField(
-        amountState = amountState,
-        onValueChange = { amountState = it },
-        modifier = Modifier.fillMaxWidth(),
-        enabled = true,
-        colorPercent = Color.Black
-    )
+fun ReportTablePreview() {
+    ReportTable(income = 10000000, expense = 5000000, net = 5000000)
 }
+
 

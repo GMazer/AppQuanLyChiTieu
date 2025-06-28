@@ -34,7 +34,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.jetpackcompose.R
-import com.example.jetpackcompose.components.montserrat
+import com.example.jetpackcompose.components.myFont
 import com.example.jetpackcompose.ui.theme.primaryColor
 import com.example.jetpackcompose.ui.theme.textColor
 import com.example.jetpackcompose.ui.theme.topBarColor
@@ -151,7 +151,7 @@ fun BottomBarItem(
         Text(
             text = title,
             color = if (isSelected) primaryColor else textColor,
-            fontFamily = montserrat,
+            fontFamily = myFont,
             fontSize = 8.sp
         )
     }

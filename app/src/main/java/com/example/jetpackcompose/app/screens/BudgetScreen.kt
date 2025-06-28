@@ -1,7 +1,6 @@
 package com.example.jetpackcompose.app.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,15 +9,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -31,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
@@ -38,14 +39,34 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.jetpackcompose.R
 import com.example.jetpackcompose.app.features.apiService.TransactionAPI.GetBudgetCategoryViewModel
 import com.example.jetpackcompose.app.features.apiService.TransactionAPI.PutLimitTransactionViewModel
 import com.example.jetpackcompose.components.BudgetTextField
+import com.example.jetpackcompose.components.MessagePopup
 import com.example.jetpackcompose.components.MyButtonComponent
-import com.example.jetpackcompose.components.montserrat
+import com.example.jetpackcompose.components.myFont
+import com.example.jetpackcompose.ui.theme.cosmeticColor
+import com.example.jetpackcompose.ui.theme.educatingColor
+import com.example.jetpackcompose.ui.theme.exchangingColor
+import com.example.jetpackcompose.ui.theme.foodColor
+import com.example.jetpackcompose.ui.theme.houseColor
+import com.example.jetpackcompose.ui.theme.medicalColor
+import com.example.jetpackcompose.ui.theme.movingColor
 import com.example.jetpackcompose.ui.theme.primaryColor
+import com.example.jetpackcompose.ui.theme.savingColor
+import com.example.jetpackcompose.ui.theme.shoppingColor
 import com.example.jetpackcompose.ui.theme.textColor
 import com.example.jetpackcompose.ui.theme.topBarColor
+
+data class BudgetItem(
+    val label: String,
+    val value: TextFieldValue,
+    @DrawableRes val iconRes: Int,
+    val iconColor: Color
+) {
+    annotation class DrawableRes
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -61,8 +82,32 @@ fun BudgetScreen() {
     var educatingValue by remember { mutableStateOf(TextFieldValue()) }
     var saveValue by remember { mutableStateOf(TextFieldValue()) }
 
+    var errorMessage by remember { mutableStateOf("") }
+    var successMessage by remember { mutableStateOf("") }
+
     val viewModel: GetBudgetCategoryViewModel = GetBudgetCategoryViewModel(LocalContext.current)
     var isLoading by remember { mutableStateOf(true) }
+    var showPopup by remember { mutableStateOf(false) }
+
+    val budgetItems = listOf(
+        BudgetItem("Nhà ở", houseValue, R.drawable.outline_home_work_24, houseColor),
+        BudgetItem("Chi phí ăn uống", foodValue, R.drawable.outline_ramen_dining_24, foodColor),
+        BudgetItem("Mua sắm quần áo", shoppingValue, R.drawable.clothes, shoppingColor),
+        BudgetItem("Đi lại", movingValue, R.drawable.outline_train_24, movingColor),
+        BudgetItem("Chăm sóc sắc đẹp", cosmeticValue, R.drawable.outline_cosmetic, cosmeticColor),
+        BudgetItem("Giao lưu", exchangingValue, R.drawable.entertainment, exchangingColor),
+        BudgetItem("Y tế", medicalValue, R.drawable.outline_health_and_safety_24, medicalColor),
+        BudgetItem("Học tập", educatingValue, R.drawable.outline_education, educatingColor),
+        BudgetItem("Khoản tiết kiệm", saveValue, R.drawable.hedgefund, savingColor)
+    )
+
+    MessagePopup(
+        showPopup = showPopup,
+        successMessage = successMessage,
+        errorMessage = errorMessage,
+        onDismiss = { showPopup = false }
+    )
+
 
     LaunchedEffect(Unit) {
         viewModel.getBudgetTransaction(
@@ -98,7 +143,7 @@ fun BudgetScreen() {
                             ) {
                                 Text(
                                     text = "Ngân sách",
-                                    fontFamily = montserrat,
+                                    fontFamily = myFont,
                                     style = TextStyle(
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 16.sp,
@@ -140,52 +185,51 @@ fun BudgetScreen() {
                 ) {
                     Text(
                         text = "Thiết lập ngân sách hàng tháng: ",
-                        fontFamily = montserrat,
+                        fontFamily = myFont,
                         color = primaryColor,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(16.dp)
                     )
-                    listOf(
-                        "Nhà ở" to houseValue,
-                        "Chi phí ăn uống" to foodValue,
-                        "Mua sắm quần áo" to shoppingValue,
-                        "Đi lại" to movingValue,
-                        "Chăm sóc sắc đẹp" to cosmeticValue,
-                        "Giao lưu" to exchangingValue,
-                        "Y tế" to medicalValue,
-                        "Học tập" to educatingValue,
-                        "Khoản tiết kiệm" to saveValue
-                    ).forEach { (label, value) ->
+                    budgetItems.forEachIndexed { index, item ->
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
                                 .padding(horizontal = 16.dp, vertical = 8.dp)
                                 .fillMaxWidth()
                         ) {
+                            Icon(
+                                painter = painterResource(id = item.iconRes),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(30.dp)
+                                    .padding(end = 8.dp),
+                                tint = item.iconColor
+                            )
+
                             Text(
-                                text = label,
-                                fontFamily = montserrat,
+                                text = item.label,
+                                fontFamily = myFont,
                                 color = textColor,
-                                fontSize = 10.sp,
+                                fontSize = 14.sp,
                                 fontWeight = FontWeight.SemiBold,
-                                modifier = Modifier.weight(2f),
-                                lineHeight = 12.sp
+                                modifier = Modifier.weight(3f),
+                                lineHeight = 20.sp
                             )
                             Box(modifier = Modifier.weight(7f)) {
                                 BudgetTextField(
-                                    amountState = value.text,
+                                    amountState = item.value,
                                     onValueChange = { newValue ->
-                                        when (label) {
-                                            "Nhà ở" -> houseValue = TextFieldValue(newValue)
-                                            "Chi phí ăn uống" -> foodValue = TextFieldValue(newValue)
-                                            "Mua sắm quần áo" -> shoppingValue = TextFieldValue(newValue)
-                                            "Đi lại" -> movingValue = TextFieldValue(newValue)
-                                            "Chăm sóc sắc đẹp" -> cosmeticValue = TextFieldValue(newValue)
-                                            "Giao lưu" -> exchangingValue = TextFieldValue(newValue)
-                                            "Y tế" -> medicalValue = TextFieldValue(newValue)
-                                            "Học tập" -> educatingValue = TextFieldValue(newValue)
-                                            "Khoản tiết kiệm" -> saveValue = TextFieldValue(newValue)
+                                        when (index) {
+                                            0 -> houseValue = newValue
+                                            1 -> foodValue = newValue
+                                            2 -> shoppingValue = newValue
+                                            3 -> movingValue = newValue
+                                            4 -> cosmeticValue = newValue
+                                            5 -> exchangingValue = newValue
+                                            6 -> medicalValue = newValue
+                                            7 -> educatingValue = newValue
+                                            8 -> saveValue = newValue
                                         }
                                     },
                                     colorPercent = Color.Black
@@ -193,9 +237,9 @@ fun BudgetScreen() {
                             }
                             Text(
                                 text = "₫",
-                                fontFamily = montserrat,
+                                fontFamily = myFont,
                                 color = textColor,
-                                fontSize = 14.sp,
+                                fontSize = 16.sp,
                                 fontWeight = FontWeight.Normal,
                                 modifier = Modifier.padding(start = 4.dp)
                             )
@@ -206,32 +250,66 @@ fun BudgetScreen() {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 16.dp),
+                            .padding(horizontal = 50.dp),
                     ) {
                         MyButtonComponent(
                             value = "Lưu ngân sách",
                             isLoading = false,
                             onClick = {
-                            val categoryLimits = listOf(
-                                LimitTransaction.CategoryLimit(1, houseValue.text.toLongOrNull() ?: 0L),
-                                LimitTransaction.CategoryLimit(2, foodValue.text.toLongOrNull() ?: 0L),
-                                LimitTransaction.CategoryLimit(3, shoppingValue.text.toLongOrNull() ?: 0L),
-                                LimitTransaction.CategoryLimit(4, movingValue.text.toLongOrNull() ?: 0L),
-                                LimitTransaction.CategoryLimit(5, cosmeticValue.text.toLongOrNull() ?: 0L),
-                                LimitTransaction.CategoryLimit(6, exchangingValue.text.toLongOrNull() ?: 0L),
-                                LimitTransaction.CategoryLimit(7, medicalValue.text.toLongOrNull() ?: 0L),
-                                LimitTransaction.CategoryLimit(8, educatingValue.text.toLongOrNull() ?: 0L),
-                                LimitTransaction.CategoryLimit(9, saveValue.text.toLongOrNull() ?: 0L)
-                            )
+                                val categoryLimits = listOf(
+                                    LimitTransaction.CategoryLimit(
+                                        1,
+                                        houseValue.text.toLongOrNull() ?: 0L
+                                    ),
+                                    LimitTransaction.CategoryLimit(
+                                        2,
+                                        foodValue.text.toLongOrNull() ?: 0L
+                                    ),
+                                    LimitTransaction.CategoryLimit(
+                                        3,
+                                        shoppingValue.text.toLongOrNull() ?: 0L
+                                    ),
+                                    LimitTransaction.CategoryLimit(
+                                        4,
+                                        movingValue.text.toLongOrNull() ?: 0L
+                                    ),
+                                    LimitTransaction.CategoryLimit(
+                                        5,
+                                        cosmeticValue.text.toLongOrNull() ?: 0L
+                                    ),
+                                    LimitTransaction.CategoryLimit(
+                                        6,
+                                        exchangingValue.text.toLongOrNull() ?: 0L
+                                    ),
+                                    LimitTransaction.CategoryLimit(
+                                        7,
+                                        medicalValue.text.toLongOrNull() ?: 0L
+                                    ),
+                                    LimitTransaction.CategoryLimit(
+                                        8,
+                                        educatingValue.text.toLongOrNull() ?: 0L
+                                    ),
+                                    LimitTransaction.CategoryLimit(
+                                        9,
+                                        saveValue.text.toLongOrNull() ?: 0L
+                                    )
+                                )
 
-                            val limitTransaction: LimitTransaction = LimitTransaction(categoryLimits)
-                            // Gọi ViewModel hoặc logic khác để lưu dữ liệu
-                            putViewModel.addLimitTransaction(
-                                data = limitTransaction.limits,
-                                onError = { },
-                                onSuccess = { }
-                            )
-                        })
+                                val limitTransaction: LimitTransaction =
+                                    LimitTransaction(categoryLimits)
+                                // Gọi ViewModel hoặc logic khác để lưu dữ liệu
+                                putViewModel.addLimitTransaction(
+                                    data = limitTransaction.limits,
+                                    onError = { error ->
+                                        errorMessage = error
+                                        showPopup = true
+                                    },
+                                    onSuccess = {
+                                        successMessage = "Cập nhật thành công!"
+                                        showPopup = true
+                                    }
+                                )
+                            })
                     }
                 }
             }

@@ -52,7 +52,7 @@ import com.example.jetpackcompose.app.features.apiService.TransactionAPI.FindTra
 import com.example.jetpackcompose.app.network.FindTransactionResponse
 import com.example.jetpackcompose.app.network.TransactionResponse
 import com.example.jetpackcompose.components.DayIndex
-import com.example.jetpackcompose.components.montserrat
+import com.example.jetpackcompose.components.myFont
 import com.example.jetpackcompose.ui.theme.primaryColor
 import com.example.jetpackcompose.ui.theme.componentShapes
 import com.example.jetpackcompose.ui.theme.textColor
@@ -123,13 +123,11 @@ fun FindCalendarScreen(navController: NavController) {
                                         tint = textColor,
                                     )
                                 }
-
-                                // Text "Lịch" căn giữa
                                 androidx.compose.material.Text(
-                                    text = "Lịch",
+                                    text = "Tìm kiếm",
                                     style = TextStyle(
                                         fontWeight = FontWeight.Bold,
-                                        fontFamily = montserrat,
+                                        fontFamily = myFont,
                                         fontSize = 16.sp,
                                     ),
                                     textAlign = TextAlign.Center,
@@ -202,8 +200,8 @@ fun FindCalendarScreen(navController: NavController) {
                                         )
                                         Spacer(modifier = Modifier.width(8.dp))
                                         Text(
-                                            text = "Tìm kiếm",
-                                            fontFamily = montserrat,
+                                            text = "Tìm kiếm bằng ghi chú, giá trị,....",
+                                            fontFamily = myFont,
                                         )
                                     }
                                 },

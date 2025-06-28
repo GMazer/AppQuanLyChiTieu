@@ -50,7 +50,7 @@ import com.example.jetpackcompose.components.MessagePopup
 import com.example.jetpackcompose.components.MyButtonComponent
 import com.example.jetpackcompose.components.RowNumberField
 import com.example.jetpackcompose.components.RowTextField
-import com.example.jetpackcompose.components.montserrat
+import com.example.jetpackcompose.components.myFont
 import com.example.jetpackcompose.ui.theme.textColor
 import java.text.SimpleDateFormat
 import java.time.LocalDate
@@ -147,7 +147,7 @@ fun EditFixedExpenseTransaction(
                 Text(
                     text = "Chỉnh sửa thu chi cố định",
                     fontSize = 16.sp,
-                    fontFamily = montserrat,
+                    fontFamily = myFont,
                     fontWeight = FontWeight.Bold,
                     color = textColor,
                     textAlign = TextAlign.Center,

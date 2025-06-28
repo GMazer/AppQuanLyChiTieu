@@ -45,7 +45,7 @@ import com.example.jetpackcompose.app.screens.login_signup.SignUpScreen
 import com.example.jetpackcompose.app.screens.login_signup.forgot_password.ForgotPasswordScreen
 import com.example.jetpackcompose.app.screens.login_signup.forgot_password.OTPContent
 import com.example.jetpackcompose.app.screens.login_signup.forgot_password.SetPasswordContent
-import com.example.jetpackcompose.components.montserrat
+import com.example.jetpackcompose.components.myFont
 import com.example.jetpackcompose.ui.theme.primaryColor
 import com.example.jetpackcompose.ui.theme.textColor
 
@@ -65,6 +65,8 @@ fun AppQuanLyChiTieu(transactionStorage: TransactionStorage) {
     val sharedPreferences = context.getSharedPreferences("app_preferences", Context.MODE_PRIVATE)
     val isDialogShown by remember {
         mutableStateOf(
+
+
             sharedPreferences.getBoolean(
                 "is_dialog_shown",
                 false
@@ -94,7 +96,7 @@ fun AppQuanLyChiTieu(transactionStorage: TransactionStorage) {
             title = {
                 Text(
                     "Giao dịch biến động số dư",
-                    fontFamily = montserrat,
+                    fontFamily = myFont,
                     color = Color(0xff222222),
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp
@@ -103,7 +105,7 @@ fun AppQuanLyChiTieu(transactionStorage: TransactionStorage) {
             text = {
                 Text(
                     "Có giao dịch từ biến động số dư mới được nhận, bạn có muốn thêm không?",
-                    fontFamily = montserrat,
+                    fontFamily = myFont,
                     fontWeight = FontWeight.SemiBold,
                     color = textColor,
                     fontSize = 14.sp
@@ -116,7 +118,7 @@ fun AppQuanLyChiTieu(transactionStorage: TransactionStorage) {
                 }) {
                     Text(
                         "OK",
-                        fontFamily = montserrat,
+                        fontFamily = myFont,
                         color = primaryColor
                     )
                 }
@@ -129,7 +131,7 @@ fun AppQuanLyChiTieu(transactionStorage: TransactionStorage) {
                     Text(
                         "Bỏ qua",
                         color = Color.Gray,
-                        fontFamily = montserrat
+                        fontFamily = myFont
                     )
                 }
             }

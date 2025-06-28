@@ -75,6 +75,7 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -113,12 +114,12 @@ import java.util.Locale
 import kotlin.math.sin
 
 
-val montserrat = FontFamily(
-    Font(R.font.montserrat_regular, FontWeight.Normal),
-    Font(R.font.montserrat_bold, FontWeight.Bold),
-    Font(R.font.montserrat_light, FontWeight.Light),
-    Font(R.font.montserrat_medium, FontWeight.Medium),
-    Font(R.font.montserrat_semibold, FontWeight.SemiBold)
+val myFont = FontFamily(
+    Font(R.font.sf_pro_display_regular, FontWeight.Normal),
+    Font(R.font.sf_pro_display_bold, FontWeight.Bold),
+    Font(R.font.sf_pro_display_light, FontWeight.Light),
+    Font(R.font.sf_pro_display_medium, FontWeight.Medium),
+    Font(R.font.sf_pro_display_semibold, FontWeight.SemiBold)
 )
 
 @Composable
@@ -130,7 +131,7 @@ fun NormalTextComponent(value: String) {
             .fillMaxWidth(),
         style = TextStyle(
             fontSize = 18.sp,
-            fontFamily = montserrat,
+            fontFamily = myFont,
             fontWeight = FontWeight.Normal,
         ),
         color = textColor,
@@ -147,7 +148,7 @@ fun HeadingTextComponent(value: String) {
             .fillMaxWidth(),
         style = TextStyle(
             fontSize = 28.sp,
-            fontFamily = montserrat,
+            fontFamily = myFont,
             fontWeight = FontWeight.Bold,
             fontStyle = FontStyle.Normal,
         ),
@@ -182,7 +183,7 @@ fun MyTextFieldComponent(
         label = {
             Text(
                 text = labelValue,
-                fontFamily = montserrat,
+                fontFamily = myFont,
                 fontWeight = FontWeight.Normal,
                 fontSize = 12.sp,
                 color = if (isFocused.value) primaryColor else Color.LightGray
@@ -257,7 +258,7 @@ fun PasswordTextFieldComponent(
         label = {
             Text(
                 text = labelValue,
-                fontFamily = montserrat,
+                fontFamily = myFont,
                 fontWeight = FontWeight.Normal,
                 fontSize = 12.sp,
                 color = if (isFocused.value) primaryColor else Color.LightGray
@@ -339,7 +340,7 @@ fun CheckboxComponent(
         Spacer(modifier = Modifier.width(8.dp)) // Tạo khoảng cách giữa checkbox và text
         Text(
             text = text,
-            fontFamily = montserrat, // Đảm bảo khai báo `monsterrat`
+            fontFamily = myFont, // Đảm bảo khai báo `monsterrat`
             fontWeight = FontWeight.Normal,
             fontSize = 12.sp,
             color = Color(0xFF777777),
@@ -539,7 +540,7 @@ fun MyButtonComponent(value: String, onClick: () -> Unit, isLoading: Boolean) {
             Text(
                 value,
                 color = Color.White,
-                fontFamily = montserrat,
+                fontFamily = myFont,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 16.sp
             )
@@ -553,7 +554,7 @@ fun ClickableTextComponent(value: String, onClick: () -> Unit) {
     Text(
         value,
         color = secondaryColor,
-        fontFamily = com.example.jetpackcompose.components.montserrat,
+        fontFamily = com.example.jetpackcompose.components.myFont,
         fontWeight = FontWeight.Light,
         fontSize = 10.sp,
         modifier = Modifier
@@ -569,90 +570,68 @@ private fun formatNumber(input: String): String {
 }
 
 @Composable
-fun NumberTextField(amountState: String, onValueChange: (String) -> Unit) {
+fun NumberTextField(
+    amountState: TextFieldValue,
+    onValueChange: (TextFieldValue) -> Unit,
+    onRawValueChange: (String) -> Unit // thêm callback này
+) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
-    val focusRequester = FocusRequester()
     var isFocused by remember { mutableStateOf(false) }
 
     BasicTextField(
-        value = formatNumber(amountState),
-        onValueChange = { newInput ->
-            if (newInput == "0" && amountState.isEmpty()) {
-                // do nothing to block the first '0'
-            } else {
-                val filteredInput = newInput.filter { it.isDigit() }
+        value = amountState,
+        onValueChange = { newValue ->
+            val rawInput = newValue.text.replace(",", "")
+            if (rawInput.all { it.isDigit() }) {
+                val formatted = formatNumber(rawInput)
+
+                // Tính toán vị trí con trỏ mới
+                val addedCommaCount = formatted.count { it == ',' }
+                val rawCommaCount = newValue.text.count { it == ',' }
+                val offsetDelta = addedCommaCount - rawCommaCount
+                val newCursorOffset = (newValue.selection.end + offsetDelta)
+                    .coerceIn(0, formatted.length)
+
+                // Trả về cả formatted và raw
                 onValueChange(
-                    if (filteredInput.isNotEmpty() && filteredInput != "0") {
-                        filteredInput
-                    } else if (filteredInput == "0" && amountState.isNotEmpty()) {
-                        filteredInput
-                    } else {
-                        ""
-                    }
+                    TextFieldValue(
+                        text = formatted,
+                        selection = TextRange(newCursorOffset)
+                    )
                 )
+                onRawValueChange(rawInput)
             }
         },
-                singleLine = true,
+        singleLine = true,
         modifier = Modifier
-            .focusRequester(focusRequester)
-            .onFocusChanged { focusState ->
-                isFocused = focusState.isFocused
-            }
+            .onFocusChanged { focusState -> isFocused = focusState.isFocused }
             .height(30.dp)
             .width(220.dp)
             .background(Color(0xFFe7e7e7), shape = componentShapes.small)
             .border(
                 1.dp,
                 if (isFocused) primaryColor else Color.Transparent,
-                componentShapes.small,
+                componentShapes.small
             )
             .padding(horizontal = 8.dp),
         textStyle = TextStyle(
-            textAlign = TextAlign.Start,
+            textAlign = TextAlign.End,
             fontSize = 20.sp,
-            fontFamily = montserrat,
+            fontFamily = myFont,
             fontWeight = FontWeight.Bold,
             color = Color.Black
         ),
-        keyboardOptions = KeyboardOptions.Default.copy(
-            keyboardType = KeyboardType.Number,
-            imeAction = ImeAction.Done
-        ),
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
         keyboardActions = KeyboardActions(
             onDone = {
-                focusManager.clearFocus()  // Clear focus from the text field
-                keyboardController?.hide()  // Hide the keyboard
+                focusManager.clearFocus()
+                keyboardController?.hide()
             }
-        ),
-        decorationBox = { innerTextField ->
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 2.dp),
-                contentAlignment = Alignment.CenterStart
-            ) {
-                if (amountState.isEmpty()) {
-                    Text(
-                        if (isFocused) "" else "0",
-                        color = Color.Black,
-                        fontWeight = FontWeight.SemiBold,
-                        fontFamily = montserrat,
-                        fontSize = 20.sp,
-                        style = LocalTextStyle.current
-                    )
-                }
-                innerTextField()
-            }
-        },
+        )
     )
 }
 
-@Preview
-@Composable
-fun PreviewNumberTextField() {
-    NumberTextField(amountState = "", onValueChange = {})
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -674,12 +653,12 @@ fun NoteTextField(textState: TextFieldValue, onValueChange: (TextFieldValue) -> 
             Text(
                 "Chưa nhập vào",
                 color = Color.LightGray,
-                fontFamily = montserrat,
+                fontFamily = myFont,
             )
         },
         textStyle = TextStyle(
             fontSize = 16.sp,
-            fontFamily = montserrat,
+            fontFamily = myFont,
             fontWeight = FontWeight.Normal,
             color = Color.Black
         ),
@@ -761,7 +740,7 @@ fun MonthPickerButton(onDateSelected: (String) -> Unit) {
                 Text(
                     text = dateText,
                     fontWeight = FontWeight.SemiBold,
-                    fontFamily = montserrat,
+                    fontFamily = myFont,
                     fontSize = 16.sp,
                     color = textColor,
                 )
@@ -769,7 +748,7 @@ fun MonthPickerButton(onDateSelected: (String) -> Unit) {
                 Text(
                     text = dateRangeText,
                     fontWeight = FontWeight.Light,
-                    fontFamily = montserrat,
+                    fontFamily = myFont,
                     fontSize = 12.sp,
                     color = textColor
                 )
@@ -909,7 +888,7 @@ fun CustomCalendar(
                             text = day,
                             fontWeight = FontWeight.Normal,
                             fontSize = 8.sp,
-                            fontFamily = montserrat,
+                            fontFamily = myFont,
                             color = if (day == "CN") sundayColor else if (day == "T7") saturdayColor else textColor,
                             textAlign = TextAlign.Center
                         )
@@ -959,7 +938,7 @@ fun CustomCalendar(
                                             5 -> saturdayColor // Thứ 7
                                             else -> Color.Black // Các ngày trong tuần
                                         },
-                                        fontFamily = montserrat,
+                                        fontFamily = myFont,
                                         fontSize = 8.sp,
                                         textAlign = TextAlign.Start
                                     )
@@ -985,7 +964,7 @@ fun CustomCalendar(
                                                     color = Color(0xff37c8ec),
                                                     fontSize = 7.sp,
                                                     textAlign = TextAlign.End,
-                                                    fontFamily = montserrat
+                                                    fontFamily = myFont
                                                 )
                                             }
                                         }
@@ -1000,7 +979,7 @@ fun CustomCalendar(
                                                     color = primaryColor,
                                                     fontSize = 7.sp,
                                                     textAlign = TextAlign.End,
-                                                    fontFamily = montserrat
+                                                    fontFamily = myFont
                                                 )
                                             }
                                         }

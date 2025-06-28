@@ -50,15 +50,10 @@ import com.example.jetpackcompose.components.DrawBottomLine
 import com.example.jetpackcompose.components.MessagePopup
 import com.example.jetpackcompose.components.NoteTextField
 import com.example.jetpackcompose.components.NumberTextField
-import com.example.jetpackcompose.components.montserrat
+import com.example.jetpackcompose.components.myFont
 import com.example.jetpackcompose.ui.theme.primaryColor
 import com.example.jetpackcompose.ui.theme.componentShapes
 import com.example.jetpackcompose.ui.theme.textColor
-import java.text.DecimalFormat
-import java.text.DecimalFormatSymbols
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
 
 @Composable
 fun EditIncomeTransaction(
@@ -73,6 +68,7 @@ fun EditIncomeTransaction(
     // Trạng thái nhập liệu
     var textNote by remember { mutableStateOf(TextFieldValue()) }
     var amountValue by remember { mutableStateOf(TextFieldValue()) }
+    var rawAmount by remember { mutableStateOf("") }
     var selectedDate by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf<Category?>(null) }
 
@@ -194,7 +190,7 @@ fun EditIncomeTransaction(
                 Text(
                     text = "Chỉnh sửa",
                     fontSize = 16.sp,
-                    fontFamily = montserrat,
+                    fontFamily = myFont,
                     fontWeight = FontWeight.Bold,
                     color = textColor,
                     modifier = Modifier.weight(1f),
@@ -227,7 +223,7 @@ fun EditIncomeTransaction(
                     "Ngày ",
                     color = Color.DarkGray,
                     fontWeight = FontWeight.Bold,
-                    fontFamily = montserrat
+                    fontFamily = myFont
                 )
                 DatePickerButton(
                     onDateSelected = { date ->
@@ -268,8 +264,9 @@ fun EditIncomeTransaction(
                 )
                 Spacer(Modifier.width(8.dp))
                 NumberTextField(
-                    amountState = amountValue.text,
-                    onValueChange = { newValue -> amountValue = TextFieldValue(newValue) }
+                    amountState = amountValue,
+                    onValueChange = { newValue -> amountValue = newValue },
+                    onRawValueChange = { newValue -> rawAmount = newValue }
                 )
                 Spacer(Modifier.width(8.dp))
                 Text("₫", color = Color.DarkGray)
@@ -284,7 +281,7 @@ fun EditIncomeTransaction(
             // Grid chọn danh mục
             CategoriesGrid(
                 categories = categories,
-                buttonColor = Color(0xFFF35E17),
+                buttonColor = primaryColor,
                 selectedCategory = selectedCategory,
                 column = 3,
                 onCategorySelected = { category -> selectedCategory = category }
@@ -301,7 +298,7 @@ fun EditIncomeTransaction(
                     onClick = {
                         successMessage = "Đang gửi dữ liệu..."
                         showPopup = true
-                        val amount = amountValue.text.toLongOrNull() ?: 0L
+                        val amount = rawAmount.toLongOrNull() ?: 0L
                         val updatedTransaction = Transaction(
                             category_id = selectedCategory?.id ?: 10,
                             amount = amount,
@@ -326,7 +323,7 @@ fun EditIncomeTransaction(
                         )
                     },
                     modifier = Modifier.width(248.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF35E17))
+                    colors = ButtonDefaults.buttonColors(containerColor = primaryColor)
                 ) {
                     Text("Sửa khoản thu", color = Color.White, fontWeight = FontWeight.Bold)
                 }
@@ -348,7 +345,7 @@ fun EditIncomeTransaction(
                 text = {
                     Text(
                         "Bạn có chắc chắn muốn xóa không?",
-                        fontFamily = montserrat,
+                        fontFamily = myFont,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.Center
@@ -367,7 +364,7 @@ fun EditIncomeTransaction(
                             Text(
                                 "Bỏ qua",
                                 color = Color(0xff3a84fc),
-                                fontFamily = montserrat,
+                                fontFamily = myFont,
                                 textAlign = TextAlign.Start
                             )
                         }
@@ -391,7 +388,7 @@ fun EditIncomeTransaction(
                             Text(
                                 "Xoá",
                                 color = primaryColor,
-                                fontFamily = montserrat,
+                                fontFamily = myFont,
                             )
                         }
                     }

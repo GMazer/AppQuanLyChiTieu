@@ -41,7 +41,7 @@ import com.example.jetpackcompose.components.MyButtonComponent
 import com.example.jetpackcompose.components.MyTextFieldComponent
 import com.example.jetpackcompose.components.NormalTextComponent
 import com.example.jetpackcompose.components.PasswordTextFieldComponent
-import com.example.jetpackcompose.components.montserrat
+import com.example.jetpackcompose.components.myFont
 
 @Composable
 fun SignInScreen(navController: NavHostController) {
@@ -153,14 +153,14 @@ fun SignInScreen(navController: NavHostController) {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
                     Text(
                         text = "Chưa có tài khoản? ",
-                        fontFamily = montserrat,
+                        fontFamily = myFont,
                         fontSize = 10.sp,
                         color = Color(0xFFB0BEC5), // Light gray color
                     )
                     Text(
                         text = "Đăng ký",
                         color = Color.Gray, // Highlight color
-                        fontFamily = montserrat,
+                        fontFamily = myFont,
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Medium,
                         modifier = Modifier.clickable {

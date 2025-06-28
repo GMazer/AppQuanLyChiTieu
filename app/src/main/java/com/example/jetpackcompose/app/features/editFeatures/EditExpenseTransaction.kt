@@ -51,11 +51,10 @@ import com.example.jetpackcompose.components.DrawBottomLine
 import com.example.jetpackcompose.components.MessagePopup
 import com.example.jetpackcompose.components.NoteTextField
 import com.example.jetpackcompose.components.NumberTextField
-import com.example.jetpackcompose.components.montserrat
+import com.example.jetpackcompose.components.myFont
 import com.example.jetpackcompose.ui.theme.componentShapes
 import com.example.jetpackcompose.ui.theme.primaryColor
 import com.example.jetpackcompose.ui.theme.textColor
-import java.util.Calendar
 
 @SuppressLint("DefaultLocale")
 @Composable
@@ -70,6 +69,7 @@ fun EditExpenseTransaction(
     // Trạng thái nhập liệu
     var textNote by remember { mutableStateOf(TextFieldValue()) }
     var amountValue by remember { mutableStateOf(TextFieldValue()) }
+    var rawAmount by remember { mutableStateOf("1000000") }
     var selectedDate by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf<Category?>(null) }
 
@@ -217,7 +217,7 @@ fun EditExpenseTransaction(
                 Text(
                     text = "Chỉnh sửa",
                     fontSize = 16.sp,
-                    fontFamily = montserrat,
+                    fontFamily = myFont,
                     fontWeight = FontWeight.Bold,
                     color = textColor,
                     modifier = Modifier.weight(1f),
@@ -228,7 +228,7 @@ fun EditExpenseTransaction(
                 Text(
                     text = "Xoá",
                     fontSize = 16.sp,
-                    fontFamily = montserrat,
+                    fontFamily = myFont,
                     color = primaryColor,
                     modifier = Modifier.clickable {
                         showDeleteDialog = true
@@ -251,7 +251,7 @@ fun EditExpenseTransaction(
                     "Ngày ",
                     color = Color.DarkGray,
                     fontWeight = FontWeight.Bold,
-                    fontFamily = montserrat
+                    fontFamily = myFont
                 )
                 DatePickerButton(
                     onDateSelected = { date ->
@@ -293,8 +293,9 @@ fun EditExpenseTransaction(
                 )
                 Spacer(Modifier.width(8.dp))
                 NumberTextField(
-                    amountState = amountValue.text,
-                    onValueChange = { newValue -> amountValue = TextFieldValue(newValue) }
+                    amountState = amountValue,
+                    onValueChange = { newValue -> amountValue = newValue },
+                    onRawValueChange = { newValue -> rawAmount = newValue }
                 )
                 Spacer(Modifier.width(8.dp))
                 Text("₫", color = Color.DarkGray)
@@ -309,7 +310,7 @@ fun EditExpenseTransaction(
             // Grid chọn danh mục
             CategoriesGrid(
                 categories = categories,
-                buttonColor = Color(0xFFF35E17),
+                buttonColor = primaryColor,
                 selectedCategory = selectedCategory,
                 column = 3,
                 onCategorySelected = { category -> selectedCategory = category }
@@ -326,7 +327,7 @@ fun EditExpenseTransaction(
                     onClick = {
                         successMessage = "Đang gửi dữ liệu..."
                         showPopup = true
-                        val amount = amountValue.text.toLongOrNull() ?: 0L
+                        val amount = rawAmount.toLongOrNull() ?: 0L
                         val updatedTransaction = Transaction(
                             category_id = selectedCategory?.id ?: 1,
                             amount = amount,
@@ -351,7 +352,7 @@ fun EditExpenseTransaction(
                         )
                     },
                     modifier = Modifier.width(248.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF35E17))
+                    colors = ButtonDefaults.buttonColors(containerColor = primaryColor)
                 ) {
                     Text("Sửa khoản chi", color = Color.White, fontWeight = FontWeight.Bold)
                 }
@@ -373,7 +374,7 @@ fun EditExpenseTransaction(
                 text = {
                     Text(
                         "Bạn có chắc chắn muốn xóa không?",
-                        fontFamily = montserrat,
+                        fontFamily = myFont,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.Center
@@ -393,7 +394,7 @@ fun EditExpenseTransaction(
                             Text(
                                 "Bỏ qua",
                                 color = Color(0xff3a84fc),
-                                fontFamily = montserrat,
+                                fontFamily = myFont,
                                 textAlign = TextAlign.Start
                             )
                         }
@@ -419,7 +420,7 @@ fun EditExpenseTransaction(
                             Text(
                                 "Xoá",
                                 color = primaryColor,
-                                fontFamily = montserrat,
+                                fontFamily = myFont,
                             )
                         }
                     }

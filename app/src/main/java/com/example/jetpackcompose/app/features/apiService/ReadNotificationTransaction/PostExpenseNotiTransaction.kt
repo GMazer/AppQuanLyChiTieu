@@ -45,7 +45,7 @@ import com.example.jetpackcompose.components.MessagePopup
 import com.example.jetpackcompose.components.MyButtonComponent
 import com.example.jetpackcompose.components.NoteTextField
 import com.example.jetpackcompose.components.NumberTextField
-import com.example.jetpackcompose.components.montserrat
+import com.example.jetpackcompose.components.myFont
 import com.example.jetpackcompose.ui.theme.primaryColor
 import com.example.jetpackcompose.ui.theme.textColor
 
@@ -66,6 +66,7 @@ fun PostExpenseNotiTransaction(
     // Trạng thái nhập liệu
     var textNote by remember { mutableStateOf(TextFieldValue()) }
     var amountValue by remember { mutableStateOf(TextFieldValue(amount.toString())) }
+    var rawAmount by remember { mutableStateOf("1000000") }
     var selectedDateState by remember { mutableStateOf(selectedDate) }
     var selectedCategory by remember { mutableStateOf<Category?>(null) }
 
@@ -169,7 +170,7 @@ fun PostExpenseNotiTransaction(
                 Text(
                     text = "Nhập khoản chi",
                     fontSize = 16.sp,
-                    fontFamily = montserrat,
+                    fontFamily = myFont,
                     fontWeight = FontWeight.Bold,
                     color = textColor,
                     modifier = Modifier.weight(1f),
@@ -181,7 +182,7 @@ fun PostExpenseNotiTransaction(
                     text = "Xoá",
                     fontSize = 16.sp,
                     color = primaryColor,
-                    fontFamily = montserrat,
+                    fontFamily = myFont,
                     modifier = Modifier.clickable {
                         showDeleteDialog = true
                     }
@@ -210,7 +211,7 @@ fun PostExpenseNotiTransaction(
                     "Ngày ",
                     color = Color.DarkGray,
                     fontWeight = FontWeight.Bold,
-                    fontFamily = montserrat
+                    fontFamily = myFont
                 )
                 DatePickerButton(
                     initialDate = selectedDateState,
@@ -248,8 +249,9 @@ fun PostExpenseNotiTransaction(
                 )
                 Spacer(Modifier.width(8.dp))
                 NumberTextField(
-                    amountState = amountValue.text,
-                    onValueChange = { newValue -> amountValue = TextFieldValue(newValue) }
+                    amountState = amountValue,
+                    onValueChange = { newValue -> amountValue = newValue },
+                    onRawValueChange = { newRawValue -> rawAmount = newRawValue }
                 )
                 Spacer(Modifier.width(8.dp))
                 Text("₫", color = Color.DarkGray)
@@ -264,7 +266,7 @@ fun PostExpenseNotiTransaction(
             // Grid chọn danh mục
             CategoriesGrid(
                 categories = categories,
-                buttonColor = Color(0xFFF35E17),
+                buttonColor = primaryColor,
                 selectedCategory = selectedCategory,
                 column = 3,
                 onCategorySelected = { category -> selectedCategory = category }
@@ -284,7 +286,7 @@ fun PostExpenseNotiTransaction(
                     onClick = {
                         successMessage = "Đang gửi dữ liệu..."
                         showPopup = true
-                        val amount = amountValue.text.toLongOrNull() ?: 0L
+                        val amount = rawAmount.toLongOrNull() ?: 0L
                         val transaction = Transaction(
                             transaction_date = selectedDateState,
                             note = textNote.text,
@@ -326,14 +328,14 @@ fun PostExpenseNotiTransaction(
             title = {
                 Text(
                     "Xác nhận xóa",
-                    fontFamily = montserrat,
+                    fontFamily = myFont,
                     color = textColor,
                     fontWeight = FontWeight.Bold
                 )
             },
             text = { Text(
                 "Bạn có chắc chắn muốn xóa giao dịch mà không thêm không?",
-                fontFamily = montserrat,
+                fontFamily = myFont,
                 fontWeight = FontWeight.SemiBold,
             ) },
             confirmButton = {
@@ -344,7 +346,7 @@ fun PostExpenseNotiTransaction(
                 }) {
                     Text(
                         "OK",
-                        fontFamily = montserrat,
+                        fontFamily = myFont,
                         color = Color.Red
                     )
                 }
@@ -354,7 +356,7 @@ fun PostExpenseNotiTransaction(
                     Text(
                         "Bỏ qua",
                         color = Color.Gray,
-                        fontFamily = montserrat
+                        fontFamily = myFont
                     )
                 }
             }

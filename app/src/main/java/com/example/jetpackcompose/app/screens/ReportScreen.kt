@@ -53,7 +53,7 @@ import com.example.jetpackcompose.components.DonutChartWithProgress
 import com.example.jetpackcompose.components.MessagePopup
 import com.example.jetpackcompose.components.MonthPickerButton
 import com.example.jetpackcompose.components.ReportTable
-import com.example.jetpackcompose.components.montserrat
+import com.example.jetpackcompose.components.myFont
 import com.example.jetpackcompose.ui.theme.primaryColor
 import com.example.jetpackcompose.ui.theme.textColor
 import com.example.jetpackcompose.ui.theme.topBarColor
@@ -189,7 +189,7 @@ fun ReportScreen() {
                                 text = "Báo cáo",
                                 style = TextStyle(
                                     fontWeight = FontWeight.Bold,
-                                    fontFamily = montserrat,
+                                    fontFamily = myFont,
                                     fontSize = 16.sp,
                                 ),
                                 textAlign = TextAlign.Center,
@@ -272,7 +272,7 @@ fun ReportScreen() {
                             ) {
                                 Text(
                                     title,
-                                    fontFamily = montserrat,
+                                    fontFamily = myFont,
                                     fontWeight = FontWeight.SemiBold,
                                     fontSize = 14.sp,
                                     color = if (selectedTabIndex == index) primaryColor else textColor,

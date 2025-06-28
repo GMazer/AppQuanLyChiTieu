@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.jetpackcompose.R
-import com.example.jetpackcompose.components.montserrat
+import com.example.jetpackcompose.components.myFont
 import com.example.jetpackcompose.ui.theme.primaryColor
 import com.example.jetpackcompose.ui.theme.textColor
 import java.text.DecimalFormat
@@ -88,7 +88,7 @@ fun TransactionNotificationScreen(navController: NavController) {
                 androidx.compose.material.Text(
                     "Giao dịch từ thông báo",
                     fontSize = 14.sp,
-                    fontFamily = montserrat,
+                    fontFamily = myFont,
                     fontWeight = FontWeight.Bold,
                     color = textColor,
                     modifier = Modifier
@@ -124,7 +124,7 @@ fun TransactionNotificationScreen(navController: NavController) {
                             Text(
                                 text = date,
                                 fontWeight = FontWeight.SemiBold,
-                                fontFamily = montserrat,
+                                fontFamily = myFont,
                                 fontSize = 12.sp,
                             )
                         }
@@ -198,7 +198,7 @@ fun TransactionRow(transaction: TransactionReadNoti, index: Int, navController: 
             },
             fontWeight = FontWeight.Bold,
             fontSize = 14.sp,
-            fontFamily = montserrat,
+            fontFamily = myFont,
             color = textColor,
             modifier = Modifier.weight(1f)
         )
@@ -208,7 +208,7 @@ fun TransactionRow(transaction: TransactionReadNoti, index: Int, navController: 
             text = amountText,
             fontWeight = FontWeight.Bold,
             fontSize = 14.sp,
-            fontFamily = montserrat,
+            fontFamily = myFont,
             color = if(transaction.type == "income") Color(0xff62bbeb) else Color(0xffff5c46),
             modifier = Modifier.weight(1f),
             textAlign = TextAlign.End

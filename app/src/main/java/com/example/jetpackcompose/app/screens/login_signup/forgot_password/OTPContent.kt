@@ -57,7 +57,7 @@ import com.example.jetpackcompose.app.network.SendOtp
 import com.example.jetpackcompose.app.network.VerifyOtp
 import com.example.jetpackcompose.components.MessagePopup
 import com.example.jetpackcompose.components.MyButtonComponent
-import com.example.jetpackcompose.components.montserrat
+import com.example.jetpackcompose.components.myFont
 import com.example.jetpackcompose.ui.theme.primaryColor
 import com.example.jetpackcompose.ui.theme.textColor
 
@@ -112,7 +112,7 @@ fun OTPContent(navController: NavHostController, email: String) {
 
             Text(
                 text = "Khôi phục mật khẩu",
-                fontFamily = montserrat,
+                fontFamily = myFont,
                 color = textColor,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold
@@ -122,7 +122,7 @@ fun OTPContent(navController: NavHostController, email: String) {
 
             Text(
                 text = "Chúng tôi đã gửi mã xác nhận đến email.",
-                fontFamily = montserrat,
+                fontFamily = myFont,
                 color = Color.Gray,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium,
@@ -184,7 +184,7 @@ fun OTPContent(navController: NavHostController, email: String) {
                         maxLines = 1,
                         textStyle = TextStyle(
                             fontSize = 28.sp,
-                            fontFamily = montserrat,
+                            fontFamily = myFont,
                             fontWeight = FontWeight.Bold,
                             color = textColor,
                             textAlign = TextAlign.Center,
@@ -255,7 +255,7 @@ fun OTPContent(navController: NavHostController, email: String) {
             ) {
                 Text(
                     text = "Không nhận được mã? ",
-                    fontFamily = montserrat,
+                    fontFamily = myFont,
                     color = Color.Gray,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Medium,
@@ -263,7 +263,7 @@ fun OTPContent(navController: NavHostController, email: String) {
                 )
                 Text(
                     text = "Gửi lại",
-                    fontFamily = montserrat,
+                    fontFamily = myFont,
                     color = primaryColor,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Medium,

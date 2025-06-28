@@ -21,6 +21,17 @@ val sundayColor = Color(0xFFFF4D4D)
 val errorColor = Color(0xffFF6347)
 val successColor = Color(0xff28a745)
 
-val primaryColor = Color(0xFF4eb644)
+val primaryColor = Color(0xFF4eb644) //0xFFF35E17
 val gradientColor1 = Color(0xFFA8E063)
 val gradientColor2 = Color(0xFF4EB644)
+
+// ICONS COLOR
+val houseColor = Color(0xFFB40300)
+val foodColor = Color(0xFF911294)
+val shoppingColor =Color(0xFF126AB6)
+val movingColor =Color(0xFF126AB6)
+val cosmeticColor =Color(0xFF0D96DA)
+val exchangingColor =Color(0xFF4DB218)
+val medicalColor =Color(0xFFD5CC00)
+val educatingColor =Color(0xFFEE9305)
+val savingColor =Color(0xFF37c166)

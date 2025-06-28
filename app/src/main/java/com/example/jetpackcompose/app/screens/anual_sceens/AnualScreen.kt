@@ -53,7 +53,7 @@ import com.example.jetpackcompose.app.features.apiService.FixedTransactionAPI.Fi
 import com.example.jetpackcompose.app.features.apiService.FixedTransactionAPI.GetFixedTransactionViewModel
 import com.example.jetpackcompose.app.screens.Category
 import com.example.jetpackcompose.components.MessagePopup
-import com.example.jetpackcompose.components.montserrat
+import com.example.jetpackcompose.components.myFont
 import com.example.jetpackcompose.ui.theme.componentShapes
 import com.example.jetpackcompose.ui.theme.primaryColor
 import com.example.jetpackcompose.ui.theme.textColor
@@ -134,7 +134,7 @@ fun AnualScreen(navController: NavHostController) {
                 Text(
                     "Thu chi cố định",
                     fontSize = 14.sp,
-                    fontFamily = montserrat,
+                    fontFamily = myFont,
                     fontWeight = FontWeight.Bold,
                     color = textColor,
                     modifier = Modifier
@@ -149,7 +149,7 @@ fun AnualScreen(navController: NavHostController) {
                 Text(
                     if (isEditing) "Hoàn thành" else "Chỉnh sửa",
                     fontSize = 12.sp,
-                    fontFamily = montserrat,
+                    fontFamily = myFont,
                     fontWeight = FontWeight.Normal,
                     color = primaryColor,
                     modifier = Modifier
@@ -393,7 +393,7 @@ fun FixedTransactionRow(
             Text(
                 text = transaction.title ?: "No Title",
                 fontWeight = FontWeight.SemiBold,
-                fontFamily = montserrat,
+                fontFamily = myFont,
                 color = textColor,
                 fontSize = 12.sp,
             )
@@ -402,13 +402,13 @@ fun FixedTransactionRow(
                 Text(
                     text = transaction.categoryName,
                     fontSize = 8.sp,
-                    fontFamily = montserrat,
+                    fontFamily = myFont,
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
                     text = "\u2022",
                     fontSize = 8.sp,
-                    fontFamily = montserrat,
+                    fontFamily = myFont,
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
@@ -420,7 +420,7 @@ fun FixedTransactionRow(
                         else -> "Không xác định"
                     },
                     fontSize = 8.sp,
-                    fontFamily = montserrat,
+                    fontFamily = myFont,
                 )
             }
         }
@@ -434,7 +434,7 @@ fun FixedTransactionRow(
             Text(
                 text = amountText,
                 fontWeight = FontWeight.SemiBold,
-                fontFamily = montserrat,
+                fontFamily = myFont,
                 fontSize = 16.sp,
                 color = if (transaction.category_id >= 10) Color(0xff62bbeb) else Color(0xffff5c46),
             )
@@ -462,7 +462,7 @@ fun FixedTransactionRow(
             title = {
                 Text(
                     text = "Xác nhận xóa",
-                    fontFamily = montserrat,
+                    fontFamily = myFont,
                     color = textColor,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 14.sp
@@ -471,7 +471,7 @@ fun FixedTransactionRow(
             text = {
                 Text(
                     text = dialogMessage,
-                    fontFamily = montserrat,
+                    fontFamily = myFont,
                     color = textColor,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Normal
@@ -498,7 +498,7 @@ fun FixedTransactionRow(
                     }) {
                         Text(
                             "Xoá",
-                            fontFamily = montserrat,
+                            fontFamily = myFont,
                             color = primaryColor,
                         )
                     }
@@ -512,7 +512,7 @@ fun FixedTransactionRow(
                 }) {
                     Text(
                         "Bỏ qua",
-                        fontFamily = montserrat,
+                        fontFamily = myFont,
                         color = Color(0xFF62B7E5),
                     )
                 }

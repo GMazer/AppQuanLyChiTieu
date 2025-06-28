@@ -46,7 +46,7 @@ import com.example.jetpackcompose.components.CustomCalendar
 import com.example.jetpackcompose.components.DayIndex
 import com.example.jetpackcompose.components.MessagePopup
 import com.example.jetpackcompose.components.MonthPickerButton
-import com.example.jetpackcompose.components.montserrat
+import com.example.jetpackcompose.components.myFont
 import com.example.jetpackcompose.ui.theme.highGray
 import com.example.jetpackcompose.ui.theme.primaryColor
 import com.example.jetpackcompose.ui.theme.textColor
@@ -199,7 +199,7 @@ fun CalendarScreen(navController: NavController) {
                                 // Text "Lịch" căn giữa
                                 androidx.compose.material3.Text(
                                     text = "Lịch",
-                                    fontFamily = montserrat,
+                                    fontFamily = myFont,
                                     style = TextStyle(
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 16.sp,
@@ -254,7 +254,7 @@ fun CalendarScreen(navController: NavController) {
                             text = "Thu nhập",
                             style = TextStyle(
                                 fontWeight = FontWeight.Bold,
-                                fontFamily = montserrat,
+                                fontFamily = myFont,
                                 fontSize = 12.sp,
                             ),
                             color = textColor,
@@ -266,7 +266,7 @@ fun CalendarScreen(navController: NavController) {
                             text = formattedTotalIncome,
                             style = TextStyle(
                                 fontWeight = FontWeight.Bold,
-                                fontFamily = montserrat,
+                                fontFamily = myFont,
                                 fontSize = 16.sp,
                             ),
                             color = Color(0xff37c8ec),
@@ -280,7 +280,7 @@ fun CalendarScreen(navController: NavController) {
                             text = "Chi tiêu",
                             style = TextStyle(
                                 fontWeight = FontWeight.Bold,
-                                fontFamily = montserrat,
+                                fontFamily = myFont,
                                 fontSize = 12.sp,
                             ),
                             color = textColor,
@@ -293,7 +293,7 @@ fun CalendarScreen(navController: NavController) {
                             style = TextStyle(
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 16.sp,
-                                fontFamily = montserrat,
+                                fontFamily = myFont,
                             ),
                             color = primaryColor,
                             textAlign = TextAlign.Center,
@@ -306,7 +306,7 @@ fun CalendarScreen(navController: NavController) {
                             text = "Số dư",
                             style = TextStyle(
                                 fontWeight = FontWeight.Bold,
-                                fontFamily = montserrat,
+                                fontFamily = myFont,
                                 fontSize = 12.sp,
                             ),
                             color = textColor,
@@ -318,7 +318,7 @@ fun CalendarScreen(navController: NavController) {
                             text = formattedBalance,
                             style = TextStyle(
                                 fontWeight = FontWeight.Bold,
-                                fontFamily = montserrat,
+                                fontFamily = myFont,
                                 fontSize = 16.sp,
                             ),
                             color = if (totalBalance >= 0) Color(0xff37c8ec) else primaryColor,
@@ -333,7 +333,7 @@ fun CalendarScreen(navController: NavController) {
                     Text(
                         text = errorMessage,
                         color = Color.Red,
-                        fontFamily = montserrat,
+                        fontFamily = myFont,
                         style = TextStyle(fontSize = 16.sp, textAlign = TextAlign.Center),
                         modifier = Modifier
                             .fillMaxWidth()

@@ -39,7 +39,7 @@ import com.example.jetpackcompose.app.features.apiService.ForgotPasswordAPI.Send
 import com.example.jetpackcompose.app.network.SendOtp
 import com.example.jetpackcompose.components.MyButtonComponent
 import com.example.jetpackcompose.components.MyTextFieldComponent
-import com.example.jetpackcompose.components.montserrat
+import com.example.jetpackcompose.components.myFont
 import com.example.jetpackcompose.ui.theme.primaryColor
 import com.example.jetpackcompose.ui.theme.textColor
 
@@ -82,7 +82,7 @@ fun ForgotPasswordScreen(navController: NavHostController) {
 
             Text(
                 text = "Quên mật khẩu?",
-                fontFamily = montserrat,
+                fontFamily = myFont,
                 color = textColor,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold
@@ -92,7 +92,7 @@ fun ForgotPasswordScreen(navController: NavHostController) {
 
             Text(
                 text = "Đừng lo lắng, chúng tôi sẽ hướng dẫn bạn khôi phục.",
-                fontFamily = montserrat,
+                fontFamily = myFont,
                 color = Color.Gray,
                 fontSize = 11.sp,
                 fontWeight = FontWeight.Medium,
@@ -177,7 +177,7 @@ fun BackToLogin(navController: NavHostController) {
         Spacer(modifier = Modifier.width(8.dp))
         Text(
             text = "Trở lại đăng nhập",
-            fontFamily = montserrat,
+            fontFamily = myFont,
             color = Color.Gray,
             fontSize = 11.sp,
             fontWeight = FontWeight.Medium

@@ -101,7 +101,7 @@ fun FixedTabRow(
     modifier: Modifier = Modifier
 ) {
     val inactiveColor = Color(0xFFe1e1e1)
-    val inactiveTextColor = Color(0xFFF35E17)
+    val inactiveTextColor = primaryColor
 
     Column {
         Row(
@@ -205,7 +205,7 @@ fun ClickableText(
 ) {
     Text(
         text = text,
-        fontFamily = montserrat,
+        fontFamily = myFont,
         color = primaryColor,
         fontSize = 12.sp,
         textAlign = TextAlign.Start,
@@ -347,7 +347,7 @@ fun CategoryIconWithName(
             // Hiển thị tên danh mục
             Text(
                 text = it.name,
-                fontFamily = montserrat,
+                fontFamily = myFont,
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Bold,
                 color = textColor
@@ -356,7 +356,7 @@ fun CategoryIconWithName(
             if (transactionNote.isNotEmpty()) {
                 Text(
                     text = "(${transactionNote})",
-                    fontFamily = montserrat,
+                    fontFamily = myFont,
                     fontWeight = FontWeight.Light,
                     fontSize = 12.sp,
                     color = textColor,
@@ -367,7 +367,7 @@ fun CategoryIconWithName(
             }
             Text(
                 text = amountText,
-                fontFamily = montserrat,
+                fontFamily = myFont,
                 fontWeight = FontWeight.Bold,
                 color = if (transactionType == "expense") textColor else Color(0xff37c8ec),
                 textAlign = TextAlign.End
@@ -439,7 +439,7 @@ fun DayIndex(
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(
                         text = formattedDate,
-                        fontFamily = montserrat,
+                        fontFamily = myFont,
                         color = textColor,
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 12.sp
@@ -519,7 +519,7 @@ fun RowTextField(
             text = label,
             color = Color.DarkGray,
             fontWeight = FontWeight.Bold,
-            fontFamily = montserrat,
+            fontFamily = myFont,
             modifier = Modifier
                 .weight(1.5f)
                 .padding(start = 16.dp)
@@ -541,12 +541,12 @@ fun RowTextField(
                 Text(
                     "Chưa nhập",
                     color = Color.LightGray,
-                    fontFamily = montserrat,
+                    fontFamily = myFont,
                 )
             },
             textStyle = TextStyle(
                 fontSize = 16.sp,
-                fontFamily = montserrat,
+                fontFamily = myFont,
                 fontWeight = FontWeight.Normal,
                 color = textColor
             ),
@@ -584,7 +584,7 @@ fun DropdownRow(
         Text(
             text = label,
             fontWeight = FontWeight.Bold,
-            fontFamily = montserrat,
+            fontFamily = myFont,
             color = textColor,
             modifier = Modifier.weight(4f)
         )
@@ -599,7 +599,7 @@ fun DropdownRow(
             Text(
                 text = selectedOption,
                 fontWeight = FontWeight.Normal,
-                fontFamily = montserrat
+                fontFamily = myFont
             )
         }
 
@@ -620,7 +620,7 @@ fun DropdownRow(
             title = {
                 Text(
                     text = "Chọn $label",
-                    fontFamily = montserrat,
+                    fontFamily = myFont,
                     fontWeight = FontWeight.Bold
                 )
             },
@@ -650,7 +650,7 @@ fun DropdownRow(
                             Text(
                                 text = option.second,
                                 fontWeight = FontWeight.Normal,
-                                fontFamily = montserrat
+                                fontFamily = myFont
                             )
                         }
                     }
@@ -680,7 +680,7 @@ fun <T : Enum<T>> DropdownRepeat(
         Text(
             text = label,
             fontWeight = FontWeight.Bold,
-            fontFamily = montserrat,
+            fontFamily = myFont,
             color = textColor,
             modifier = Modifier.weight(4f)
         )
@@ -701,7 +701,7 @@ fun <T : Enum<T>> DropdownRepeat(
                     else -> ""
                 }, // Hiển thị tên enum dưới dạng chuỗi
                 fontWeight = FontWeight.Normal,
-                fontFamily = montserrat
+                fontFamily = myFont
             )
         }
 
@@ -722,7 +722,7 @@ fun <T : Enum<T>> DropdownRepeat(
             title = {
                 Text(
                     text = "Chọn ${label.lowercase(Locale.ROOT)}",
-                    fontFamily = montserrat,
+                    fontFamily = myFont,
                     fontWeight = FontWeight.Bold
                 )
             },
@@ -748,7 +748,7 @@ fun <T : Enum<T>> DropdownRepeat(
                                     "yearly" -> "Hàng năm"
                                     else -> ""
                                 },
-                                fontFamily = montserrat,
+                                fontFamily = myFont,
                                 fontWeight = FontWeight.Normal
                             ) // Hiển thị tên chuỗi (displayName) từ enum
                         }
@@ -792,7 +792,7 @@ fun DatePickerRow(
             text = label,
             fontWeight = FontWeight.Bold,
             color = textColor,
-            fontFamily = montserrat,
+            fontFamily = myFont,
             modifier = Modifier.weight(3f)
         )
 
@@ -821,7 +821,7 @@ fun DatePickerRow(
             Text(
                 text = formattedDate,
                 fontWeight = FontWeight.Normal,
-                fontFamily = montserrat,
+                fontFamily = myFont,
                 textAlign = TextAlign.Center,
                 color = textColor
             )
@@ -856,7 +856,7 @@ fun RowNumberField(
             text = label,
             color = textColor,
             fontWeight = FontWeight.Bold,
-            fontFamily = montserrat,
+            fontFamily = myFont,
             modifier = Modifier
                 .weight(1.5f)
                 .padding(start = 16.dp)
@@ -892,12 +892,12 @@ fun RowNumberField(
                 Text(
                     "Nhập số tiền",
                     color = Color.LightGray,
-                    fontFamily = montserrat,
+                    fontFamily = myFont,
                 )
             },
             textStyle = TextStyle(
                 fontSize = 16.sp,
-                fontFamily = montserrat,
+                fontFamily = myFont,
                 fontWeight = FontWeight.Normal,
                 color = textColor
             ),
@@ -942,7 +942,7 @@ fun EndDateRow(
         Text(
             text = label,
             fontWeight = FontWeight.Bold,
-            fontFamily = montserrat,
+            fontFamily = myFont,
             color = textColor,
             modifier = Modifier.weight(4f)
         )
@@ -957,7 +957,7 @@ fun EndDateRow(
             Text(
                 text = if (selectedOption == "Ngày chỉ định" && selectedDate.isNotEmpty()) selectedDate else selectedOption,
                 fontWeight = FontWeight.Normal,
-                fontFamily = montserrat
+                fontFamily = myFont
             )
         }
 
@@ -979,7 +979,7 @@ fun EndDateRow(
             title = {
                 Text(
                     text = "Chọn ${label.lowercase(Locale.ROOT)}",
-                    fontFamily = montserrat,
+                    fontFamily = myFont,
                     fontWeight = FontWeight.Bold
                 )
             },
@@ -1005,7 +1005,7 @@ fun EndDateRow(
                             Text(
                                 text = option,
                                 fontWeight = FontWeight.Normal,
-                                fontFamily = montserrat
+                                fontFamily = myFont
                             )
                         }
                     }
@@ -1071,7 +1071,7 @@ fun MessagePopup(
                         Text(
                             text = errorMessage,
                             color = errorColor,
-                            fontFamily = montserrat,
+                            fontFamily = myFont,
                             fontWeight = FontWeight.Bold,
                             textAlign = TextAlign.Center
                         )
@@ -1080,7 +1080,7 @@ fun MessagePopup(
                         Text(
                             text = successMessage,
                             color = successColor,
-                            fontFamily = montserrat,
+                            fontFamily = myFont,
                             fontWeight = FontWeight.Bold,
                             textAlign = TextAlign.Center
                         )
