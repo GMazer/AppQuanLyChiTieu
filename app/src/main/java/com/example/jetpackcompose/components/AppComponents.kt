@@ -431,10 +431,12 @@ fun CategoryItem(
         )
     }
 
-    // Tạo giá trị sóng thay đổi theo percentage (nâng lên hạ xuống)
+    val adjustedPercentage = if (percentage < 0.001f) -0.1f else percentage
+
     val waveYOffset by animateFloatAsState(
-        targetValue = boxHeight * (1 - percentage - 0.04f), // Tính giá trị y cho sóng theo percentage
-        animationSpec = tween(durationMillis = 500, easing = LinearEasing), label = ""
+        targetValue = boxHeight * (1 - adjustedPercentage - 0.04f),
+        animationSpec = tween(durationMillis = 1000, easing = LinearEasing),
+        label = ""
     )
 
     val height = if (column == 2) 120.dp else 90.dp
@@ -477,14 +479,14 @@ fun CategoryItem(
 
             // Vẽ nền
             drawRect(
-                color = bgItemColor,
+                color = if (percentage < 0.001f) Color(0xFFF6DADA) else bgItemColor,
                 size = size
             )
 
             // Vẽ path sóng
             drawPath(
                 path = wavePath,
-                color = Color(0xFFB3E5FC) // Màu xanh nhạt cho nước
+                color = if (percentage < 0.1f) Color(0xFFFF7A7A) else Color(0xFFB3E5FC) // Thực ra là 2 màu giống nhau
             )
         }
 
@@ -1135,13 +1137,14 @@ fun CategoryProgress(
     category?.let {
         Column(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxWidth(if (it.id < 10) 0.95f else 1f)
                 .padding(8.dp)
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Start,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
             ) {
                 Icon(
                     painter = it.iconPainter(),

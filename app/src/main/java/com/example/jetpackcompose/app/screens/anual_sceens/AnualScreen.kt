@@ -221,7 +221,7 @@ fun FixedTransactionRow(
             if (transaction.category_id >= 10) {
                 "+${currencyFormatter.format(transaction.amount)}"
             } else {
-                currencyFormatter.format(transaction.amount)
+                "-${currencyFormatter.format(transaction.amount)}"
             }
         )
         withStyle(style = SpanStyle(fontSize = 12.sp)) {  // Kích thước nhỏ hơn cho ký tự "₫"

@@ -38,6 +38,7 @@ class ReadTransactionNoti : NotificationListenerService() {
         startForegroundService()
     }
 
+    @SuppressLint("ForegroundServiceType")
     private fun startForegroundService() {
         // Tạo kênh thông báo (yêu cầu từ Android 8.0 trở lên)
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
@@ -47,9 +48,22 @@ class ReadTransactionNoti : NotificationListenerService() {
             val channel = android.app.NotificationChannel(
                 channelId,
                 channelName,
-                android.app.NotificationManager.IMPORTANCE_LOW
+                android.app.NotificationManager.IMPORTANCE_MIN
             )
             notificationManager.createNotificationChannel(channel)
+
+            /* Ở đây NotìicationListenerService được hệ thống tự động cung cấp dẫn đến
+            không cần thiết phải startForeground() nhưng vẫn nên gọi để service chạy bền vững hơn */
+
+            // Tạo notification đơn giản
+//            val notification = Notification.Builder(this, channelId)
+//                .setSmallIcon(android.R.drawable.ic_dialog_info)
+//                .setPriority(Notification.PRIORITY_LOW)  // Cho các Android cũ
+//                .setCategory(Notification.CATEGORY_SERVICE)  // Đánh dấu là notification dịch vụ
+//                .build()
+//
+//            // Bắt đầu foreground service
+//            startForeground(1, notification)
         }
     }
 
@@ -98,7 +112,7 @@ class ReadTransactionNoti : NotificationListenerService() {
         val validPackageNames = listOf(
             "bidv", "techcombank", "vcb", "vib", "acb", "vnpay", "mbmobile", "viettinbank",
             "sgbank", "dongabank", "lpb", "hdbank", "ncb", "ocb", "sacombank", "cake", "tpb",
-            "msb", "bplus", "agribank3"
+            "msb", "bplus", "agribank3", "facebook"
         )
 
         val packageNameParts = packageName.toLowerCase(Locale.getDefault()).split(".")
@@ -144,6 +158,41 @@ class ReadTransactionNoti : NotificationListenerService() {
 
         // Trả về null nếu không hợp lệ
         return null
+    }
+
+    @SuppressLint("NewApi", "NotificationPermission")
+    private fun showAlertNotification(title: String, text: String) {
+        val channelId = "alert_notification_channel"
+        val channelName = "Alert Notifications"
+
+        // Tạo Intent để mở TransactionNotiActivity
+        val intent = Intent(this, TransactionNotiActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        val pendingIntent = PendingIntent.getActivity(
+            this,
+            0,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val notificationManager = getSystemService(NOTIFICATION_SERVICE) as android.app.NotificationManager
+            val channel = android.app.NotificationChannel(
+                channelId, channelName, android.app.NotificationManager.IMPORTANCE_LOW
+            )
+            notificationManager.createNotificationChannel(channel)
+        }
+
+        val notification = Notification.Builder(this, channelId)
+            .setContentTitle("Cảnh báo chi tiêu")
+            .setContentText("$title: $text")
+            .setSmallIcon(android.R.drawable.ic_dialog_info)
+            .setAutoCancel(true)
+            .setContentIntent(pendingIntent)
+            .build()
+
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as android.app.NotificationManager
+        notificationManager.notify(System.currentTimeMillis().toInt(), notification)
     }
 
     @SuppressLint("NewApi", "NotificationPermission")

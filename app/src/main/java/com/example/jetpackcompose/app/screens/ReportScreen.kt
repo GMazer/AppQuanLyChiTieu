@@ -12,11 +12,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
+import androidx.compose.material.Icon
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -42,6 +44,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
@@ -51,6 +54,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.jetpackcompose.R
 import com.example.jetpackcompose.app.features.apiService.ReportAPI.GetReportExpenseViewModel
 import com.example.jetpackcompose.app.features.apiService.ReportAPI.GetReportIncomeViewModel
 import com.example.jetpackcompose.app.features.apiService.TransactionAPI.GetBudgetCategoryViewModel
@@ -492,11 +496,27 @@ fun ReportScreen(
                                     horizontalArrangement = Arrangement.Start,
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .background(color = Color.White)
+                                        .background(Color.White)
                                         .height(50.dp)
                                         .padding(horizontal = 16.dp)
                                 ) {
                                     CategoryProgress(item.name, "", item.amount, "expense", item.process)
+
+                                    if (item.process > 1f) {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.error),
+                                            contentDescription = "Mô tả ảnh",
+                                            modifier = Modifier.size(24.dp),
+                                            tint = Color.Red
+                                        )
+                                    } else {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.success),
+                                            contentDescription = "Mô tả ảnh",
+                                            modifier = Modifier.size(24.dp),
+                                            tint = Color.Green
+                                        )
+                                    }
                                 }
                             }
                             item {

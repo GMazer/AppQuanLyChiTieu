@@ -42,12 +42,16 @@
             </intent-filter>
         </receiver>
 
-        <!-- NotificationService -->
-        <activity android:name=".TransactionNotiActivity" />
+        <!-- NotificationService Activity-->
+        <activity
+            android:name=".TransactionNotiActivity"
+            android:screenOrientation="portrait"
+        />
 
         <!-- MainActivity -->
         <activity
             android:name=".MainActivity"
+            android:screenOrientation="portrait"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.JetpackCompose">
