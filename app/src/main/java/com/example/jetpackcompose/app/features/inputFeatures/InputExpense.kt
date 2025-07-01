@@ -257,6 +257,7 @@ fun ExpenseContent(
                     ) {
                         Button(
                             onClick = {
+                                errorMessage = ""
                                 successMessage = "Đang gửi dữ liệu..."
                                 showPopup = true
                                 val amount = amountValue.text.toLongOrNull() ?: 0L
@@ -312,7 +313,9 @@ fun ExpenseContent(
                     showPopup = showPopup,
                     successMessage = successMessage,
                     errorMessage = errorMessage,
-                    onDismiss = { showPopup = false }
+                    onDismiss = {
+                        showPopup = false
+                    }
                 )
             }
         }

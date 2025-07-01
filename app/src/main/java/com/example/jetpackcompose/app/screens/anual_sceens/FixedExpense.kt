@@ -34,6 +34,7 @@ import com.example.jetpackcompose.components.MessagePopup
 import com.example.jetpackcompose.components.MyButtonComponent
 import com.example.jetpackcompose.components.RowNumberField
 import com.example.jetpackcompose.components.RowTextField
+import kotlinx.coroutines.delay
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.util.Date
@@ -98,6 +99,7 @@ fun FixedExpense(
                     Divider(color = Color(0xFFd4d4d4), thickness = 0.5.dp)
 
                     DropdownRow(
+                        initialValue = 4,
                         label = "Danh mục",
                         options = listOf(
                             Pair(R.drawable.outline_home_work_24, "Chi phí nhà ở"),
@@ -126,6 +128,7 @@ fun FixedExpense(
             ) {
                 Column {
                     DropdownRepeat(
+                        initialValue = 4,
                         label = "Lặp lại",
                         options = RepeatFrequency.entries.map { it.displayName to it } // Lấy tất cả giá trị enum
                     ) { repeat ->
@@ -159,6 +162,9 @@ fun FixedExpense(
                     value = "Thêm",
                     isLoading = isLoading,
                     onClick = {
+                        errorMessage = ""
+                        successMessage = "Đang gửi dữ liệu..."
+                        showPopup = true
                         isLoading = true
                         // Chuyển giá trị sang FixedTransaction và gọi ViewModel để thêm
                         val amount = amountState.text.toLongOrNull() ?: 0L
@@ -193,15 +199,18 @@ fun FixedExpense(
                                 statusMessage = message
                                 statusColor = Color.Green
                                 showPopup = true // Hiển thị popup thành công
+                                showPopup = false
+                                isLoading = false
                                 navController.popBackStack("anual", inclusive = false)
                             },
                             onError = { message ->
                                 // Cập nhật thông báo lỗi và hiển thị popup
                                 successMessage = ""
-                                errorMessage = selectedDate
+                                errorMessage = "Gửi dữ liệu thất bại!"
                                 statusMessage = message
                                 statusColor = Color.Red
                                 showPopup = true // Hiển thị popup lỗi
+                                isLoading = false
                             }
                         )
                     }

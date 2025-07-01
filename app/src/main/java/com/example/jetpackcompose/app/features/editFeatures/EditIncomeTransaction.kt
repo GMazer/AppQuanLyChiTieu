@@ -113,7 +113,7 @@ fun EditIncomeTransaction(
             13,
             "Trợ cấp",
             { painterResource(R.drawable.subsidy) },
-            Color(0xFFfba74a),
+            Color(0xFF0000FF),
             percentage = 1.00f // 50%
         )
     )
@@ -123,6 +123,9 @@ fun EditIncomeTransaction(
     val month = dateParts[1].toInt()
     // Tải danh sách giao dịch và tìm giao dịch cần chỉnh sửa
     LaunchedEffect(transactionId) {
+        errorMessage = ""
+        successMessage = "Đang tải giao dịch..."
+        showPopup = true
         getViewModel.getTransactions(
             month = month,
             year = year,
@@ -150,6 +153,7 @@ fun EditIncomeTransaction(
                     selectedDate = "$year-$formattedMonth-$formattedDay"
                     selectedDate = selectedDate.split(" ")[0]
                     selectedCategory = categories.find { it.name == transaction.categoryName }
+                    showPopup = false
                 } else {
                     errorMessage = "Không tìm thấy giao dịch!"
                     showPopup = true
@@ -299,6 +303,7 @@ fun EditIncomeTransaction(
             ) {
                 Button(
                     onClick = {
+                        errorMessage = ""
                         successMessage = "Đang gửi dữ liệu..."
                         showPopup = true
                         val amount = amountValue.text.toLongOrNull() ?: 0L

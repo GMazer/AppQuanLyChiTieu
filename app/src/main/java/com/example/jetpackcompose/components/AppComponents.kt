@@ -67,15 +67,20 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
@@ -87,6 +92,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -425,10 +431,12 @@ fun CategoryItem(
         )
     }
 
-    // Tạo giá trị sóng thay đổi theo percentage (nâng lên hạ xuống)
+    val adjustedPercentage = if (percentage < 0.001f) -0.1f else percentage
+
     val waveYOffset by animateFloatAsState(
-        targetValue = boxHeight * (1 - percentage - 0.04f), // Tính giá trị y cho sóng theo percentage
-        animationSpec = tween(durationMillis = 500, easing = LinearEasing), label = ""
+        targetValue = boxHeight * (1 - adjustedPercentage - 0.04f),
+        animationSpec = tween(durationMillis = 1000, easing = LinearEasing),
+        label = ""
     )
 
     val height = if (column == 2) 120.dp else 90.dp
@@ -471,14 +479,14 @@ fun CategoryItem(
 
             // Vẽ nền
             drawRect(
-                color = bgItemColor,
+                color = if (percentage < 0.001f) Color(0xFFF6DADA) else bgItemColor,
                 size = size
             )
 
             // Vẽ path sóng
             drawPath(
                 path = wavePath,
-                color = Color(0xFFB3E5FC) // Màu xanh nhạt cho nước
+                color = if (percentage < 0.1f) Color(0xFFFF7A7A) else Color(0xFFB3E5FC) // Thực ra là 2 màu giống nhau
             )
         }
 
@@ -562,7 +570,7 @@ fun ClickableTextComponent(value: String, onClick: () -> Unit) {
     )
 }
 
-private fun formatNumber(input: String): String {
+fun formatNumber(input: String): String {
     return input.replace(",", "").toLongOrNull()?.let {
         String.format(Locale.US, "%,d", it) // Sử dụng Locale.US để đảm bảo định dạng đúng
     } ?: ""
@@ -1014,6 +1022,226 @@ fun CustomCalendar(
         }
     }
 }
+
+
+@Composable
+fun CategoryProgress(
+    categoryName: String,
+    transactionNote: String,
+    transactionAmount: Long,
+    transactionType: String,
+    categoryPercent: Float
+) {
+    val currencyFormatter = remember {
+        val symbols = DecimalFormatSymbols(Locale("vi", "VN"))
+        symbols.decimalSeparator = '.'
+        symbols.groupingSeparator = ','
+
+        val format = DecimalFormat("#,###", symbols)
+        format
+    }
+
+    val amountText = buildAnnotatedString {
+        append(currencyFormatter.format(transactionAmount))
+        withStyle(style = SpanStyle(fontSize = 10.sp)) {  // Kích thước nhỏ hơn cho ký tự "₫"
+            append("₫")
+        }
+    }
+
+    // Danh sách các Category
+    val categories = listOf(
+        Category(
+            1,
+            "Chi phí nhà ở",
+            { painterResource(R.drawable.outline_home_work_24) },
+            Color(0xFFB40300),
+            1.00f
+        ),
+        Category(
+            2,
+            "Ăn uống",
+            { painterResource(R.drawable.outline_ramen_dining_24) },
+            Color(0xFF911294),
+            1.00f
+        ),
+        Category(
+            3,
+            "Mua sắm quần áo",
+            { painterResource(R.drawable.clothes) },
+            Color(0xFF0C326E),
+            1.00f
+        ),
+        Category(
+            4,
+            "Đi lại",
+            { painterResource(R.drawable.outline_train_24) },
+            Color(0xFF126AB6),
+            1.00f
+        ),
+        Category(
+            5,
+            "Chăm sóc sắc đẹp",
+            { painterResource(R.drawable.outline_cosmetic) },
+            Color(0xFF0D96DA),
+            1.00f
+        ),
+        Category(
+            6,
+            "Giao lưu",
+            { painterResource(R.drawable.entertainment) },
+            Color(0xFF4DB218),
+            1.00f
+        ),
+        Category(
+            7,
+            "Y tế",
+            { painterResource(R.drawable.outline_health_and_safety_24) },
+            Color(0xFFD5CC00),
+            1.00f
+        ),
+        Category(
+            8,
+            "Học tập",
+            { painterResource(R.drawable.outline_education) },
+            Color(0xFFEE9305),
+            1.00f
+        ),
+        Category(
+            10,
+            "Tiền lương",
+            { painterResource(R.drawable.salary) },
+            Color(0xFFfb791d),
+            1.00f
+        ),
+        Category(
+            11,
+            "Tiền thưởng",
+            { painterResource(R.drawable.baseline_card_giftcard_24) },
+            Color(0xFF37c166),
+            1.00f
+        ),
+        Category(
+            12,
+            "Thu nhập phụ",
+            { painterResource(R.drawable.secondary) },
+            Color(0xFFf95aa9),
+            1.00f
+        ),
+        Category(13, "Trợ cấp", { painterResource(R.drawable.subsidy) }, Color(0xFF0000FF), 1.00f)
+    )
+
+    // Tìm Category phù hợp với categoryName
+    val category = categories.find { it.name == categoryName }
+
+    // Nếu tìm thấy Category, hiển thị icon và tên
+    category?.let {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth(if (it.id < 10) 0.95f else 1f)
+                .padding(8.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start,
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                Icon(
+                    painter = it.iconPainter(),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(24.dp)
+                        .padding(end = 8.dp),
+                    tint = it.iconColor
+                )
+
+                Text(
+                    text = it.name,
+                    fontFamily = montserrat,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = textColor
+                )
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                if (transactionNote.isNotEmpty()) {
+                    Text(
+                        text = "(${transactionNote})",
+                        fontFamily = montserrat,
+                        fontWeight = FontWeight.Light,
+                        fontSize = 12.sp,
+                        color = textColor,
+                        modifier = Modifier.weight(1f)
+                    )
+                } else {
+                    Spacer(modifier = Modifier.weight(1f))
+                }
+
+                Text(
+                    text = amountText,
+                    fontFamily = montserrat,
+                    fontWeight = FontWeight.Bold,
+                    color = if (transactionType == "expense") primaryColor else Color(0xff37c8ec),
+                    textAlign = TextAlign.End
+                )
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                Text(
+                    text = "(${String.format("%.2f", categoryPercent * 100)}%)",
+                    fontFamily = montserrat,
+                    fontWeight = FontWeight.Light,
+                    fontSize = 10.sp,
+                    color = if (transactionType == "expense") primaryColor else Color(0xff37c8ec),
+                    textAlign = TextAlign.End
+                )
+
+            }
+
+
+            Log.d("CategoryProgress", "name: ${categoryName}, process: ${categoryPercent}")
+            // Thanh tiến trình
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(8.dp)
+                    .padding(top = 2.dp)
+            ) {
+//              Nền của thanh tiến trình
+                Canvas(modifier = Modifier.fillMaxSize()) {
+                    drawRoundRect(
+                        color = Color.LightGray.copy(alpha = 0.3f),
+                        size = size ,
+                        cornerRadius = CornerRadius(4.dp.toPx())
+                    )
+                }
+                // Tiến trình chính theo tỷ lệ
+                Canvas(modifier = Modifier
+                    .fillMaxWidth(categoryPercent)
+                    .height(8.dp)
+                ) {
+                    val progressColor = if (categoryPercent > 1f) {
+                        Brush.linearGradient(
+                            colors = listOf(
+                                it.iconColor.copy(alpha = 0.8f),
+                                it.iconColor.copy(alpha = 1f)
+                            )
+                        )
+                    } else {
+                        SolidColor(it.iconColor.copy(alpha = 0.8f))
+                    }
+                    drawRoundRect(
+                        brush = progressColor,
+                        size = size,
+                        cornerRadius = CornerRadius(4.dp.toPx())
+                    )
+                }
+            }
+        }
+    }
+}
+
 
 
 

@@ -247,7 +247,7 @@ fun DonutChartWithProgress(
                     color = Color.White,
                     start = lineStart,
                     end = lineEnd,
-                    strokeWidth = 15f // Độ rộng của đường ngăn
+                    strokeWidth = 10f // Độ rộng của đường ngăn
                 )
 
                 startAngle += sweepAngle
@@ -255,7 +255,7 @@ fun DonutChartWithProgress(
         }
 
         // Hiển thị thông tin khi click vào mảnh
-        if (selectedSegment != -1) {
+        if (selectedSegment != -1 && selectedSegment != 8) {
             Column {
                 Text(
                     text = "${labels[selectedSegment]}",
@@ -275,6 +275,33 @@ fun DonutChartWithProgress(
                 )
                 Text(
                     text = "Chi tiêu: ${(progresses[selectedSegment] * 100).toInt()}%",
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                    fontFamily = montserrat,
+                    fontWeight = FontWeight.Normal,
+                    color = colors[selectedSegment],
+                    fontSize = 12.sp
+                )
+            }
+        } else {
+            Column {
+                Text(
+                    text = "${labels[selectedSegment]}",
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                    fontFamily = montserrat,
+                    fontWeight = FontWeight.Bold,
+                    color = colors[selectedSegment],
+                    fontSize = 12.sp
+                )
+                Text(
+                    text = "Phân bổ: ${values[selectedSegment]}%",
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                    fontFamily = montserrat,
+                    fontWeight = FontWeight.Normal,
+                    color = colors[selectedSegment],
+                    fontSize = 12.sp
+                )
+                Text(
+                    text = "Còn lại: ${(progresses[selectedSegment] * 100).toInt()}%",
                     modifier = Modifier.align(Alignment.CenterHorizontally),
                     fontFamily = montserrat,
                     fontWeight = FontWeight.Normal,
@@ -396,15 +423,22 @@ fun DonutChartIncome(
                     color = Color.White,
                     start = lineStart,
                     end = lineEnd,
-                    strokeWidth = 15f // Độ rộng của đường ngăn
+                    strokeWidth = 10f // Độ rộng của đường ngăn
                 )
 
                 startAngle += sweepAngle
             }
         }
 
+        for (it in progresses) {
+            if (it == 0f) {
+                selectedSegment += 1
+            } else {
+                break
+            }
+        }
         // Hiển thị thông tin khi click vào mảnh
-        if (selectedSegment != -1) {
+        if (selectedSegment != -1 && selectedSegment < progresses.size) {
             Column {
                 Text(
                     text = "${labels[selectedSegment]}",
@@ -420,6 +454,17 @@ fun DonutChartIncome(
                     fontFamily = montserrat,
                     fontWeight = FontWeight.Normal,
                     color = colors[selectedSegment],
+                    fontSize = 12.sp
+                )
+            }
+        } else {
+            Column {
+                Text(
+                    text = "Không có khoản thu",
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                    fontFamily = montserrat,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Gray,
                     fontSize = 12.sp
                 )
             }
@@ -946,13 +991,6 @@ fun BudgetTextField(
         }
     )
 }
-
-private fun formatNumber(input: String): String {
-    return input.replace(",", "").toLongOrNull()?.let {
-        String.format(Locale.US, "%,d", it)
-    } ?: ""
-}
-
 
 @Composable
 fun OtherFunction(

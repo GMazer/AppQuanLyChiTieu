@@ -26,14 +26,15 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.jetpackcompose.app.features.apiService.LogAPI.SignInViewModel
 import com.example.jetpackcompose.app.features.apiService.LogAPI.SignInViewModelFactory
-import com.example.jetpackcompose.app.features.apiService.ReadNotificationTransaction.PostExpenseNotiTransaction
-import com.example.jetpackcompose.app.features.apiService.ReadNotificationTransaction.PostIncomeNotiTransaction
-import com.example.jetpackcompose.app.features.apiService.ReadNotificationTransaction.TransactionNotificationScreen
-import com.example.jetpackcompose.app.features.apiService.ReadNotificationTransaction.TransactionStorage
+import com.example.jetpackcompose.app.features.ReadNotificationTransaction.PostExpenseNotiTransaction
+import com.example.jetpackcompose.app.features.ReadNotificationTransaction.PostIncomeNotiTransaction
+import com.example.jetpackcompose.app.features.ReadNotificationTransaction.TransactionNotificationScreen
+import com.example.jetpackcompose.app.features.ReadNotificationTransaction.TransactionStorage
 import com.example.jetpackcompose.app.features.editFeatures.EditExpenseTransaction
 import com.example.jetpackcompose.app.features.editFeatures.EditFixedExpenseTransaction
 import com.example.jetpackcompose.app.features.editFeatures.EditIncomeExpenseTransaction
 import com.example.jetpackcompose.app.features.editFeatures.EditIncomeTransaction
+import com.example.jetpackcompose.app.screens.BudgetScreen
 import com.example.jetpackcompose.app.screens.CalendarScreen
 import com.example.jetpackcompose.app.screens.MainScreen
 import com.example.jetpackcompose.app.screens.OtherScreen
@@ -162,6 +163,8 @@ fun AppQuanLyChiTieu(transactionStorage: TransactionStorage) {
             composable("other") { OtherScreen(navController) }
             composable("inputfixedtab") { InputFixedTab(navController) }
             composable("calendar") { CalendarScreen(navController) }
+            composable("budget") { BudgetScreen(navController) }
+            composable("findTransaction") { FindCalendarScreen(navController) }
             composable("transactionNotification") { TransactionNotificationScreen(navController) }
 
             // Chỉnh sửa giao dịch (truyền transactionId)
@@ -286,7 +289,8 @@ fun AppQuanLyChiTieu(transactionStorage: TransactionStorage) {
             composable("other") { OtherScreen(navController) }
             composable("inputfixedtab") { InputFixedTab(navController) }
             composable("calendar") { CalendarScreen(navController) }
-            composable("findtransaction") { FindCalendarScreen(navController) }
+            composable("budget") { BudgetScreen(navController) }
+            composable("findTransaction") { FindCalendarScreen(navController) }
             composable("transactionNotification") { TransactionNotificationScreen(navController) }
 
 
