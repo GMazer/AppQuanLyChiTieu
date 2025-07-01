@@ -193,6 +193,7 @@ fun ReportScreen(
         errorMessage = ""
         if (!isLoading && selectedMonthYear != currentMonthYear && !recommendBudget) {
             isLoading = true
+            errorMessage = ""
             successMessage = "Đang tải dữ liệu..."
             showPopup = true
 

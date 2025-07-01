@@ -873,7 +873,7 @@ fun DatePickerRow(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RowNumberField(
-    label: String = "Số tiền", // Label mặc định
+    label: String = "Số tiền",
     textState: TextFieldValue,
     onValueChange: (TextFieldValue) -> Unit
 ) {
@@ -890,27 +890,31 @@ fun RowNumberField(
                 .weight(1.5f)
                 .padding(start = 16.dp)
         )
+
         val keyboardController = LocalSoftwareKeyboardController.current
         val focusManager = LocalFocusManager.current
 
-        androidx.compose.material3.OutlinedTextField(
-            modifier = Modifier
-                .weight(3.5f),
-            value = textState,
-            onValueChange = { newValue ->
-                // Lọc chỉ cho phép nhập số
-                val filteredText = newValue.text.filter { it.isDigit() }
+        val rawText = textState.text.replace(",", "") // Bỏ dấu , cũ
+        val formattedText = if (rawText.isNotEmpty()) "%,d".format(rawText.toLong()) else ""
 
-                // Kiểm tra xem chuỗi có rỗng không hoặc không bắt đầu bằng '0' nếu không phải là số duy nhất
-                if (filteredText.isEmpty() || (filteredText != "0" && filteredText.first() != '0')) {
-                    // Nếu chuỗi không bắt đầu bằng 0 hoặc là 0 duy nhất, cập nhật giá trị
-                    onValueChange(
-                        TextFieldValue(
-                            text = filteredText,
-                            selection = TextRange(filteredText.length) // Đặt con trỏ ở cuối
-                        )
+        androidx.compose.material3.OutlinedTextField(
+            modifier = Modifier.weight(3.5f),
+            value = textState.copy(text = formattedText), // Hiển thị dạng có dấu phẩy
+            onValueChange = { newValue ->
+                val digitsOnly = newValue.text.filter { it.isDigit() }
+
+                // Bỏ qua nếu người dùng nhập toàn dấu , hoặc bắt đầu bằng 0 không hợp lệ
+                if (digitsOnly.isEmpty() || (digitsOnly != "0" && digitsOnly.startsWith("0"))) return@OutlinedTextField
+
+                // Tính lại vị trí con trỏ sau định dạng
+                val selectionOffset = digitsOnly.length
+
+                onValueChange(
+                    TextFieldValue(
+                        text = digitsOnly,
+                        selection = TextRange(selectionOffset)
                     )
-                }
+                )
             },
             colors = androidx.compose.material3.TextFieldDefaults.outlinedTextFieldColors(
                 unfocusedBorderColor = Color.Transparent,
@@ -931,13 +935,13 @@ fun RowNumberField(
                 color = textColor
             ),
             keyboardOptions = KeyboardOptions.Default.copy(
-                keyboardType = KeyboardType.Number, // Chỉ cho phép nhập số
+                keyboardType = KeyboardType.Number,
                 imeAction = ImeAction.Done
             ),
             keyboardActions = KeyboardActions(
                 onDone = {
-                    focusManager.clearFocus()  // Clear focus from the text field
-                    keyboardController?.hide()  // Hide the keyboard
+                    focusManager.clearFocus()
+                    keyboardController?.hide()
                 }
             ),
         )

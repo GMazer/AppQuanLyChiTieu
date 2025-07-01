@@ -81,6 +81,7 @@ fun AnualScreen(navController: NavHostController) {
 
     // Hàm gọi lại API để tải lại danh sách giao dịch
     fun reloadTransactions() {
+        errorMessage = ""
         successMessage = "Đang tải dữ liệu..."
         showPopup = true
         viewModel.getFixedTransactions(

@@ -1,4 +1,4 @@
-package com.example.jetpackcompose.app.features.apiService.ReadNotificationTransaction
+package com.example.jetpackcompose.app.features.ReadNotificationTransaction
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -254,6 +254,7 @@ fun PostIncomeNotiTransaction(
                 MyButtonComponent(
                     value = "Nhập khoản thu",
                     onClick = {
+                        errorMessage = ""
                         successMessage = "Đang gửi dữ liệu..."
                         showPopup = true
                         val amount = amountValue.text.toLongOrNull() ?: 0L

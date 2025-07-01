@@ -158,7 +158,8 @@ fun SignUpScreen(navController: NavHostController, viewModel: SignUpViewModel = 
                                 }
                             },
                             onError = {
-                                errorMessage = it
+                                errorMessage2 = it
+                                showPopup = true
                             }
                         )
                     }

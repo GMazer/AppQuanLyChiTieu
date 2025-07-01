@@ -162,6 +162,7 @@ fun FixedExpense(
                     value = "Thêm",
                     isLoading = isLoading,
                     onClick = {
+                        errorMessage = ""
                         successMessage = "Đang gửi dữ liệu..."
                         showPopup = true
                         isLoading = true
@@ -199,6 +200,7 @@ fun FixedExpense(
                                 statusColor = Color.Green
                                 showPopup = true // Hiển thị popup thành công
                                 showPopup = false
+                                isLoading = false
                                 navController.popBackStack("anual", inclusive = false)
                             },
                             onError = { message ->
@@ -208,6 +210,7 @@ fun FixedExpense(
                                 statusMessage = message
                                 statusColor = Color.Red
                                 showPopup = true // Hiển thị popup lỗi
+                                isLoading = false
                             }
                         )
                     }

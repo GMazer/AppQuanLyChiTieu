@@ -1,4 +1,4 @@
-package com.example.jetpackcompose.app.features.apiService.ReadNotificationTransaction
+package com.example.jetpackcompose.app.features.ReadNotificationTransaction
 
 import android.annotation.SuppressLint
 import android.app.Notification
@@ -100,7 +100,7 @@ class ReadTransactionNoti : NotificationListenerService() {
 
                 sharedPreferences.edit().putLong("last_notification_time", postTime).apply()
 
-                showReceivedNotification( if (it.type == "expense") "Expense" else "Income", it.amount.toString() + "VND")
+                showReceivedNotification( if (it.type == "expense") "Expense" else "Income", "%,dVND".format(it.amount))
 
                 Log.d("NotificationService", "Danh sách giao dịch đã được lưu: $transactionList")
             }
@@ -158,41 +158,6 @@ class ReadTransactionNoti : NotificationListenerService() {
 
         // Trả về null nếu không hợp lệ
         return null
-    }
-
-    @SuppressLint("NewApi", "NotificationPermission")
-    private fun showAlertNotification(title: String, text: String) {
-        val channelId = "alert_notification_channel"
-        val channelName = "Alert Notifications"
-
-        // Tạo Intent để mở TransactionNotiActivity
-        val intent = Intent(this, TransactionNotiActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        val pendingIntent = PendingIntent.getActivity(
-            this,
-            0,
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val notificationManager = getSystemService(NOTIFICATION_SERVICE) as android.app.NotificationManager
-            val channel = android.app.NotificationChannel(
-                channelId, channelName, android.app.NotificationManager.IMPORTANCE_LOW
-            )
-            notificationManager.createNotificationChannel(channel)
-        }
-
-        val notification = Notification.Builder(this, channelId)
-            .setContentTitle("Cảnh báo chi tiêu")
-            .setContentText("$title: $text")
-            .setSmallIcon(android.R.drawable.ic_dialog_info)
-            .setAutoCancel(true)
-            .setContentIntent(pendingIntent)
-            .build()
-
-        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as android.app.NotificationManager
-        notificationManager.notify(System.currentTimeMillis().toInt(), notification)
     }
 
     @SuppressLint("NewApi", "NotificationPermission")

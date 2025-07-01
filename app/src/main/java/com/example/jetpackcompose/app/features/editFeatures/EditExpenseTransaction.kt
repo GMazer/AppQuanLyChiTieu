@@ -146,6 +146,7 @@ fun EditExpenseTransaction(
     val month = dateParts[1].toInt()
     // Tải danh sách giao dịch và tìm giao dịch cần chỉnh sửa
     LaunchedEffect(transactionId) {
+        errorMessage = ""
         successMessage = "Đang tải giao dịch..."
         showPopup = true
         getViewModel.getTransactions(
@@ -327,6 +328,7 @@ fun EditExpenseTransaction(
             ) {
                 Button(
                     onClick = {
+                        errorMessage = ""
                         successMessage = "Đang gửi dữ liệu..."
                         showPopup = true
                         val amount = amountValue.text.toLongOrNull() ?: 0L

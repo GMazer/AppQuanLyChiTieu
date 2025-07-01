@@ -95,6 +95,7 @@ fun EditIncomeExpenseTransaction(
 
     // Lấy thông tin giao dịch cố định khi màn hình được mở
     LaunchedEffect(fixedTransactionId) {
+        errorMessage2 = ""
         successMessage2 = "Đang tải dữ liệu..."
         showPopup = true
         getFixedTransactionViewModel.getFixedTransactions(

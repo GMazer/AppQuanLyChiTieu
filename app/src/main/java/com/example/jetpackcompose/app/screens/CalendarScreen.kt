@@ -104,6 +104,7 @@ fun CalendarScreen(navController: NavController) {
 
     // Khởi tạo NavHostController
     LaunchedEffect(selectedMonthYear) {
+        errorMessage = ""
         successMessage = "Đang tải dữ liệu..."
         showPopup = true
         val (month, year) = monthYear.split("/").map { it.toInt() }

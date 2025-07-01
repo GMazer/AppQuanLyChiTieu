@@ -74,13 +74,6 @@ data class Category(
     val percentage: Float
 )
 
-
-//val montserrat = FontFamily(
-//    Font(R.font.montserrat_regular, FontWeight.Normal),
-//    Font(R.font.montserrat_bold, FontWeight.Bold),
-//    Font(R.font.montserrat_light, FontWeight.Light)
-//)
-
 data class TabItem(val text: String, val icon: ImageVector, val screen: @Composable () -> Unit)
 
 data class Transaction(
@@ -89,8 +82,6 @@ data class Transaction(
     val transaction_date: String,
     val note: String
 )
-
-
 
 
 @Composable

@@ -72,6 +72,19 @@ fun BudgetScreen(navController: NavController) {
     val viewModel: GetBudgetCategoryViewModel = GetBudgetCategoryViewModel(LocalContext.current)
     var isLoading by remember { mutableStateOf(true) }
 
+    val suitableIncome = listOf(
+        houseValue,
+        foodValue,
+        shoppingValue,
+        movingValue,
+        cosmeticValue,
+        exchangingValue,
+        medicalValue,
+        educatingValue,
+        saveValue
+    ).sumOf { it.text.toLongOrNull() ?: 0L }
+
+
     LaunchedEffect(Unit) {
         viewModel.getBudgetTransaction(
             onError = { isLoading = false },
@@ -218,6 +231,22 @@ fun BudgetScreen(navController: NavController) {
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
+
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                    ) {
+                        Text(
+                            text = "Phù hợp cho khoản thu đầu vào hàng tháng: %,d₫".format(suitableIncome),
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            fontFamily = montserrat,
+                            fontWeight = FontWeight.Normal,
+                            color = primaryColor,
+                            fontSize = 12.sp
+                        )
+                    }
+
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -228,6 +257,7 @@ fun BudgetScreen(navController: NavController) {
                             isLoading = false,
                             onClick = {
 
+                                errorMessage = ""
                                 successMessage = "Đang gửi dữ liệu..."
                                 showPopup = true
 

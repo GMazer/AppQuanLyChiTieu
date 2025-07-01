@@ -159,6 +159,7 @@ fun IncomeContent(postViewModel: PostTransactionViewModel = PostTransactionViewM
                     Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
                         Button(
                             onClick = {
+                                errorMessage = ""
                                 successMessage = "Đang gửi dữ liệu..."
                                 showPopup = true
                                 val amount = amountValue.text.toLongOrNull() ?: 0L
