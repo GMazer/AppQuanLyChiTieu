@@ -31,6 +31,7 @@ import com.example.jetpackcompose.app.network.RegistrationData
 import com.example.jetpackcompose.components.CheckboxComponent
 import com.example.jetpackcompose.components.ClickableTextComponent
 import com.example.jetpackcompose.components.HeadingTextComponent
+import com.example.jetpackcompose.components.MessagePopup
 import com.example.jetpackcompose.components.MyButtonComponent
 import com.example.jetpackcompose.components.MyTextFieldComponent
 import com.example.jetpackcompose.components.NormalTextComponent
@@ -46,6 +47,25 @@ fun SignUpScreen(navController: NavHostController, viewModel: SignUpViewModel = 
     var errorMessage by remember { mutableStateOf("") }
     var successMessage by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
+
+    var showPopup by remember { mutableStateOf(false) }
+    var errorMessage2 by remember { mutableStateOf("") }
+    var successMessage2 by remember { mutableStateOf("") }
+
+    // Biểu thức chính quy để kiểm tra email và số điện thoại
+    val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$".toRegex()
+    val phoneRegex = "^[0-9]{10,15}$".toRegex() // Giả sử số điện thoại phải có từ 10 đến 15 ký tự
+
+    MessagePopup(
+        showPopup = showPopup,
+        successMessage = successMessage2,
+        errorMessage = errorMessage2,
+        onDismiss = {
+            showPopup = false
+            errorMessage2 = ""
+            successMessage2 = ""
+        }
+    )
 
     Surface(
         modifier = Modifier
@@ -99,13 +119,26 @@ fun SignUpScreen(navController: NavHostController, viewModel: SignUpViewModel = 
                 "Đăng ký",
                 isLoading = isLoading,
                 onClick = {
+                    // Kiểm tra các điều kiện
                     if (phoneNumber.isEmpty() || email.isEmpty() || password.isEmpty() || retypePassword.isEmpty()) {
-                        errorMessage = "Vui lòng điền đầy đủ thông tin."
+                        errorMessage2 = "Vui lòng điền đầy đủ thông tin."
+                        showPopup = true
                     } else if (password != retypePassword) {
-                        errorMessage = "Mật khẩu và xác nhận mật khẩu không trùng khớp."
+                        errorMessage2 = "Mật khẩu và xác nhận mật khẩu không trùng khớp."
+                        showPopup = true
                     } else if (!agreeToTerms) {
-                        errorMessage = "Vui lòng đồng ý với điều khoản và chính sách."
+                        errorMessage2 = "Vui lòng đồng ý với điều khoản và chính sách."
+                        showPopup = true
+                    } else if (!email.matches(emailRegex)) {
+                        errorMessage2 = "Vui lòng nhập địa chỉ email hợp lệ."
+                        showPopup = true
+                    } else if (!phoneNumber.matches(phoneRegex)) {
+                        errorMessage2 = "Số điện thoại không hợp lệ. Vui lòng nhập lại."
+                        showPopup = true
                     } else {
+                        errorMessage2 = ""
+                        successMessage2 = "Đang đăng ký tài khoản..."
+                        showPopup = true
                         val registrationData = RegistrationData(
                             phone_number = phoneNumber,
                             email = email,
@@ -116,6 +149,8 @@ fun SignUpScreen(navController: NavHostController, viewModel: SignUpViewModel = 
                         viewModel.registerUser(
                             data = registrationData,
                             onSuccess = {
+                                successMessage2 = "Tài khoản đã được đăng ký thành công!"
+                                showPopup = true
                                 successMessage = it
                                 navController.navigate("signin")
                                 {
@@ -123,29 +158,14 @@ fun SignUpScreen(navController: NavHostController, viewModel: SignUpViewModel = 
                                 }
                             },
                             onError = {
-                                errorMessage = it
+                                errorMessage2 = it
+                                showPopup = true
                             }
                         )
                     }
-                })
-            if (errorMessage.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(20.dp))
-                Text(
-                    text = errorMessage,
-                    color = Color.Red,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
+                }
+            )
 
-            if (successMessage.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(20.dp))
-                Thread.sleep(3000)
-                Text(
-                    text = successMessage,
-                    color = Color.Green,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
             Row(modifier = Modifier.fillMaxWidth()) {
                 Spacer(modifier = Modifier.weight(1f))
                 ClickableTextComponent("Đã có tài khoản? Đăng nhập ngay", onClick = {

@@ -98,6 +98,7 @@ fun FixedIncome(
                     Divider(color = Color(0xFFd4d4d4), thickness = 0.5.dp)
 
                     DropdownRow(
+                        initialValue = 4,
                         label = "Danh mục",
                         options = listOf(
                             Pair(R.drawable.salary, "Tiền lương"),
@@ -122,6 +123,7 @@ fun FixedIncome(
             ) {
                 Column {
                     DropdownRepeat(
+                        initialValue = 4,
                         label = "Lặp lại",
                         options = RepeatFrequency.values().map {
                             it.displayName to it
@@ -149,54 +151,66 @@ fun FixedIncome(
                 }
             }
 
-            // Nút thêm giao dịch
-            MyButtonComponent(
-                value = "Thêm",
-                isLoading = isLoading,
-                onClick = {
-                    isLoading = true
-                    // Chuyển giá trị sang FixedTransaction và gọi ViewModel để thêm
-                    val amount = amountState.text.toLongOrNull() ?: 0L
+            Box(
+                modifier = Modifier
+                    .padding(horizontal = 50.dp)
+                    .fillMaxWidth()
+            ){
+                // Nút thêm giao dịch
+                MyButtonComponent(
+                    value = "Thêm",
+                    isLoading = isLoading,
+                    onClick = {
+                        errorMessage = ""
+                        successMessage = "Đang gửi dữ liệu..."
+                        showPopup = true
+                        isLoading = true
+                        // Chuyển giá trị sang FixedTransaction và gọi ViewModel để thêm
+                        val amount = amountState.text.toLongOrNull() ?: 0L
 
-                    val fixedTransaction = FixedTransaction(
-                        category_id = when (selectedCategory) {
-                            "Tiền lương" -> 10
-                            "Tiền thưởng" -> 11
-                            "Thu nhập phụ" -> 12
-                            "Trợ cấp" -> 13
-                            else -> 0
-                        },
-                        title = titleState.text,
-                        amount = amount,
-                        repeat_frequency = selectedRepeat, // Sử dụng enum RepeatFrequency
-                        start_date = selectedDate,
-                        end_date = selectedEndDate
-                    )
+                        val fixedTransaction = FixedTransaction(
+                            category_id = when (selectedCategory) {
+                                "Tiền lương" -> 10
+                                "Tiền thưởng" -> 11
+                                "Thu nhập phụ" -> 12
+                                "Trợ cấp" -> 13
+                                else -> 0
+                            },
+                            title = titleState.text,
+                            amount = amount,
+                            repeat_frequency = selectedRepeat, // Sử dụng enum RepeatFrequency
+                            start_date = selectedDate,
+                            end_date = selectedEndDate
+                        )
 
-                    Log.i("FixedIncome", "FixedTransaction: $fixedTransaction")
+                        Log.i("FixedIncome", "FixedTransaction: $fixedTransaction")
 
-                    // Gọi ViewModel để thêm giao dịch và xử lý kết quả
-                    viewModel.addFixedTransaction(fixedTransaction,
-                        onSuccess = { message ->
-                            navController.popBackStack("anual", inclusive = false)
-                            // Cập nhật thông báo thành công và hiển thị popup
-                            successMessage = "Gửi dữ liệu thành công"
-                            errorMessage = ""
-                            statusMessage = message
-                            statusColor = Color.Green
-                            showPopup = true // Hiển thị popup thành công
-                        },
-                        onError = { message ->
-                            // Cập nhật thông báo lỗi và hiển thị popup
-                            successMessage = ""
-                            errorMessage = selectedDate
-                            statusMessage = message
-                            statusColor = Color.Red
-                            showPopup = true // Hiển thị popup lỗi
-                        }
-                    )
-                }
-            )
+                        // Gọi ViewModel để thêm giao dịch và xử lý kết quả
+                        viewModel.addFixedTransaction(fixedTransaction,
+                            onSuccess = { message ->
+                                navController.popBackStack("anual", inclusive = false)
+                                // Cập nhật thông báo thành công và hiển thị popup
+                                successMessage = "Gửi dữ liệu thành công!"
+                                errorMessage = ""
+                                statusMessage = message
+                                statusColor = Color.Green
+                                showPopup = true // Hiển thị popup thành công
+                                isLoading = false
+                            },
+                            onError = { message ->
+                                // Cập nhật thông báo lỗi và hiển thị popup
+                                successMessage = ""
+                                errorMessage = "Gửi dữ liệu thất bại!"
+                                statusMessage = message
+                                statusColor = Color.Red
+                                showPopup = true // Hiển thị popup lỗi
+                                isLoading = false
+                            }
+                        )
+                    }
+                )
+            }
+
         }
 
         // Hiển thị thông báo popup

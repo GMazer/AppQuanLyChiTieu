@@ -13,8 +13,8 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.example.jetpackcompose.app.AppQuanLyChiTieu
-import com.example.jetpackcompose.app.features.apiService.ReadNotificationTransaction.ReadTransactionNoti
-import com.example.jetpackcompose.app.features.apiService.ReadNotificationTransaction.TransactionStorage
+import com.example.jetpackcompose.app.features.ReadNotificationTransaction.ReadTransactionNoti
+import com.example.jetpackcompose.app.features.ReadNotificationTransaction.TransactionStorage
 
 
 class MainActivity : ComponentActivity() {

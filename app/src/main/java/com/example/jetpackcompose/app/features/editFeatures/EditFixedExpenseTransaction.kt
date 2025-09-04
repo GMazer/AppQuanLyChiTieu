@@ -54,6 +54,7 @@ import com.example.jetpackcompose.components.montserrat
 import com.example.jetpackcompose.ui.theme.textColor
 import java.text.SimpleDateFormat
 import java.time.LocalDate
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
@@ -95,23 +96,34 @@ fun EditFixedExpenseTransaction(
 
     // Lấy thông tin giao dịch cố định khi màn hình được mở
     LaunchedEffect(fixedTransactionId) {
+        errorMessage2 = ""
+        successMessage2 = "Đang tải dữ liệu"
+        showPopup = true
         getFixedTransactionViewModel.getFixedTransactions(
             onSuccess = { transactionList ->
                 fixedTransaction =
                     transactionList.find { it.fixed_transaction_id == fixedTransactionId }
+
                 // Điền dữ liệu vào các trường nhập liệu
                 fixedTransaction?.let {
+
+                    val calendar = Calendar.getInstance()
+                    calendar.set(it.startDate[0], it.startDate[1] - 1, it.startDate[2]) // Month trừ 1 vì Calendar sử dụng 0-based indexing cho tháng.
+
                     titleState = TextFieldValue(it.title ?: "")
                     selectedCategory = it.categoryName
                     amountState = TextFieldValue(it.amount.toString())
-
+                    selectedRepeat = RepeatFrequency.valueOf(it.repeate_frequency)
+                    selectedDate = SimpleDateFormat("yyyy-MM-dd").format(calendar.time)
                     selectedEndDate = it.endDate?.let { endDateList ->
                         LocalDate.of(endDateList[0], endDateList[1], endDateList[2]).toString()
                     } ?: ""
                 }
+                showPopup = false
+                successMessage2 = ""
             },
             onError = { errorMessage ->
-                errorMessage1 = ""
+                errorMessage1 = "Có lỗi xảy ra khi tải giao dịch"
                 showPopup = true
             }
         )
@@ -199,6 +211,17 @@ fun EditFixedExpenseTransaction(
                     Divider(color = Color(0xFFd4d4d4), thickness = 0.5.dp)
 
                     DropdownRow(
+                        initialValue = when (selectedCategory) {
+                            "Chi phí nhà ở" -> 0
+                            "Ăn uống" -> 1
+                            "Mua sắm quần áo" -> 2
+                            "Đi lại" -> 3
+                            "Chăm sóc săc đẹp" -> 4
+                            "Giao lưu" -> 5
+                            "Y tế" -> 6
+                            "Học tập" -> 7
+                            else -> 0  // Default giá trị nếu không có
+                        },
                         label = "Danh mục",
                         options = listOf(
                             Pair(R.drawable.outline_home_work_24, "Chi phí nhà ở"),
@@ -227,6 +250,13 @@ fun EditFixedExpenseTransaction(
             ) {
                 Column {
                     DropdownRepeat(
+                        initialValue = when (selectedRepeat) {
+                            RepeatFrequency.daily -> 0
+                            RepeatFrequency.weekly -> 1
+                            RepeatFrequency.monthly -> 2
+                            RepeatFrequency.yearly -> 3
+                            else -> 0  // Default giá trị nếu không có
+                        },
                         label = "Lặp lại",
                         options = RepeatFrequency.values()
                             .map { it.displayName to it }

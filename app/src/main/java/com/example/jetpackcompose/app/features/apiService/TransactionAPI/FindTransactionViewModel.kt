@@ -39,6 +39,8 @@ class FindTransactionViewModel(private val context: Context) : ViewModel() {
 
     // Hàm tìm kiếm giao dịch
     fun findTransactions(
+        amount: Long?,
+        categoryName: String,
         note: String,
         onSuccess: (List<FindTransactionResponse>) -> Unit,
         onError: (String) -> Unit
@@ -56,7 +58,7 @@ class FindTransactionViewModel(private val context: Context) : ViewModel() {
                 Log.d("FindTransactionViewModel", "Token: $token")
                 Log.d("FindTransactionViewModel", "Keyword: $note")
 
-                val response = api.findTransactions("Bearer $token", note)
+                val response = api.findTransactions("Bearer $token", note, categoryName, amount)
                 Log.d("FindTransactionViewModel", "Response Code: ${response.code()}")
                 Log.d("FindTransactionViewModel", "Response Error Body: ${response.errorBody()?.string()}")
 

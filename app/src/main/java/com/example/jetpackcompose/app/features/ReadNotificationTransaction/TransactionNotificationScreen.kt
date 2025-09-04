@@ -1,4 +1,4 @@
-package com.example.jetpackcompose.app.features.apiService.ReadNotificationTransaction
+package com.example.jetpackcompose.app.features.ReadNotificationTransaction
 
 // TransactionNotificationScreen.kt
 import android.util.Log

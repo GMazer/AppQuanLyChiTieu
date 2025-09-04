@@ -320,7 +320,7 @@ fun CategoryIconWithName(
             Color(0xFFf95aa9),
             1.00f
         ),
-        Category(11, "Trợ cấp", { painterResource(R.drawable.subsidy) }, Color(0xFFfba74a), 1.00f)
+        Category(13, "Trợ cấp", { painterResource(R.drawable.subsidy) }, Color(0xFF0000FF), 1.00f)
     )
 
     // Tìm Category phù hợp với categoryName
@@ -369,7 +369,7 @@ fun CategoryIconWithName(
                 text = amountText,
                 fontFamily = montserrat,
                 fontWeight = FontWeight.Bold,
-                color = if (transactionType == "expense") textColor else Color(0xff37c8ec),
+                color = if (transactionType == "expense") primaryColor else Color(0xff37c8ec),
                 textAlign = TextAlign.End
             )
 
@@ -468,7 +468,6 @@ fun DayIndex(
                                 } catch (e: Exception) {
                                     date
                                 }
-                                Log.d("DayIndex", "CAIDEOGIVAY: $transactionId, Date: $transactionDate")
                                 if (transaction.type == "expense") {
                                     navController.navigate("editExpense/$transactionId?date=$transactionDate")
                                 } else {
@@ -567,12 +566,25 @@ fun RowTextField(
 
 @Composable
 fun DropdownRow(
+    initialValue: Int,
     label: String,
     options: List<Pair<Int?, String>>, // Icon (Int?) và tên danh mục (String)
     onChangeValue: (String) -> Unit // Callback chỉ trả về String
 ) {
     var selectedOption by remember { mutableStateOf(options[0].second) }
     var showDialog by remember { mutableStateOf(false) }
+
+    if (initialValue == 0){
+        selectedOption = options[0].second // Lưu enum thay vì String
+    } else if (initialValue == 1){
+        selectedOption = options[1].second // Lưu enum thay vì String
+    } else if (initialValue == 2){
+        selectedOption = options[2].second // Lưu enum thay vì String
+    } else if (initialValue == 3){
+        selectedOption = options[3].second // Lưu enum thay vì String
+    } else {
+
+    }
 
     Row(
         modifier = Modifier
@@ -619,7 +631,7 @@ fun DropdownRow(
             onDismissRequest = { showDialog = false },
             title = {
                 Text(
-                    text = "Chọn $label",
+                    text = "Chọn:",
                     fontFamily = montserrat,
                     fontWeight = FontWeight.Bold
                 )
@@ -642,7 +654,7 @@ fun DropdownRow(
                                 Icon(
                                     painter = painterResource(id = iconId),
                                     contentDescription = null,
-                                    tint = Color(0xff4caf50),
+                                    tint = Color(0xfff35e17),
                                     modifier = Modifier.size(24.dp)
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
@@ -663,11 +675,28 @@ fun DropdownRow(
 
 @Composable
 fun <T : Enum<T>> DropdownRepeat(
+    initialValue: Int, // Giá trị hiển thị ban đầu
     label: String,
     options: List<Pair<String, T>>, // Truyền vào danh sách các giá trị enum dưới dạng cặp (displayName, enumValue)
     onChangeValue: (T) -> Unit // Trả về enum thay vì String
 ) {
+
+    Log.d("DropdownRepeat", "Initial Value: $initialValue")
+
     var selectedOption by remember { mutableStateOf(options[0].second) } // Lưu enum thay vì String
+
+    if (initialValue == 0){
+        selectedOption = options[0].second // Lưu enum thay vì String
+    } else if (initialValue == 1){
+        selectedOption = options[1].second // Lưu enum thay vì String
+    } else if (initialValue == 2){
+        selectedOption = options[2].second // Lưu enum thay vì String
+    } else if (initialValue == 3){
+        selectedOption = options[3].second // Lưu enum thay vì String
+    } else {
+
+    }
+
     var showDialog by remember { mutableStateOf(false) }
 
     Row(
@@ -844,7 +873,7 @@ fun DatePickerRow(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RowNumberField(
-    label: String = "Số tiền", // Label mặc định
+    label: String = "Số tiền",
     textState: TextFieldValue,
     onValueChange: (TextFieldValue) -> Unit
 ) {
@@ -861,27 +890,31 @@ fun RowNumberField(
                 .weight(1.5f)
                 .padding(start = 16.dp)
         )
+
         val keyboardController = LocalSoftwareKeyboardController.current
         val focusManager = LocalFocusManager.current
 
-        androidx.compose.material3.OutlinedTextField(
-            modifier = Modifier
-                .weight(3.5f),
-            value = textState,
-            onValueChange = { newValue ->
-                // Lọc chỉ cho phép nhập số
-                val filteredText = newValue.text.filter { it.isDigit() }
+        val rawText = textState.text.replace(",", "") // Bỏ dấu , cũ
+        val formattedText = if (rawText.isNotEmpty()) "%,d".format(rawText.toLong()) else ""
 
-                // Kiểm tra xem chuỗi có rỗng không hoặc không bắt đầu bằng '0' nếu không phải là số duy nhất
-                if (filteredText.isEmpty() || (filteredText != "0" && filteredText.first() != '0')) {
-                    // Nếu chuỗi không bắt đầu bằng 0 hoặc là 0 duy nhất, cập nhật giá trị
-                    onValueChange(
-                        TextFieldValue(
-                            text = filteredText,
-                            selection = TextRange(filteredText.length) // Đặt con trỏ ở cuối
-                        )
+        androidx.compose.material3.OutlinedTextField(
+            modifier = Modifier.weight(3.5f),
+            value = textState.copy(text = formattedText), // Hiển thị dạng có dấu phẩy
+            onValueChange = { newValue ->
+                val digitsOnly = newValue.text.filter { it.isDigit() }
+
+                // Bỏ qua nếu người dùng nhập toàn dấu , hoặc bắt đầu bằng 0 không hợp lệ
+                if (digitsOnly.isEmpty() || (digitsOnly != "0" && digitsOnly.startsWith("0"))) return@OutlinedTextField
+
+                // Tính lại vị trí con trỏ sau định dạng
+                val selectionOffset = digitsOnly.length
+
+                onValueChange(
+                    TextFieldValue(
+                        text = digitsOnly,
+                        selection = TextRange(selectionOffset)
                     )
-                }
+                )
             },
             colors = androidx.compose.material3.TextFieldDefaults.outlinedTextFieldColors(
                 unfocusedBorderColor = Color.Transparent,
@@ -902,13 +935,13 @@ fun RowNumberField(
                 color = textColor
             ),
             keyboardOptions = KeyboardOptions.Default.copy(
-                keyboardType = KeyboardType.Number, // Chỉ cho phép nhập số
+                keyboardType = KeyboardType.Number,
                 imeAction = ImeAction.Done
             ),
             keyboardActions = KeyboardActions(
                 onDone = {
-                    focusManager.clearFocus()  // Clear focus from the text field
-                    keyboardController?.hide()  // Hide the keyboard
+                    focusManager.clearFocus()
+                    keyboardController?.hide()
                 }
             ),
         )
@@ -1050,8 +1083,12 @@ fun MessagePopup(
 ) {
     if (showPopup) {
         LaunchedEffect(key1 = showPopup) {
-            delay(1000)
-            onDismiss() //
+            if (!showPopup){
+                onDismiss()
+            } else {
+                delay(2500)
+                onDismiss()
+            }
         }
 
         AlertDialog(

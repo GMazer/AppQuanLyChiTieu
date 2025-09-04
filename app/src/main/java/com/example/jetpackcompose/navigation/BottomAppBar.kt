@@ -42,9 +42,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
-fun CustomBottomAppBar(pagerState: PagerState, coroutineScope: CoroutineScope) {
-    var selectedPage by rememberSaveable { mutableStateOf(0) }
-
+fun CustomBottomAppBar(
+    pagerState: PagerState,
+    coroutineScope: CoroutineScope,
+    selectedPage: Int,
+    onPageSelected: (Int) -> Unit
+) {
     Box(
         modifier = Modifier
             .background(topBarColor)
@@ -59,35 +62,26 @@ fun CustomBottomAppBar(pagerState: PagerState, coroutineScope: CoroutineScope) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            // Báo cáo
             BottomBarItem(
                 title = "Báo cáo",
                 iconRes = R.drawable.chart,
                 isSelected = selectedPage == 0,
-                onClick = {
-                    selectedPage = 0
-                    coroutineScope.launch { pagerState.scrollToPage(0) }
-                }
+                onClick = { onPageSelected(0) }
             )
 
-            // Lịch
             BottomBarItem(
                 title = "Lịch",
                 iconRes = R.drawable.calendar,
                 isSelected = selectedPage == 1,
-                onClick = {
-                    selectedPage = 1
-                    coroutineScope.launch { pagerState.scrollToPage(1) }
-                }
+                onClick = { onPageSelected(1) }
             )
 
-            // Dấu "+" trong hình tròn
             Box(
                 modifier = Modifier
                     .size(50.dp)
                     .background(primaryColor, shape = CircleShape)
                     .clickable {
-                        selectedPage = 2
+                        onPageSelected(2)
                         coroutineScope.launch { pagerState.scrollToPage(2) }
                     },
                 contentAlignment = Alignment.Center
@@ -100,26 +94,18 @@ fun CustomBottomAppBar(pagerState: PagerState, coroutineScope: CoroutineScope) {
                 )
             }
 
-            // Ngân sách
             BottomBarItem(
                 title = "Ngân sách",
                 iconRes = R.drawable.budget__2_,
                 isSelected = selectedPage == 4,
-                onClick = {
-                    selectedPage = 4
-                    coroutineScope.launch { pagerState.scrollToPage(4) }
-                }
+                onClick = { onPageSelected(4) }
             )
 
-            // Khác
             BottomBarItem(
                 title = "Khác",
                 iconRes = R.drawable.baseline_more_horiz_24,
                 isSelected = selectedPage == 3,
-                onClick = {
-                    selectedPage = 3
-                    coroutineScope.launch { pagerState.scrollToPage(3) }
-                }
+                onClick = { onPageSelected(3) }
             )
         }
     }
@@ -164,7 +150,7 @@ fun CustomBottomAppBarPreview() {
         pageCount = { 5 }
     )
     val coroutineScope = rememberCoroutineScope()
-    CustomBottomAppBar(pagerState, coroutineScope)
+    CustomBottomAppBar(pagerState, coroutineScope, 0, {})
 }
 
 
