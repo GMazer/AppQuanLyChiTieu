@@ -251,6 +251,7 @@ fun DonutChartWithProgress(
                 )
 
                 startAngle += sweepAngle
+
             }
         }
 
