@@ -60,6 +60,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -922,28 +923,36 @@ fun BudgetTextField(
     enabled: Boolean = true,
     colorPercent: Color
 ) {
-
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
     var isFocused by remember { mutableStateOf(false) }
 
+    // Format một lần để tái sử dụng
+    val formatted = remember(amountState) { formatNumber(amountState) }
+    // Bắt con trỏ luôn ở cuối sau khi format
+    val textFieldValue = remember(formatted) {
+        TextFieldValue(
+            text = formatted,
+            selection = TextRange(formatted.length)
+        )
+    }
+
     BasicTextField(
-        value = formatNumber(amountState), // Định dạng số với dấu phẩy
-        onValueChange = { newInput ->
-            val unformattedInput = newInput.replace(",", "") // Loại bỏ dấu phẩy trước khi xử lý
-            if (unformattedInput == "0" && amountState.isEmpty()) {
-                // Không làm gì để chặn '0' đầu tiên
-            } else {
-                val filteredInput = unformattedInput.filter { it.isDigit() }
-                onValueChange(filteredInput)
+        value = textFieldValue, // dùng TextFieldValue thay vì String
+        onValueChange = { tfv ->
+            // Lấy text người dùng nhập, bỏ dấu phẩy để xử lý số "thô"
+            val unformattedInput = tfv.text.replace(",", "")
+            if (!(unformattedInput == "0" && amountState.isEmpty())) {
+                val filtered = unformattedInput.filter { it.isDigit() }
+                onValueChange(filtered) // cập nhật state "thô" bên ngoài
             }
+            // Không cần set selection ở đây; khi amountState đổi -> formatted đổi -> textFieldValue mới
+            // sẽ kéo con trỏ về cuối nhờ TextRange(formatted.length)
         },
         singleLine = true,
         enabled = enabled,
         modifier = modifier
-            .onFocusChanged { focusState ->
-                isFocused = focusState.isFocused
-            }
+            .onFocusChanged { focusState -> isFocused = focusState.isFocused }
             .height(30.dp)
             .fillMaxWidth()
             .background(Color(0xFFe7e7e7), componentShapes.small)
@@ -967,7 +976,7 @@ fun BudgetTextField(
         keyboardActions = KeyboardActions(
             onDone = {
                 focusManager.clearFocus()
-                keyboardController?.hide() // Ẩn bàn phím khi nhấn Done
+                keyboardController?.hide()
             }
         ),
         decorationBox = { innerTextField ->
@@ -992,6 +1001,7 @@ fun BudgetTextField(
         }
     )
 }
+
 
 @Composable
 fun OtherFunction(

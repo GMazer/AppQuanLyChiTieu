@@ -79,6 +79,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.Font
@@ -100,16 +101,16 @@ import androidx.compose.ui.unit.sp
 import com.example.jetpackcompose.R
 import com.example.jetpackcompose.app.screens.Category
 import com.example.jetpackcompose.app.screens.DailyTransaction
-import com.example.jetpackcompose.ui.theme.saturdayColor
-import com.example.jetpackcompose.ui.theme.sundayColor
-import com.example.jetpackcompose.ui.theme.textColorPrimary
 import com.example.jetpackcompose.ui.theme.bgColor
 import com.example.jetpackcompose.ui.theme.bgItemColor
-import com.example.jetpackcompose.ui.theme.primaryColor
-import com.example.jetpackcompose.ui.theme.secondaryColor
 import com.example.jetpackcompose.ui.theme.componentShapes
 import com.example.jetpackcompose.ui.theme.highGray
+import com.example.jetpackcompose.ui.theme.primaryColor
+import com.example.jetpackcompose.ui.theme.saturdayColor
+import com.example.jetpackcompose.ui.theme.secondaryColor
+import com.example.jetpackcompose.ui.theme.sundayColor
 import com.example.jetpackcompose.ui.theme.textColor
+import com.example.jetpackcompose.ui.theme.textColorPrimary
 import java.lang.StrictMath.PI
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
@@ -583,25 +584,27 @@ fun NumberTextField(amountState: String, onValueChange: (String) -> Unit) {
     val focusRequester = FocusRequester()
     var isFocused by remember { mutableStateOf(false) }
 
+    val formatted = remember(amountState) { formatNumber(amountState) }
+    val textFieldValue = remember(formatted) {
+        TextFieldValue(
+            text = formatted,
+            selection = TextRange(formatted.length)
+        )
+    }
+
     BasicTextField(
-        value = formatNumber(amountState),
-        onValueChange = { newInput ->
-            if (newInput == "0" && amountState.isEmpty()) {
-                // do nothing to block the first '0'
-            } else {
-                val filteredInput = newInput.filter { it.isDigit() }
-                onValueChange(
-                    if (filteredInput.isNotEmpty() && filteredInput != "0") {
-                        filteredInput
-                    } else if (filteredInput == "0" && amountState.isNotEmpty()) {
-                        filteredInput
-                    } else {
-                        ""
-                    }
-                )
+        value = textFieldValue,
+        onValueChange = { tfv ->
+            // Lấy text người dùng nhập, bỏ dấu phẩy để xử lý số "thô"
+            val unformattedInput = tfv.text.replace(",", "")
+            if (!(unformattedInput == "0" && amountState.isEmpty())) {
+                val filtered = unformattedInput.filter { it.isDigit() }
+                onValueChange(filtered) // cập nhật state "thô" bên ngoài
             }
+            // Không cần set selection ở đây; khi amountState đổi -> formatted đổi -> textFieldValue mới
+            // sẽ kéo con trỏ về cuối nhờ TextRange(formatted.length)
         },
-                singleLine = true,
+        singleLine = true,
         modifier = Modifier
             .focusRequester(focusRequester)
             .onFocusChanged { focusState ->
@@ -726,7 +729,8 @@ fun MonthPickerButton(onDateSelected: (String) -> Unit) {
 
         // Format khoảng ngày
         val dayMonthFormat = SimpleDateFormat("d/M", Locale("vi", "VN"))
-        dateRangeText = "(${dayMonthFormat.format(firstDay.time)} - ${dayMonthFormat.format(lastDay.time)})"
+        dateRangeText =
+            "(${dayMonthFormat.format(firstDay.time)} - ${dayMonthFormat.format(lastDay.time)})"
 
         onDateSelected("$dateText $dateRangeText")
     }
@@ -1212,14 +1216,15 @@ fun CategoryProgress(
                 Canvas(modifier = Modifier.fillMaxSize()) {
                     drawRoundRect(
                         color = Color.LightGray.copy(alpha = 0.3f),
-                        size = size ,
+                        size = size,
                         cornerRadius = CornerRadius(4.dp.toPx())
                     )
                 }
                 // Tiến trình chính theo tỷ lệ
-                Canvas(modifier = Modifier
-                    .fillMaxWidth(categoryPercent)
-                    .height(8.dp)
+                Canvas(
+                    modifier = Modifier
+                        .fillMaxWidth(categoryPercent)
+                        .height(8.dp)
                 ) {
                     val progressColor = if (categoryPercent > 1f) {
                         Brush.linearGradient(
